@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+
+<html lang='en'>
+
+<head>
+	<meta charset='utf-8' />
+	<title>Polymer Graph Test</title>
+	<link rel='import' href='../../bower_components/polymer/polymer.html'>
+	<link rel='import' href='../../bower_components/polymer/polymer-element.html' />
+	<link rel='import' href='../../dist/framework/polymer2/ui-widget-toolkit-polymer2.html' />
+	<link rel='import' href='../../dist/framework/polymer2/ui-widget-toolkit-checkbox-tree.html' />
+	<link rel='import' href='../../dist/framework/polymer2/ui-widget-toolkit-collapsible-grid.html' />
+	<link rel='import' href='../../dist/framework/polymer2/ui-widget-toolkit-chiclet-heatmap.html' />
+	<link rel='stylesheet' , href='../../dist/css/ui-widget-toolkit.css' , type='text/css' />
+
+	<script src='../../node_modules/d3/dist/d3.min.js'></script>
+	<script src='../../dist/js/ui-widget-toolkit.js'></script>
+	<script src='../testBase.js'></script>
+	<script src='../testData.js'></script>
+	<script src='./polymer2Test.js'></script>
+</head>
+
+<body>
+	<p>
+		Polymer Graph Test
+		<p></p>
+		<p>
+			<button id='zoomReset' type='button'>Reset Zoom</button>
+		</p>
+
+		<p>
+			Add Selection: <input type='text' id='addInput' />
+			<button id='addSelection' type='button'>Go!</button>
+		</p>
+		<p>
+			Remove Selection: <input type='text' id='removeInput' />
+			<button id='removeSelection' type='button'>Go!</button>
+		</p>
+		<p>
+			Clear Selection
+			<button id='clearSelection' type='button'>Go!</button>
+		</p>
+	</p>
+	<uwt-swimlane-chart id='swimlaneTest'></uwt-swimlane-chart>
+	<uwt-chart id='chart1'></uwt-chart>
+	<uwt-chart id='chart2'></uwt-chart>
+	<uwt-chart id='chart3'></uwt-chart>
+	<uwt-chart id='chart4'></uwt-chart>
+	<uwt-chart id='chart5'></uwt-chart>
+	<uwt-chart id='chart6'></uwt-chart>
+	<uwt-chart id='chart7'></uwt-chart>
+	<uwt-pie-chart id='pieTestId'></uwt-pie-chart>
+	<uwt-pie-chart id='pieTestId2'></uwt-pie-chart>
+	<uwt-grid id='grid1'></uwt-grid>
+	<uwt-flow-diagram id='flowchart1'></uwt-flow-diagram>
+	<uwt-graph id='forcegraph1'></uwt-graph>
+	<uwt-chart id='flamechart1'></uwt-chart>
+	<uwt-sunburst-chart id='sunburst1'></uwt-sunburst-chart>
+	<uwt-checkbox-tree id='checkboxTree'></uwt-checkbox-tree>
+	<style is="custom-style">
+		#grid2 {
+			--uwt-grid-header-border: 1px solid green;
+			--uwt-grid-header-background: red;
+		}
+	</style>
+	<uwt-collapsible-grid id='grid2'></uwt-collapsible-grid>
+	<uwt-chiclet-heatmap id='heatmap'></uwt-chiclet-heatmap>
+</body>
+
+</html>

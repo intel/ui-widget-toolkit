@@ -1,0 +1,25 @@
+.node-row {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.node-row>label {
+    margin-left: 0px!important;
+}
+
+.node-preicon {
+    cursor: pointer;
+}
+
+.node-name {
+    cursor: pointer;
+}
+
+ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+li {
+    list-style-type: none;
+}

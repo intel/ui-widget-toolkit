@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+
+<html lang='en'>
+
+<head>
+	<meta charset='utf-8' />
+	<title>Grid Test</title>
+	<link rel='stylesheet' href='../../dist/css/ui-widget-toolkit.css' type='text/css' />
+	<link rel='stylesheet' href='../../dist/css/ag-grid/ag-grid.css' type='text/css' />
+	<link rel='stylesheet' href='../../dist/css/ag-grid/ag-theme-fresh.css' type='text/css' />
+
+	<script src='../../node_modules/ag-grid-community/dist/ag-grid-community.min.js'></script>
+	<script src='../../dist/js/ui-widget-toolkit-grid.js'></script>
+	<script src='../testBase.js'></script>
+	<script src='./gridTest.js'></script>
+</head>
+
+<body>
+	<p>
+		<p></p>
+		<p>
+			Add Selection:
+			<input type='text' id='addInput' />
+			<button id='addSelection' type='button'>Go!</button>
+		</p>
+		<p>
+			Remove Selection:
+			<input type='text' id='removeInput' />
+			<button id='removeSelection' type='button'>Go!</button>
+		</p>
+		<p>
+			Clear Selection
+			<button id='clearSelection' type='button'>Go!</button>
+		</p>
+	</p>
+	<div id='graphArea0' class='ag-theme-fresh' style='height: 200px; width: 600px'></div>
+	<div id='graphArea1' class='ag-theme-fresh' style='height: 200px; width: 600px'></div>
+	<div id='graphArea2' class='ag-theme-fresh' style='height: 200px; width: 600px'></div>
+	<div id='graphArea3' class='ag-theme-fresh' style='height: 200px; width: 600px'></div>
+</body>
+
+</html>

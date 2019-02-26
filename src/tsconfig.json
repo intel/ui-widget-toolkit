@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "declaration": true,
+        "declarationDir": "../../types",
+        "module": "commonjs",
+        "target": "es5",
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "jsx": "react"
+    },
+    "exclude": [
+        "framework"
+    ]
+}

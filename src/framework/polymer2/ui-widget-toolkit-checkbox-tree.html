@@ -1,0 +1,290 @@
+<link rel='import' href='../../../bower_components/paper-checkbox/paper-checkbox.html'>
+
+<!--
+`<uwt-checkbox-tree-node>` display a tree node with expandable/collapsible capabilities and a checkbox for each row
+
+## Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--uwt-checkbox-selected-background-color`      | Highlight color for selected node           | `rgba(200, 200, 200, 0.5)`
+`--uwt-checkbox-selected-color`                 | Text and icon color for selected node       | `inherit`
+`--uwt-checkbox-toggle-theme`                   | Change theme for node +/- toggle            |
+`--uwt-checkbox-icon-theme`                     | Change theme for node icon                  |
+-->
+
+<dom-module id='uwt-checkbox-tree-node'>
+    <template>
+        <style>
+            :host(.selected)>.node-container>.node-row {
+                background-color: var(--uwt-checkbox-selected-background-color, rgba(200, 200, 200, 0.5));
+                color: var(--uwt-checkbox-selected-color, inherit);
+            }
+
+            .node-container {
+                white-space: nowrap;
+            }
+
+            .node-row {
+                padding-left: 4px;
+                padding-right: 4px;
+            }
+
+            .node-preicon.collapsed,
+            .node-preicon.expanded {
+                padding-left: 0px;
+            }
+
+            .node-preicon {
+                padding-left: 18px;
+            }
+
+            .node-preicon:before {
+                margin-right: 5px;
+                @apply --uwt-checkbox-toggle-theme;
+            }
+
+            .node-preicon.collapsed:before {
+                content: '\002B';
+            }
+
+            .node-preicon.expanded:before {
+                content: '\2212';
+            }
+
+            .node-preicon,
+            .node-name {
+                cursor: pointer;
+            }
+
+            ul {
+                margin: 0;
+                padding-left: 20px;
+            }
+
+            li {
+                list-style-type: none;
+            }
+        </style>
+
+        <div class='node-container'>
+            <div class='node-row'>
+                <span class$='{{_computeClass(data.*)}}' on-click='toggleChildren'></span>
+                <template is='dom-if' if='{{!data.notCheckable}}'>
+                    <paper-checkbox title='{{data.name}}' checked='{{data.checked}}' on-change='_onCheckChanged'>
+                        {{data.name}}</paper-checkbox>
+                </template>
+                <template is='dom-if' if='{{data.notCheckable}}'>
+                    {{data.name}}
+                </template>
+            </div>
+            <template is='dom-if' if='{{data.open}}'>
+                <ul>
+                    <template is='dom-repeat' items='{{data.children}}'>
+                        <li>
+                            <uwt-checkbox-tree-node id='{{item.name}}' data='{{item}}'
+                                onCheckChanged='[[onCheckChanged]]' class='checkbox-tree-node'></uwt-checkbox-tree-node>
+                        </li>
+                    </template>
+                </ul>
+            </template>
+        </div>
+    </template>
+</dom-module>
+
+<script>
+    class UWTCheckboxTreeNode extends Polymer.Element {
+
+        static get is() { return 'uwt-checkbox-tree-node'; }
+        static get properties() {
+            return {
+                /**
+                 * Data hold by this node (contains the children).
+                 *
+                 * Specific data:
+                 *
+                 * - `data.name`: string representing the node name.
+                 * - `data.open`: boolean telling whether the node is expanded or not.
+                 * - `data.children` array containing the children of the node.
+                 */
+                data: {
+                    type: Object,
+                    value: function () {
+                        return null;
+                    },
+                    observer: '_onDataChanged'
+                },
+                onCheckChanged: {
+                    type: Function,
+                }
+            }
+        }
+
+        _onCheckChanged($event) {
+            this.onCheckChanged(this.data);
+            this._updateChildCheckBox(this, $event.target.checked);
+            this._updateParentCheckBox(this.getParent());
+        }
+
+        _updateChildCheckBox(node, checked, force) {
+            if (node.get('data.checked') !== checked) {
+                node.set('data.checked', checked);
+                if (!node.get('data.notCheckable')) {
+                    node.onCheckChanged(node.data);
+                }
+            }
+
+            if (node.getChildren().length) {
+                node.getChildren().forEach((child) => this._updateChildCheckBox(child, checked, true));
+            }
+        }
+
+        _updateParentCheckBox(nodeData) {
+            if (nodeData) {
+                if (nodeData.getChildren().length) {
+                    let allChildChecked = true;
+
+                    for (let child of nodeData.getChildren()) {
+                        let childChecked = child.get('data.checked');
+                        if (!childChecked) {
+                            allChildChecked = false;
+                            break;
+                        }
+                    }
+                    if (nodeData.get('data.checked') !== allChildChecked) {
+                        nodeData.set('data.checked', allChildChecked);
+                        if (!nodeData.get('data.notCheckable')) {
+                            nodeData.onCheckChanged(nodeData.data);
+                        }
+                    }
+                }
+                nodeData._updateParentCheckBox(nodeData.getParent());
+            }
+        }
+
+        _initializeChildren(parent) {
+            if (parent.data && parent.data.open) {
+                var nodes = parent.shadowRoot.querySelectorAll('.checkbox-tree-node');
+                if (nodes) {
+                    for (let i = 0; i < nodes.length; ++i) {
+                        nodes[i].onCheckChanged = parent.onCheckChanged;
+                    }
+                }
+                for (let i = 0; i < parent.data.children.length; ++i) {
+                    parent.data.children[i].parent = parent.data;
+                }
+            }
+        }
+
+        /**
+         * Called whenever the data is changed to notify the lower nodes.
+         */
+        _onDataChanged() {
+            let self = this;
+            setTimeout(function () {
+                self._initializeChildren(self);
+            });
+        }
+
+        /**
+         * Returns the necessary classes.
+         *
+         * @param {object} change An object containing the property that changed and its value.
+         * @return {string} The class name indicating whether the node is open or closed
+         */
+        _computeClass(change) {
+            var open = change && change.base && change.base.open;
+            var children = change && change.base && change.base.children;
+            return 'node-preicon ' + ((open && children && children.length) ? 'expanded' : children && children.length ? 'collapsed' : '');
+        }
+        /**
+         * Returns the parent tree node. Returns `null` if root.
+         */
+        getParent() {
+            let host = Polymer.dom(this).getOwnerRoot().host;
+            return host.tagName === 'INTEL-CHECKBOX-TREE-NODE' ? host : null;
+        }
+        /**
+         * Returns the children tree nodes.
+         */
+        getChildren() {
+            return Polymer.dom(this.root).querySelectorAll('uwt-checkbox-tree-node');
+        }
+        /**
+         * Display/Hide the children nodes.
+         */
+        toggleChildren() {
+            let self = this;
+            self.set('data.open', !self.data.open && self.data.children && self.data.children.length);
+            setTimeout(function () {
+                self.dispatchEvent(new CustomEvent('toggle', self));
+                self._initializeChildren(self);
+            });
+        }
+    }
+    customElements.define(UWTCheckboxTreeNode.is, UWTCheckboxTreeNode);
+
+</script>
+
+<!--
+`<uwt-checkbox-tree>` display a browsable tree of nodes (`<uwt-checkbox-tree-node>`) with expandable/collapsible capabilities and actions menu for each node.
+
+Example:
+
+    <uwt-checkbox-tree></uwt-checkbox-tree>
+
+@demo
+-->
+
+<dom-module id='uwt-checkbox-tree'>
+
+    <template>
+        <div>
+            <uwt-checkbox-tree-node id='root' data='{{data}}' onCheckChanged='{{onCheckChanged}}'
+                class='checkbox-tree-node'></uwt-checkbox-tree-node>
+        </div>
+    </template>
+
+</dom-module>
+
+<script>
+    class UWTCheckboxTree extends Polymer.Element {
+
+        static get is() { return 'uwt-checkbox-tree'; }
+        static get properties() {
+            return {
+                /**
+                 * Data hold by the root node (contains the children).
+                 *
+                 * Specific data:
+                 *
+                 * - `data.name`: string representing the node name.
+                 * - `data.open`: boolean telling whether the node is expanded or not.
+                 * - `data.children` array containing the children of the node.
+                 */
+                data: {
+                    type: Object,
+                    value: function () {
+                        return null;
+                    },
+                    observer: '_onDataChanged'
+                },
+                onCheckChanged: {
+                    type: Function
+                }
+            }
+        }
+
+        /**
+         * Called whenever the data is changed to notify the lower nodes.
+         */
+        _onDataChanged() {
+            this.$.root.data = this.data;
+            this.$.root.onCheckChanged = this.onCheckChanged;
+        }
+    }
+    customElements.define(UWTCheckboxTree.is, UWTCheckboxTree);
+
+</script>

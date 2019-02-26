@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html lang='en'>
+
+<head>
+    <meta charset='utf-8' />
+    <title>React Graph Test</title>
+    <link rel='stylesheet' , href='../../dist/css/ag-grid/ag-grid.css' , type='text/css' />
+    <link rel='stylesheet' , href='../../dist/css/ag-grid/ag-theme-fresh.css' , type='text/css' />
+    <link rel='stylesheet' , href='../../dist/css/ui-widget-toolkit.css' , type='text/css' />
+
+    <script src='../../node_modules/d3/dist/d3.min.js'></script>
+    <script src='../../dist/js/ui-widget-toolkit.js'></script>
+    <script src='../testBase.js'></script>
+    <script src='../testData.js'></script>
+</head>
+
+<body>
+    <p>
+        React Graph Test
+        <p></p>
+        <p>
+            <button id='zoomReset' type='button'>Reset Zoom</button>
+        </p>
+
+        <p>
+            Add Selection:
+            <input type='text' id='addInput' />
+            <button id='addSelection' type='button'>Go!</button>
+        </p>
+        <p>
+            Remove Selection:
+            <input type='text' id='removeInput' />
+            <button id='removeSelection' type='button'>Go!</button>
+        </p>
+        <p>
+            Clear Selection
+            <button id='clearSelection' type='button'>Go!</button>
+        </p>
+    </p>
+
+    <div id='testDiv'></div>
+    <script src='./reactTest.js'></script>
+</body>
+
+</html>

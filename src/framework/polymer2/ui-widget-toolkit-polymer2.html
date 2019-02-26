@@ -1,0 +1,809 @@
+<!--
+Base element to share all the default styles
+-->
+
+<script src='../../js/ui-widget-toolkit.js'></script>
+
+<dom-module id='uwt-pie-chart'>
+    <template>
+        <style>
+            .legendCells .cell .label {
+                font-size: var(--uwt-legend-text-size, 12px);
+                font-family: Arial;
+            }
+
+            .chart {
+                margin: auto;
+                width: inherit;
+            }
+
+            .no-pointer-events {
+                pointer-events: none;
+            }
+        </style>
+
+        <div class='chart-title'>{{chartTitle}}</div>
+        <div id='chart'></div>
+    </template>
+    <script>
+        class PieChart extends Polymer.Element {
+            static get is() { return 'uwt-pie-chart'; }
+            static get properties() {
+                return {
+                    chartTitle: {
+                        type: String
+                    },
+                    chartDef: {
+                        type: Object,
+                        notify: true,
+                        observer: '_onDataChanged'
+                    },
+                    renderOptions: {
+                        type: Object,
+                        notify: true,
+                        observer: '_onRenderOptionsChanged'
+                    },
+                    colorManager: {
+                        type: Object,
+                        value: function () { return new UWT.ColorManager() },
+                        observer: '_onColorManagerChanged'
+                    },
+                    onRender: {
+                        type: Function
+                    },
+                    renderer: {
+                        type: Object
+                    }
+                }
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                if (!this.renderer) {
+                    this.renderer = new UWT.D3Renderer('', this.colorManager);
+                }
+                this.renderer.setOnRenderCallback(this.onRender);
+
+                if (this.chartDef) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chartDef, this.renderOptions);
+                }
+            }
+            _onDataChanged() {
+                if (this.renderer && this.chartDef) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chartDef, this.renderOptions);
+                }
+            }
+            _onRenderOptionsChanged() {
+                if (this.renderer && this.chart) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chart, this.renderOptions);
+                }
+            }
+            _onColorManagerChanged() {
+                if (this.renderer) {
+                    this.renderer.setColorManager(this.colorManager);
+                }
+            }
+        }
+
+        customElements.define(PieChart.is, PieChart);
+    </script>
+</dom-module>
+<dom-module id='uwt-sunburst-chart'>
+    <template>
+        <style>
+            .legendCells .cell .label {
+                font-size: var(--uwt-legend-text-size, 12px);
+                font-family: Arial;
+            }
+
+            .chart {
+                margin: auto;
+                width: inherit;
+            }
+
+            .no-pointer-events {
+                pointer-events: none;
+            }
+        </style>
+
+        <div class='chart-title'>{{chartTitle}}</div>
+        <div id='chart'></div>
+    </template>
+    <script>
+        class SunburstChart extends Polymer.Element {
+            static get is() { return 'uwt-sunburst-chart'; }
+            static get properties() {
+                return {
+                    chartTitle: {
+                        type: String
+                    },
+                    chartDef: {
+                        type: Object,
+                        notify: true,
+                        observer: '_onDataChanged'
+                    },
+                    renderOptions: {
+                        type: Object,
+                        notify: true,
+                        observer: '_onRenderOptionsChanged'
+                    },
+                    colorManager: {
+                        type: Object,
+                        value: function () { return new UWT.ColorManager() },
+                        observer: '_onColorManagerChanged'
+                    },
+                    onRender: {
+                        type: Function
+                    },
+                    renderer: {
+                        type: Object
+                    }
+                }
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+                if (!this.renderer) {
+                    this.renderer = new UWT.D3Renderer('', this.colorManager);
+                }
+                this.renderer.setOnRenderCallback(this.onRender);
+
+                if (this.chartDef) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chartDef, this.renderOptions);
+                }
+            }
+
+            _onDataChanged() {
+                if (this.renderer && this.chartDef) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chartDef, this.renderOptions);
+                }
+            }
+            _onRenderOptionsChanged() {
+                if (this.renderer && this.chart) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chart, this.renderOptions);
+                }
+            }
+            _onColorManagerChanged() {
+                if (this.renderer) {
+                    this.renderer.setColorManager(this.colorManager);
+                }
+            }
+        };
+
+        customElements.define(SunburstChart.is, SunburstChart);
+    </script>
+</dom-module>
+
+<dom-module id='uwt-chart'>
+    <template>
+        <style>
+            svg {
+                padding-top: 4px;
+                padding-bottom: 3px;
+            }
+
+            .axis path,
+            .axis line {
+                fill: none;
+                stroke: grey;
+                stroke-width: 1;
+                shape-rendering: crispEdges;
+            }
+
+            .axis text {
+                font-size: var(--uwt-axis-text-size, larger);
+                fill: var(--uwt-axis-text-color, black);
+                stroke-width: 0;
+            }
+
+            .lane-axis-label {
+                font-size: .8em;
+            }
+
+            .lane-title {
+                font-size: larger;
+                font-style: italic;
+            }
+
+            .chart-title {
+                padding-top: 1px;
+            }
+
+            .chart-background {
+                stroke: var(--uwt-chart-background-stroke, white);
+                fill: var(--uwt-chart-background-fill, white);
+            }
+
+            .brush .extent {
+                stroke: #fff;
+                shape-rendering: crispEdges;
+                fill-opacity: 0.125;
+            }
+
+            .brush {
+                fill: var(--uwt-chart-brush-fill, none);
+            }
+
+            .zoom-region {
+                fill: black;
+                stroke: #fff;
+                shape-rendering: crispEdges;
+                fill-opacity: 0.125;
+            }
+
+            .legendCells .cell .label {
+                font-size: var(--uwt-legend-text-size, 12px);
+                font-family: Arial;
+            }
+
+            .chart-flame.labels {
+                font-size: var(--uwt-flame-text-size, 12px);
+                font-family: Arial;
+                font-weight: bold;
+                background-color: transparent;
+                color: black;
+            }
+
+            .no-pointer-events {
+                pointer-events: none;
+            }
+        </style>
+
+        <div class='chart-title'>{{chartTitle}}</div>
+        <div id='chart'></div>
+    </template>
+    <script>
+        class Chart extends Polymer.Element {
+            static get is() { return 'uwt-chart'; }
+            static get properties() {
+                return {
+                    chartTitle: {
+                        type: String
+                    },
+                    chartDef: {
+                        type: Object,
+                        observer: '_onDataChanged'
+                    },
+                    renderOptions: {
+                        type: Object,
+                        observer: '_onRenderOptionsChanged'
+                    },
+                    colorManager: {
+                        type: Object,
+                        value: function () { return new UWT.ColorManager() },
+                        observer: '_onColorManagerChanged'
+                    },
+                    onRender: {
+                        type: Function
+                    },
+                    renderer: {
+                        type: Object
+                    }
+                }
+            }
+            connectedCallback() {
+                super.connectedCallback();
+
+                if (!this.renderer) {
+                    this.renderer = new UWT.D3Renderer('', this.colorManager);
+                }
+                this.renderer.setOnRenderCallback(this.onRender);
+
+                if (this.chartDef) {
+                    // clear needed to make the swim lanes work right
+                    // as polymer reuses the old divs in an array
+                    this.renderer.clearDiv(this.$.chart);
+                    this.renderer.destroy(this.chartDef);
+
+                    this.renderer.setDiv(this.$.chart);
+                    UWT.Chart.finalize(this.chartDef);
+                    this.renderer.invalidate(this.chartDef, this.renderOptions);
+                }
+            }
+            _onDataChanged() {
+                if (this.renderer && this.chartDef) {
+                    // clear needed to make the swim lanes work right
+                    // as polymer reuses the old divs in an array
+                    this.renderer.destroy(this.chartDef);
+                    UWT.Chart.finalize(this.chartDef);
+                    let self = this;
+                    setTimeout(function () {
+                        // timeout because otherwise the internal caching
+                        // fails since invalidate happens on an old div object
+                        self.renderer.clearDiv(self.$.chart);
+                        self.renderer.destroy(self.chartDef);
+
+                        self.renderer.setDiv(self.$.chart);
+                        self.renderer.invalidate(self.chartDef, self.renderOptions);
+                    }, 0);
+                }
+            }
+            _onRenderOptionsChanged() {
+                if (this.renderer && this.chartDef) {
+                    // clear needed to make the swim lanes work right
+                    // as polymer reuses the old divs in an array
+                    this.renderer.clearDiv(this.$.chart);
+                    this.renderer.destroy(this.chartDef);
+
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chartDef, this.renderOptions);
+                }
+            }
+            _onColorManagerChanged() {
+                if (this.renderer) {
+                    this.renderer.setColorManager(this.colorManager);
+                }
+            }
+        }
+        customElements.define(Chart.is, Chart);
+    </script>
+</dom-module>
+
+<dom-module id='uwt-swimlane-chart'>
+    <template>
+        <div class='chart-title'>{{chartTitle}}</div>
+        <template is='dom-repeat' items='{{chartDefWrappers}}' as='wrapper'>
+            <uwt-chart id='{{wrapper.chartDef.title}}' chart-def='{{wrapper.chartDef}}'
+                render-options='{{wrapper.chartOptions}}' color-manager='{{colorManager}}' on-render='{{onRender}}'
+                renderer='{{renderer}}'></uwt-chart>
+        </template>
+    </template>
+    <script>
+        class SwimlaneChart extends Polymer.Element {
+            static get is() { return 'uwt-swimlane-chart'; }
+            static get properties() {
+                return {
+                    chartTitle: {
+                        type: String
+                    },
+                    chartDefs: {
+                        type: Array,
+                        observer: '_onDataChanged'
+                    },
+                    renderOptions: {
+                        type: Object,
+                        value: function () {
+                            return { topMargin: 4, bottomMargin: 4, disableAutoResizeWidth: true, height: 34 }
+                        },
+                        observer: '_onRenderOptionsChanged'
+                    },
+                    chartDefWrappers: {
+                        type: Array
+                    },
+                    colorManager: {
+                        type: Object,
+                        value: function () { return new UWT.ColorManager() },
+                        observer: '_onColorManagerChanged'
+                    },
+                    onRender: {
+                        type: Function
+                    },
+                    renderer: {
+                        type: Object
+                    }
+                }
+            }
+            createWrapper() {
+                if (this.chartDefs) {
+                    let wrappers = [];
+                    for (let i = 0; i < this.chartDefs.length; ++i) {
+                        wrappers.push({
+                            chartDef: this.chartDefs[i],
+                            chartOptions: this.chartOptions[i]
+                        })
+                    }
+                    this.chartDefWrappers = wrappers;
+                }
+            }
+            _onDataChanged() {
+                let chartMap = new Map();
+                if (this.chartDefs) {
+                    for (let i = 0; i < this.chartDefs.length; ++i) {
+                        chartMap.set(this.chartDefs[i], true);
+                    }
+                }
+                let legends = [];
+                let oldList = this.chartDefWrappers;
+                if (oldList) {
+                    for (let i = 0; i < oldList.length; ++i) {
+                        let oldChart = oldList[i];
+                        if (!chartMap.has(oldChart.chartDef)) {
+                            UWT.ChartGroup.handleRemoveChart(oldChart.chartDef);
+                        }
+                        if (oldChart.chartDef.legends) {
+                            legends = legends.concat(oldChart.chartDef.legends);
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < this.chartDefs.length; ++i) {
+                        if (this.chartDefs[i].legends) {
+                            legends = legends.concat(this.chartDefs[i].legends);
+                        }
+                    }
+                }
+
+                this.chartOptions = [];
+                UWT.ChartGroup.handleChartUpdate(this.chartDefs,
+                    this.chartOptions, this, legends);
+
+                this.createWrapper();
+            }
+            _onRenderOptionsChanged() {
+                if (this.chartDefs) {
+                    this.chartOptions = new Array(this.chartDefs.length);
+                }
+                UWT.ChartGroup.handleRenderOptionsUpdate(this, this.renderOptions,
+                    this.chartOptions);
+                this.createWrapper();
+            }
+            _onColorManagerChanged() {
+                if (this.renderer) {
+                    this.renderer.setColorManager(this.colorManager);
+                }
+            }
+        }
+        customElements.define(SwimlaneChart.is, SwimlaneChart);
+    </script>
+</dom-module>
+
+<dom-module id='uwt-grid'>
+    <link rel="import" type="css" href="../../css/ag-grid/ag-grid.css">
+    <link rel="import" type="css" href="../../css/ag-grid/ag-theme-fresh.css">
+    <template>
+        <style>
+            div#grid {
+                height: var(--uwt-grid-height, 200px);
+            }
+        </style>
+
+        <div class='grid-title'>{{gridTitle}}</div>
+        <div id='grid'></div>
+    </template>
+    <script>
+        class Grid extends Polymer.Element {
+            static get is() { return 'uwt-grid'; }
+            static get properties() {
+                return {
+                    gridTitle: {
+                        type: String
+                    },
+                    gridDef: {
+                        type: Object,
+                        observer: '_onDataChanged'
+                    },
+                    gridStyle: {
+                        type: Object,
+                        observer: '_onStyleChanged'
+                    },
+                    colorManager: {
+                        type: Object,
+                        value: function () { return new UWT.ColorManager() },
+                        observer: '_onColorManagerChanged'
+                    },
+                    onRender: {
+                        type: Function
+                    },
+                    renderer: {
+                        type: Object
+                    }
+                }
+            }
+            connectedCallback() {
+                super.connectedCallback();
+
+                if (!this.renderer) {
+                    this.renderer = new UWT.AgGridRenderer(undefined, undefined, this.colorManager);
+                }
+                this.renderer.setOnRenderCallback(this.onRender);
+
+                if (this.grid) {
+                    this.renderer.setDiv(this.grid, this.$.grid);
+                    this.renderer.invalidate(this.grid);
+                }
+            }
+            _onDataChanged(newVal, oldVal) {
+                if (oldVal && oldVal.gridOptions.gridClass) {
+                    this.$.grid.classList.remove(oldVal.gridOptions.gridClass);
+                }
+                if (newVal) {
+                    if (newVal.gridOptions.gridClass) {
+                        this.$.grid.classList.add(newVal.gridOptions.gridClass);
+                    } else {
+                        this.$.grid.classList.add('ag-theme-fresh');
+                    }
+                }
+
+                this.grid = newVal;
+                if (this.renderer && this.grid) {
+                    this.renderer.setDiv(this.grid, this.$.grid);
+                    this.renderer.invalidate(this.grid);
+                }
+            }
+            _onStyleChanged(newVal, oldVal) {
+                for (let key in newVal) {
+                    this.$.grid.style[key] = newVal[key];
+                }
+            }
+            _onColorManagerChanged() {
+                if (this.renderer) {
+                    this.renderer.setColorManager(this.colorManager);
+                }
+            }
+        }
+        customElements.define(Grid.is, Grid);
+    </script>
+</dom-module>
+
+<dom-module id='uwt-flow-diagram'>
+    <template>
+        <style>
+            .node rect {
+                cursor: move;
+                fill-opacity: .9;
+                shape-rendering: crispEdges;
+            }
+
+            .node text {
+                pointer-events: none;
+                text-shadow: 0 1px 0 #fff;
+            }
+
+            .link {
+                fill: none;
+                stroke: #888;
+                stroke-opacity: .4;
+            }
+        </style>
+
+        <div class='diagram-title'>{{diagramTitle}}</div>
+        <div id='diagram'></div>
+    </template>
+    <script>
+        class FlowDiagram extends Polymer.Element {
+            static get is() { return 'uwt-flow-diagram'; }
+            static get properties() {
+                return {
+                    diagramTitle: {
+                        type: String
+                    },
+                    diagramDef: {
+                        type: Object,
+                        observer: '_onDataChanged'
+                    },
+                    renderOptions: {
+                        type: Object,
+                        observer: '_onRenderOptionsChanged'
+                    },
+                    colorManager: {
+                        type: Object,
+                        value: function () { return new UWT.ColorManager() },
+                        observer: '_onColorManagerChanged'
+                    },
+                    onRender: {
+                        type: Function
+                    },
+                    renderer: {
+                        type: Object
+                    }
+                }
+            }
+            connectedCallback() {
+                super.connectedCallback();
+
+                if (!this.renderer) {
+                    this.renderer = new UWT.D3Renderer('', this.colorManager);
+                }
+                this.renderer.setOnRenderCallback(this.onRender);
+
+                if (this.diagramDef) {
+                    this.renderer.setDiv(this.$.diagram);
+                    this.renderer.invalidate(this.diagramDef, this.renderOptions);
+                }
+            }
+            _onDataChanged() {
+                if (this.renderer && this.diagramDef) {
+                    this.renderer.setDiv(this.$.diagram);
+                    this.renderer.invalidate(this.diagramDef, this.renderOptions);
+                }
+            }
+            _onRenderOptionsChanged() {
+                if (this.renderer && this.diagramDef) {
+                    this.renderer.setDiv(this.$.diagram);
+                    this.renderer.invalidate(this.diagramDef, this.renderOptions);
+                }
+            }
+            _onColorManagerChanged() {
+                if (this.renderer) {
+                    this.renderer.setColorManager(this.colorManager);
+                }
+            }
+        }
+        customElements.define(FlowDiagram.is, FlowDiagram);
+    </script>
+</dom-module>
+
+<dom-module id='ui-widget-toolkit-graph'>
+    <template>
+        <style>
+            .nodes circle {
+                stroke: #fff;
+                stroke-width: 1.5px;
+            }
+
+            .link {
+                fill: none;
+                stroke: #888;
+                stroke-opacity: .4;
+            }
+        </style>
+
+        <div class='graph-title'>{{graphTitle}}</div>
+        <div id='graph'></div>
+    </template>
+    <script>
+        class UWTGraph extends Polymer.Element {
+            static get is() { return 'uwt-graph'; }
+            static get properties() {
+                return {
+                    graphTitle: {
+                        type: String
+                    },
+                    graphDef: {
+                        type: Object,
+                        notify: true,
+                        observer: '_onDataChanged'
+                    },
+                    colorManager: {
+                        type: Object,
+                        value: function () { return new UWT.ColorManager() },
+                        observer: '_onColorManagerChanged'
+                    },
+                    renderOptions: {
+                        type: Object,
+                        observer: '_onRenderOptionsChanged'
+                    },
+                    onRender: {
+                        type: Function
+                    },
+                    renderer: {
+                        type: Object
+                    }
+                }
+            }
+            connectedCallback() {
+                super.connectedCallback();
+
+                if (!this.renderer) {
+                    this.renderer = new UWT.D3Renderer('', this.colorManager);
+                }
+                this.renderer.setOnRenderCallback(this.onRender);
+
+                if (this.graphDef) {
+                    this.renderer.setDiv(this.$.graph);
+                    this.renderer.invalidate(this.graphDef, this.renderOptions);
+                }
+            }
+            _onDataChanged() {
+                if (this.renderer && this.graphDef) {
+                    this.renderer.setDiv(this.$.graph);
+                    this.renderer.invalidate(this.graphDef, this.renderOptions);
+                }
+            }
+            _onRenderOptionsChanged() {
+                if (this.renderer && this.graphDef) {
+                    this.renderer.setDiv(this.$.graph);
+                    this.renderer.invalidate(this.graphDef, this.renderOptions);
+                }
+            }
+            _onColorManagerChanged() {
+                if (this.renderer) {
+                    this.renderer.setColorManager(this.colorManager);
+                }
+            }
+        }
+
+        customElements.define(UWTGraph.is, UWTGraph);
+    </script>
+</dom-module>
+
+<dom-module id='uwt-hierarchy-graph'>
+    <template>
+        <style>
+            .h-node {
+                cursor: pointer;
+            }
+
+            .h-node rect {
+                shape-rendering: crispEdges;
+            }
+
+            .h-link {
+                cursor: pointer;
+                stroke-opacity: .4;
+            }
+
+            .link {
+                fill: none;
+                stroke: #888;
+                stroke-opacity: .4;
+            }
+        </style>
+
+        <div class='graph-title'>{{graphTitle}}</div>
+        <div id='graph'></div>
+    </template>
+    <script>
+        class HierarchyGraph extends Polymer.Element {
+            static get is() { return 'uwt-hierarchy-graph'; }
+            static get properties() {
+                return {
+                    graphTitle: {
+                        type: String
+                    },
+                    graphDef: {
+                        type: Object,
+                        notify: true,
+                        observer: '_onDataChanged'
+                    },
+                    colorManager: {
+                        type: Object,
+                        value: function () { return new UWT.ColorManager() },
+                        observer: '_onColorManagerChanged'
+                    },
+                    renderOptions: {
+                        type: Object,
+                        observer: '_onRenderOptionsChanged'
+                    },
+                    onRender: {
+                        type: Function
+                    },
+                    renderer: {
+                        type: Object
+                    }
+                }
+            }
+            connectedCallback() {
+                super.connectedCallback();
+
+                if (!this.renderer) {
+                    this.renderer = new UWT.D3Renderer('', this.colorManager);
+                }
+                this.renderer.setOnRenderCallback(this.onRender);
+
+                if (this.graphDef) {
+                    this.renderer.setDiv(this.$.graph);
+                    this.renderer.invalidate(this.graphDef, this.renderOptions);
+                }
+            }
+            _onDataChanged() {
+                if (this.renderer && this.graphDef) {
+                    this.renderer.setDiv(this.$.graph);
+                    this.renderer.invalidate(this.graphDef, this.renderOptions);
+                }
+                if (!this.graphDef) {
+                    while (this.$.graph.firstChild) {
+                        this.$.graph.remove(this.$.graph.firstChild);
+                    }
+                }
+            }
+            _onRenderOptionsChanged() {
+                if (this.renderer && this.graphDef) {
+                    this.renderer.setDiv(this.$.graph);
+                    this.renderer.invalidate(this.graphDef, this.renderOptions);
+                }
+            }
+            _onColorManagerChanged() {
+                if (this.renderer) {
+                    this.renderer.setColorManager(this.colorManager);
+                }
+            }
+        }
+
+        customElements.define(HierarchyGraph.is, HierarchyGraph);
+    </script>
+</dom-module>

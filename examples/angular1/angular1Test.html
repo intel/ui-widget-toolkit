@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+
+<html lang='en'>
+
+<head>
+	<meta charset='utf-8' />
+	<title>Angular Graph Test</title>
+	<link rel='stylesheet' , href='../../dist/css/ag-grid/ag-grid.css' , type='text/css' />
+	<link rel='stylesheet' , href='../../dist/css/ag-grid/ag-theme-fresh.css' , type='text/css' />
+	<link rel='stylesheet' , href='../../dist/css/ui-widget-toolkit.css' , type='text/css' />
+
+	<script src='../../node_modules/d3/dist/d3.min.js'></script>
+	<script src='../../node_modules/ag-grid-community/dist/ag-grid-community.min.js'></script>
+	<script src='../../dist/framework/angular1/index.js'></script>
+	<script src='../testBase.js'></script>
+	<script src='../testData.js'></script>
+	<script src='../../node_modules/angular/angular.js'></script>
+	<script src='./angular1Test.js'></script>
+</head>
+
+<body ng-app='test' ng-controller='TestCtrl'>
+	<p>
+		Angular Graph Test
+		<p></p>
+		<p>
+			<button id='zoomReset' type='button'>Reset Zoom</button>
+		</p>
+
+		<p>
+			Add Selection: <input type='text' id='addInput' />
+			<button id='addSelection' type='button'>Go!</button>
+		</p>
+		<p>
+			Remove Selection: <input type='text' id='removeInput' />
+			<button id='removeSelection' type='button'>Go!</button>
+		</p>
+		<p>
+			Clear Selection
+			<button id='clearSelection' type='button'>Go!</button>
+		</p>
+	</p>
+
+	<uwt-swimlane-chart id='swimlane' chart-title='swimTitle' chart-defs='swimDef' render-options='swimlaneOptions'
+		color-manager='colorManager'></uwt-swimlane-chart>
+	<uwt-chart id='chart1' chart-title='title' chart-def='chartDef' render-options='renderOptions'
+		color-manager='colorManager'></uwt-chart>
+	<uwt-chart id='chart2' chart-title='barTitle' chart-def='barDef' color-manager='colorManager'></uwt-chart>
+	<uwt-pie-chart id='piechart1' chart-title='pieTitle' chart-def='pieDef' color-manager='colorManager'>
+	</uwt-pie-chart>
+	<uwt-grid id='grid1' grid-title='gridTitle' grid-def='gridDef' grid-style='gridStyle' grid-class='gridClass'
+		color-manager='colorManager'></uwt-grid>
+	<uwt-flow-diagram id='flow1' diagram-title='flowTitle' diagram-def='diagramDef' color-manager='colorManager'>
+	</uwt-flow-diagram>
+	<uwt-graph id='graph1' graph-title='graphTitle' graph-def='graphDef' color-manager='colorManager'>
+	</uwt-graph>
+	<uwt-chart id='chart3' chart-title='flameTitle' chart-def='flameChart' color-manager='colorManager'
+		render-options='flameRenderOptions'></uwt-chart>
+	<uwt-sunburst-chart id='chart4' chart-title='sunTitle' chart-def='sunChart' color-manager='colorManager'>
+	</uwt-sunburst-chart>
+</body>
+
+</html>

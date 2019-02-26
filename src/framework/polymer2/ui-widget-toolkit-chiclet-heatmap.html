@@ -1,0 +1,94 @@
+<dom-module id='uwt-chiclet-heatmap'>
+    <template>
+        <style>
+            .chiclet {
+                height: 50px;
+                margin: 5px;
+                border-radius: 15px;
+                float: left;
+            }
+
+            .chiclet-text {
+                width: 50px;
+                text-align: center;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        </style>
+        <div class='chart-title'>{{title}}</div>
+        <template is='dom-repeat' items='{{chicletWrappers}}' as='chiclet'>
+            <div id='chiclet{{chiclet.name}}' title='{{chiclet.name}}: {{chiclet.value}}'
+                style='display: table; background: {{chiclet.color}};' class='chiclet'>
+                <div style='display: table-cell; vertical-align: middle;'>
+                    <div class='chiclet-text'>{{chiclet.name}}</div>
+                </div>
+            </div>
+        </template>
+    </template>
+    <script>
+        class ChicletHeatmap extends Polymer.Element {
+            static get is() { return 'uwt-chiclet-heatmap'; }
+            static get properties() {
+                return {
+                    title: {
+                        type: String
+                    },
+                    chicletDefs: {
+                        type: Array,
+                        observer: '_onDataChanged'
+                    },
+                    chicletWrappers: {
+                        type: Array
+                    },
+                    maxValue: {
+                        type: Number,
+                        value: 100
+                    },
+                    minValue: {
+                        type: Number,
+                        value: 0
+                    }
+
+                }
+            }
+            _computeColor(value, percentScalar) {
+                let scalar = (value - this.minValue) * percentScalar;
+                if (scalar < .1) {
+                    return '#1976d2';
+                } else if (scalar < .2) {
+                    return '#2196f3';
+                } else if (scalar < .3) {
+                    return '#64b5f6';
+                } else if (scalar < .4) {
+                    return '#2196f3';
+                } else if (scalar < .5) {
+                    return '#bbdefb';
+                } else if (scalar < .6) {
+                    return '#ffebee';
+                } else if (scalar < .7) {
+                    return '#ef9a9a';
+                } else if (scalar < .8) {
+                    return '#ef5350';
+                } else if (scalar < .9) {
+                    return '#e53935';
+                } else {
+                    return '#c62828';
+                }
+            }
+            _onDataChanged() {
+                if (this.chicletDefs) {
+                    // cache this just for performance reasons
+                    let percentScalar = 1 / (this.maxValue - this.minValue);
+                    let wrappers = [];
+                    for (let i = 0; i < this.chicletDefs.length; ++i) {
+                        let chiclet = this.chicletDefs[i];
+                        chiclet.color = this._computeColor(chiclet.value, percentScalar);
+                        wrappers.push(chiclet);
+                    }
+                    this.chicletWrappers = wrappers;
+                }
+            }
+        }
+        customElements.define(ChicletHeatmap.is, ChicletHeatmap);
+    </script>
+</dom-module>
