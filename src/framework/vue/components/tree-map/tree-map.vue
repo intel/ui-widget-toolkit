@@ -1,15 +1,16 @@
 <template>
-    <div>
-        <div class='tree-title'>{{treeTitle}}</div>
-        <div ref='tree'></div>
-    </div>
+  <div>
+    <div class="tree-title">{{treeTitle}}</div>
+    <div ref="tree"></div>
+  </div>
 </template>
 
 <script lang=ts>
-import { ColorManager } from '../../../../core/color-manager';
-import { D3Renderer } from '../../../../core/renderer';
+import { ColorManager } from "../../../../core/color-manager";
+import { D3Renderer } from "../../../../core/renderer";
 
 export default {
+  name: "uwtTreeMap",
   props: {
     treeTitle: {
       type: String,

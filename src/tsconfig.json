@@ -8,8 +8,5 @@
         "preserveConstEnums": true,
         "sourceMap": true,
         "jsx": "react"
-    },
-    "exclude": [
-        "framework"
-    ]
+    }
 }

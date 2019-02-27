@@ -4,16 +4,24 @@ module TestBase {
     export var elemManager = new UWT.ElementManager();
     export var colorManager = new UWT.ColorManager();
 
+    let elements: any = [];
+    export function addElement(element: UWT.UIElement, tooltipGroup?: string,
+        hoverGroup?: string, renderGroup?: string, options: UWT.IOptions = {}) {
+
+        elemManager.addElement(element, tooltipGroup, hoverGroup, renderGroup);
+        elements.push({ elem: element, options: options });
+    }
+
     export function render() {
         var elems = elemManager.getElements();
-        for (var i = 0; i < elems.length; ++i) {
-            let elem = elems[i];
+        for (var i = 0; i < elements.length; ++i) {
+            let elem = elements[i].elem;
             if (elem.type === UWT.UIType.Grid) {
                 let r = new UWT.AgGridRenderer('div#graphArea' + i);
-                r.invalidate(elem, {});
+                r.invalidate(elem, elements[i].options);
             } else {
                 let r = new UWT.D3Renderer('div#graphArea' + i, colorManager);
-                r.invalidate(elem, {});
+                r.invalidate(elem, elements[i].options);
             }
         }
     }

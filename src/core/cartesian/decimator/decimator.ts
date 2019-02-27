@@ -418,11 +418,14 @@ export class AvgContinuousDecimator extends CustomContinuousXYDecimator {
     }
 };
 
+/** this is a helper function class that computes the summed values for each
+ * Y state per each X bucket
+ */
 export function sumMultiXYSeriesValues(_xValueToCoord: (value: any) => number,
     _xCoordToValue: (value: any) => number, _yValueToCoord: (value: any) => number,
-    xStart: number, xEnd: number, values: IBuffer<IXYValue>[]) {
+    xStart: number, xEnd: number, values: IBuffer<IXYValue>[]): any[][] {
 
-    let ret = [];
+    let ret: any[] = [];
     // first this is total weighted sum per x, then used to store percentage per x
     let tempValues: number[][] = [];
 
@@ -522,7 +525,7 @@ export function sumMultiXYSeriesValues(_xValueToCoord: (value: any) => number,
     return ret;
 }
 
-/** Used to compute the stacked output for a list of list of xy data */
+/** class that computes the summed values for each Y state per each X bucket */
 export class SummedValueMultiXYSeriesDecimator implements IXYStackedDecimator {
     public static KEY = 'SummedValueMultiXYSeriesDecimator';
 
@@ -593,8 +596,9 @@ export class SummedValueMultiXYSeriesDecimator implements IXYStackedDecimator {
     }
 };
 
-/** Used to compute the stacked residency (normalized value to 100% per pixel)
- *  for a list of list of xy data */
+/** class that computes the residency values for each Y state per each X bucket.
+ * This means the sum of all values within an output bucket is 100.
+*/
 export class ResidencyDecimator extends SummedValueMultiXYSeriesDecimator {
     public static KEY = 'ResidencyDecimator';
 
@@ -651,7 +655,7 @@ export class ResidencyDecimator extends SummedValueMultiXYSeriesDecimator {
     }
 };
 
-/** Used to compute the stacked output for a list of xy data */
+/** class that computes the summed Y value per each X bucket */
 export class SummedValueXYSeriesDecimator implements IXYDecimator {
     public static KEY = 'SummedValueXYSeriesDecimator';
 
@@ -824,6 +828,9 @@ export class NEWSBaseDecimator implements IDecimator {
     }
 }
 
+/** this class takes a series x, y points and using for each X bucket provides
+ * the Y entry/exit/min/max/average for that X bucket
+ */
 export class NEWSPointDecimator extends NEWSBaseDecimator {
     public static KEY = 'NEWSPointDecimator';
     constructor() {
@@ -929,6 +936,9 @@ export class NEWSPointDecimator extends NEWSBaseDecimator {
     }  // decimateValues()
 }   // class NEWSDecimator
 
+/** this class takes a series x, y points and using for each X bucket provides
+ * the Y entry/exit/min/max/average for that X bucket
+ */
 export class NEWSStateDecimator extends NEWSBaseDecimator {
     public static KEY = 'NEWSStateDecimator';
     protected _weightedSums: { [index: string]: number } = {};
@@ -978,7 +988,7 @@ export class NEWSStateDecimator extends NEWSBaseDecimator {
         if (this._isYObject) {
             if (this._states) {
                 // take prevX and currentX
-                for (let stateKey in value.y) {
+                for (let stateKey in value.y as { [index: number]: number }) {
                     this.addToStateValueToBucket(this._states[stateKey],
                         (value.x - this._prevX) * value.y[stateKey]);
                 }
@@ -1209,6 +1219,10 @@ export class FlameChartRectLimitDecimator implements IFlameChartDecimator {
     }
 };
 
+/** this decimator merges the rectangles in a flame chart to combine
+ * identical rectangles that are touching on a left/right pixel basis so
+ * we can merge them for rendering
+ */
 export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
     public static KEY = 'FlameChartMergeRectDecimator';
     protected _data: IFlameChartValue[];
@@ -1285,7 +1299,7 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
             } else {
                 // might have to merge things with subpixel accuracy
                 let startTime = values[i].traceValue.x;
-                let subpixelMap = {};
+                let subpixelMap: any = {};
                 let valueList: ITraceValue[] = [];
 
                 // before adding the next item iterate to a point where the next
@@ -1398,6 +1412,10 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
     }
 };
 
+/**
+ * Takes ITraceValue data and for each bucket returns a residency value
+ * by ITracevalue.name. This means the sum of all values within an output bucket is 100.
+ */
 export class TraceResidencyDecimator implements ITraceResidencyDecimator {
     public static KEY = 'TraceResidencyDecimator';
     protected _decimatedValues: IXYValue[][];
@@ -1465,7 +1483,7 @@ export class TraceResidencyDecimator implements ITraceResidencyDecimator {
         let tempValues: { [index: string]: number[] } = {};
 
         // map states to return index
-        let stateMap = {};
+        let stateMap: { [index: string]: number } = {};
         this._states.forEach((state, index) => {
             stateMap[state] = index;
             tempValues[state] = Array.apply(null, Array(globalEndBucket)).
@@ -1571,6 +1589,10 @@ export class TraceResidencyDecimator implements ITraceResidencyDecimator {
     }
 };
 
+/**
+* Takes ITraceValue data and for each bucket returns a sum by ITracevalue.name.
+* This means the sum of all values within an output bucket is 100.
+*/
 export class TraceStateDecimator implements ITraceStateDecimator {
     public static KEY = 'TraceStateDecimator';
     protected _decimatedValues: INEWSDecimationValue[];
@@ -1657,7 +1679,7 @@ export class TraceStateDecimator implements ITraceStateDecimator {
         this._decimatedValues = Array.apply(null, Array(globalEndBucket)).
             map(() => { return new NEWSDecimationValue(); })
 
-        let states = {};
+        let states: { [index: string]: number } = {};
         this._states.forEach((state, i) => {
             states[state] = i;
         })
@@ -1693,12 +1715,14 @@ export class TraceStateDecimator implements ITraceStateDecimator {
                     Math.max(this._decimatedValues[startBucket].max, states[value.name]);
 
                 // add in all the bucket values in between
-                for (let currBucket = startBucket + 1; currBucket < endBucket; ++currBucket) {
-                    this._decimatedValues[currBucket].x = xBucketValues[currBucket];
-                    this._decimatedValues[currBucket].entry = states[value.name];
-                    this._decimatedValues[currBucket].exit = states[value.name];
-                    this._decimatedValues[currBucket].min = states[value.name];
-                    this._decimatedValues[currBucket].max = states[value.name];
+                if (endBucket !== globalEndBucket) {
+                    for (let currBucket = startBucket + 1; currBucket <= endBucket; ++currBucket) {
+                        this._decimatedValues[currBucket].x = xBucketValues[currBucket];
+                        this._decimatedValues[currBucket].entry = states[value.name];
+                        this._decimatedValues[currBucket].exit = states[value.name];
+                        this._decimatedValues[currBucket].min = states[value.name];
+                        this._decimatedValues[currBucket].max = states[value.name];
+                    }
                 }
             }
         }
@@ -1714,6 +1738,9 @@ export class TraceStateDecimator implements ITraceStateDecimator {
     }
 };
 
+/**
+ * For a marker layer just removes markers that have the same X value
+ */
 export class SimpleMarkerDecimator implements IDecimator {
     public static KEY = 'SimpleMarkerDecimator';
     protected _data: ITraceValue[];
@@ -1757,8 +1784,8 @@ export class SimpleMarkerDecimator implements IDecimator {
         return this._data;
     }
 
-    public mergeMarkers(values: ITraceValue[]) {
-        let ret = [];
+    public mergeMarkers(values: ITraceValue[]): ITraceValue[] {
+        let ret: ITraceValue[] = [];
 
         let lastCoord = -Number.MAX_VALUE;
         values.forEach((value) => {
@@ -1784,7 +1811,7 @@ export class SimpleMarkerDecimator implements IDecimator {
 
         // using the whole view
         if (xStart !== undefined && xEnd !== undefined) {
-            let filteredData = [];
+            let filteredData: ITraceValue[] = [];
             allData.forEach(function (value) {
                 if (value.x < xEnd && value.x > xStart) {
                     filteredData.push(value);
@@ -1799,6 +1826,174 @@ export class SimpleMarkerDecimator implements IDecimator {
             this._data = this.mergeMarkers(allData);
         }
         return this._data;
+    }
+};
+
+/** */
+
+
+export class XYHeatMapDecimator implements IXYStackedDecimator {
+    public static KEY = 'SummedValueMultiXYSeriesDecimator';
+
+    /** this function is used to map the input xyValues to x scaled values*/
+    protected _xValueToCoord: (value: any) => number;
+
+    /** this function is used to map the revert xyValues from x scaled values*/
+    protected _xCoordToValue: (value: any) => number;
+
+    /** this function is used to map the input xyValues to y scaled values*/
+    protected _yValueToCoord: (value: any) => number;
+
+    /** the list of values in the bucket */
+    protected _decimatedValues: IXYValue[][];
+
+    constructor() {
+    }
+
+    /**
+     * construct a generic decimator using a custom user function
+     *
+     * @param xValueToCoord converts the x value to a GUI x coordinate
+     * @param yValueToCoord converts the y value to a GUI y coordinate
+     * @param decimationFunc convert a list of data to a for rendering smaller list
+     */
+    initialize(xValueToCoord: (value: any) => number,
+        xCoordToValue: (value: any) => number,
+        yValueToCoord: (value: any) => number) {
+
+        this._xValueToCoord = xValueToCoord;
+        this._xCoordToValue = xCoordToValue;
+        this._yValueToCoord = yValueToCoord;
+    }
+
+    /**
+     * Returns the key of this decimator
+     */
+    public getKey(): string {
+        return SummedValueMultiXYSeriesDecimator.KEY;
+    }
+
+    /**
+     * Returns the decimated list of buckets
+     */
+    public getName(): string {
+        return '';
+    }
+
+    /**
+     * Returns the decimated list of buckets
+     */
+    public getValues(): IXYValue[][] {
+        return this._decimatedValues;
+    }
+
+    /**
+     * Values to be decimated
+     *
+     * @param xStart - start time of the region
+     * @param xEnd - start time of the region
+     * @param values - Values to be decimated.
+     */
+    public decimateValues(xStart: number, xEnd: number, values: IBuffer<IXYValue>[]): IXYValue[][] {
+        this._decimatedValues = [];
+
+        // first this is total weighted sum per x, then used to store percentage per x
+        let tempValues: number[][] = [];
+
+        let globalStartBucket = 0;
+        let globalEndBucket = Math.ceil(this._xValueToCoord(Number.MAX_VALUE));
+
+        if (globalEndBucket < globalStartBucket) {
+            return undefined;
+        }
+
+        // NOTE: I do this up here so I can cheat and use the x values here
+        // so later I don't keep calling _xCoordToValue
+        let xBucketValues = [];
+        for (let bucket = 0; bucket <= globalEndBucket + 1; ++bucket) {
+            xBucketValues.push(this._xCoordToValue(bucket));
+        }
+
+        // for a series get the weighted sum for the number of buckets xStart to xEnd
+        for (let stateIdx = 0; stateIdx < values.length; ++stateIdx) {
+            let perStateData = values[stateIdx];
+            let value: IXYValue;
+            let nextValue: IXYValue;
+            let start = findFirstInsertionIdx(values[stateIdx], xStart);
+            let end = findLastInsertionIdx(values[stateIdx], xEnd);
+
+            if (start > 0) {
+                --start;
+            }
+            // the last element would be caught by the algorithm already
+            if (end === perStateData.length()) {
+                --end;
+            }
+
+            // pad endBucket + 1 so we get data past the last point in the bucket
+            // so we can graph to the first value in the next bucket
+            tempValues[stateIdx] = Array.apply(null, Array(globalEndBucket)).
+                map(Number.prototype.valueOf, 0);
+
+            // get weighted sum of the values for each bucket
+            for (let rawDataIdx = start; rawDataIdx < end; ++rawDataIdx) {
+                value = perStateData.get(rawDataIdx);
+                nextValue = perStateData.get(rawDataIdx + 1);
+
+                let startBucket = Math.floor(this._xValueToCoord(value.x));
+                let endBucket = Math.floor(this._xValueToCoord(nextValue.x));
+
+                let totalX = (nextValue.x - value.x);
+                let valuePerX = totalX === 0 ? 0 : nextValue.y / totalX;
+                if (startBucket === endBucket) {
+                    if (xStart === undefined || (value.x > xStart && nextValue.x < xEnd)) {
+                        // here it's all in the existing bucket
+                        tempValues[stateIdx][startBucket] += valuePerX;
+                    } else {
+                        let bucketScalar = 1 / (xBucketValues[startBucket + 1] - xBucketValues[startBucket]);
+                        if (nextValue.x < xEnd) {
+                            // here the back half is in the bucket
+                            tempValues[stateIdx][startBucket] +=
+                                (nextValue.x - xBucketValues[startBucket]) * valuePerX * bucketScalar;
+                        } else {
+                            // here the front half is in the bucket
+                            tempValues[stateIdx][startBucket] +=
+                                (xBucketValues[startBucket + 1] - value.x) * valuePerX * bucketScalar;
+                        }
+                    }
+                } else {
+                    let bucketScalar = 1 / (xBucketValues[startBucket + 1] - xBucketValues[startBucket]);
+                    let startX = xStart ? Math.max(xStart, value.x) : value.x;
+                    let endStartBucket = xBucketValues[startBucket + 1];
+                    tempValues[stateIdx][startBucket] +=
+                        (endStartBucket - startX) * valuePerX * bucketScalar;
+
+                    // add in all the bucket values in between
+                    for (let currBucket = startBucket + 1; currBucket < endBucket; ++currBucket) {
+                        tempValues[stateIdx][currBucket] += valuePerX;
+                    }
+
+                    // add in end bucket amount
+                    bucketScalar = 1 / (xBucketValues[endBucket] - xBucketValues[endBucket - 1]);
+                    let endX = xEnd ? Math.min(xEnd, nextValue.x) : nextValue.x;
+                    let startEndBucket = xBucketValues[endBucket];
+                    tempValues[stateIdx][endBucket] +=
+                        (endX - startEndBucket) * valuePerX * bucketScalar;
+                }
+            }
+
+            this._decimatedValues[stateIdx] = [];
+
+            let buckets = tempValues[stateIdx];
+            for (let bucket = 0; bucket < buckets.length; ++bucket) {
+                this._decimatedValues[stateIdx][bucket] = {
+                    x: xBucketValues[bucket],
+                    y: tempValues[stateIdx][bucket]
+                };
+            }
+        }
+
+        return this._decimatedValues;
     }
 };
 

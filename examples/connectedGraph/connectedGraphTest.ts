@@ -41,7 +41,7 @@ module ConnectedGraphTest {
             }],
             legend: { alignment: UWT.Alignment.Top }
         }
-        TestBase.elemManager.addElement(flow, 'group', 'group2');
+        TestBase.addElement(flow, 'group', 'group2');
 
         let forceGraph: UWT.IConnectedGraph = {
             type: UWT.UIType.ForceDirectedGraph,
@@ -62,19 +62,9 @@ module ConnectedGraphTest {
                 console.log('graph double click');
                 console.log(event.data);
             },
-            legend: { alignment: UWT.Alignment.Right },
-            render: function (renderer?: UWT.UIRenderer, options?: UWT.IOptions): Promise<any> {
-                if (renderer) {
-                    renderer.invalidate(forceGraph, { height: 100, enableXYZoom: true });
-                } else {
-                    forceGraph.renderer.invalidate(forceGraph, { height: 100, enableXYZoom: true });
-                }
-                return new Promise(function (resolve, reject) {
-                    resolve(true);
-                });
-            }
+            legend: { alignment: UWT.Alignment.Right }
         }
-        TestBase.elemManager.addElement(forceGraph, 'group2', 'group2');
+        TestBase.addElement(forceGraph, 'group2', 'group2');
 
         let nodes = [
             { key: 'data-0', type: ['group1'], x: 10, y: 10 },
@@ -115,7 +105,7 @@ module ConnectedGraphTest {
             }],
             legend: { alignment: UWT.Alignment.Top }
         }
-        TestBase.elemManager.addElement(preproc, '', 'group2');
+        TestBase.addElement(preproc, '', 'group2');
 
         let preproc2: UWT.IConnectedGraph = {
             type: UWT.UIType.SimpleGraph,
@@ -163,6 +153,6 @@ module ConnectedGraphTest {
             }],
             legend: { alignment: UWT.Alignment.Top }
         }
-        TestBase.elemManager.addElement(preproc2, '', 'group2');
+        TestBase.addElement(preproc2, '', 'group2');
     }
 }

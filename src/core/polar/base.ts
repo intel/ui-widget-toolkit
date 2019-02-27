@@ -10,13 +10,13 @@ import { IPolarSegment } from '../../interface/chart/decimator';
 import { getSelectionName } from '../utilities';
 import { CustomDivTooltip } from '../tooltip';
 import {
-    addClickHelper, D3Legend, D3SVGRenderer
+    addClickHelper, D3Legend, SVGRenderer
 } from '../svg-helper';
 import { D3Renderer } from '../renderer';
 
 import * as d3 from 'd3';
 
-export class D3Polar extends D3SVGRenderer {
+export class D3Polar extends SVGRenderer {
     protected _radius: number;
     protected _center: IXYValue; // x, y coordianates of the polar graph center
     protected _hoverItem: any;
@@ -112,7 +112,7 @@ export class D3Polar extends D3SVGRenderer {
         if (self._options.enableSaveAsImage) {
             let saveImageItem = {
                 title: 'Save As Image',
-                action: function (elem, data, index) {
+                action: function (elem: any, data: any, index: number) {
                     self.saveImage();
                 },
                 disabled: false // optional, defaults to false
@@ -130,7 +130,7 @@ export class D3Polar extends D3SVGRenderer {
         return;
 
         function onHoverChanged(event?: IEvent) {
-            if (D3SVGRenderer.IS_RESIZING) {
+            if (SVGRenderer.IS_RESIZING) {
                 return;
             }
             let hoverCallback = chart.onHover;
@@ -190,7 +190,7 @@ export class D3Polar extends D3SVGRenderer {
         return; // showTooltip handled in the callback below
 
         function showTooltip(d: any): boolean {
-            if (D3SVGRenderer.IS_RESIZING) {
+            if (SVGRenderer.IS_RESIZING) {
                 return;
             }
             let polarChart = self._element as IPolarChart;

@@ -2,11 +2,20 @@ import {
     IEvent, IOptions, UIElement, UIRenderer, Css, ITooltipData, UIType
 } from '../interface/ui-base';
 import { ColorManager } from './color-manager';
-import { D3SVGRenderer } from './svg-helper';
+import { SVGRenderer } from './svg-helper';
 
 import * as d3 from 'd3';
 
-let UIRendererMap = {};
+let UIRendererMap: { [index: number]: Object } = {};
+
+let testContext: any;
+if (document) {
+    testContext = document.createElement('canvas').getContext('2d');
+}
+export function getTextWidth(text: string, font: string, size: string) {
+    testContext.font = size + 'px ' + font;
+    return testContext.measureText(text).width;
+};
 
 export class UIElementRenderer {
     protected _options: IOptions;
@@ -42,7 +51,7 @@ export class D3Renderer implements UIRenderer {
 
     /** maps to render elements if multiple renders are used
      *  through this interface */
-    protected _rendererMap: WeakMap<UIElement, D3SVGRenderer>;
+    protected _rendererMap: WeakMap<UIElement, SVGRenderer>;
 
     // from UIRenderer
     public onRender: (elem: UIElement, options: IOptions) => void;
@@ -56,7 +65,7 @@ export class D3Renderer implements UIRenderer {
             this._colorMgr = colorMgr;
         }
 
-        this._rendererMap = new WeakMap<UIElement, D3SVGRenderer>();
+        this._rendererMap = new WeakMap<UIElement, SVGRenderer>();
     }
 
     public setOnRenderCallback(callback: (elem: UIElement, options: IOptions) => void) {
@@ -162,7 +171,7 @@ export class D3Renderer implements UIRenderer {
                 this._parent = d3.select(this._parentId);
             }
 
-            let Renderer = UIRendererMap[element.type];
+            let Renderer: any = UIRendererMap[element.type];
             if (Renderer) {
                 let r = new Renderer(element, this, this._parent);
                 r.setColorManager(this._colorMgr);

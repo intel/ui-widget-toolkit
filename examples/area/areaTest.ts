@@ -34,7 +34,7 @@ module AreaTest {
     export function createView() {
         {
             let lane1 = {
-                title: 'D',
+                title: 'Alpha Area',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Area,
@@ -51,7 +51,7 @@ module AreaTest {
             }
 
             let lane2 = {
-                title: 'E',
+                title: 'Stacked Area',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Area | UWT.RenderType.Stacked,
@@ -67,7 +67,7 @@ module AreaTest {
             }
 
             let lane3 = {
-                title: 'F',
+                title: 'Computed Residency',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Area | UWT.RenderType.Stacked,
@@ -85,7 +85,7 @@ module AreaTest {
             }
 
             let lane4 = {
-                title: 'G',
+                title: 'Stacked Summation',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Area | UWT.RenderType.Stacked,
@@ -113,10 +113,10 @@ module AreaTest {
             UWT.Chart.finalize(lane2);
             UWT.Chart.finalize(lane3);
             UWT.Chart.finalize(lane4);
-            TestBase.elemManager.addElement(lane1);
-            TestBase.elemManager.addElement(lane2);
-            TestBase.elemManager.addElement(lane3);
-            TestBase.elemManager.addElement(lane4);
+            TestBase.addElement(lane1);
+            TestBase.addElement(lane2);
+            TestBase.addElement(lane3);
+            TestBase.addElement(lane4);
         }
 
     }

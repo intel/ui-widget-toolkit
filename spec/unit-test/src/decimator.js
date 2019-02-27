@@ -57,7 +57,7 @@ let traceXScale = d3.scaleLinear()
     .range([0, xPixels]);
 
 
-describe("decimator-perf", function () {
+describe("decimator-sanity", function () {
     it("avgPoint", function () {
         let avgPointDecimator = new AvgPointDecimator()
         avgPointDecimator.initialize(xyXScale, xyXScale.invert, xyYScale);

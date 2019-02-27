@@ -17,25 +17,36 @@ module LineTest {
                 label: 'Time',
                 scalingInfo: TestData.secScalingInfo
             };
+            let left: UWT.IAxisDescription = {
+                scaleType: UWT.AxisType.Linear,
+                label: 'Time',
+                scalingInfo: TestData.secScalingInfo
+            };
             let chart = {
                 title: 'Step Graph',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Line,
                     interpolateType: UWT.InterpolateType.StepBefore,
-                    data: [{ name: 'data-' + 0, values: TestData.xyDataSets[0] }]
+                    data: [{ name: 'data-' + 0, values: TestData.xyDataSets[0] }],
+                    xAxisIdx: 0,
+                    yAxisIdx: 1
                 }],
                 legends: [{ alignment: UWT.Alignment.Right }],
                 axes: [
                     {
                         axisDesc: bottomAxis,
                         alignment: UWT.Alignment.Bottom
+                    },
+                    {
+                        axisDesc: left,
+                        alignment: UWT.Alignment.Left
                     }],
                 isXContinuous: true
             }
 
             UWT.Chart.finalize(chart);
-            TestBase.elemManager.addElement(chart);
+            TestBase.addElement(chart);
         }
 
         {
@@ -55,7 +66,7 @@ module LineTest {
             }
 
             UWT.Chart.finalize(chart);
-            TestBase.elemManager.addElement(chart);
+            TestBase.addElement(chart);
         }
 
         {
@@ -76,7 +87,7 @@ module LineTest {
             }
 
             UWT.Chart.finalize(chart);
-            TestBase.elemManager.addElement(chart);
+            TestBase.addElement(chart);
         }
         {
             // lines
@@ -101,7 +112,7 @@ module LineTest {
             }
 
             UWT.Chart.finalize(chart);
-            TestBase.elemManager.addElement(chart, 'group3', 'group3');
+            TestBase.addElement(chart, 'group3', 'group3');
         }
 
         {
@@ -135,13 +146,13 @@ module LineTest {
             }
 
             UWT.Chart.finalize(chart);
-            TestBase.elemManager.addElement(chart, 'group3', 'group3');
+            TestBase.addElement(chart, 'group3', 'group3');
         }
 
         {
             // lines
             let chart = {
-                title: 'Chart Level 2b',
+                title: 'Ordinal X',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Line,
@@ -164,11 +175,12 @@ module LineTest {
             }
 
             UWT.Chart.finalize(chart);
-            TestBase.elemManager.addElement(chart, 'group1', 'group1');
+            TestBase.addElement(chart, 'group1', 'group1');
         }
 
         {
             let chart1: UWT.ICartesianChart = {
+                title: 'Text',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Line,
@@ -253,11 +265,12 @@ module LineTest {
             UWT.Chart.finalize(chart2);
 
             let merged = UWT.Chart.mergeCharts('testCategory', 'merged', chart1, chart2);
-            TestBase.elemManager.addElement(chart1);
-            TestBase.elemManager.addElement(chart2);
-            TestBase.elemManager.addElement(merged);
+            TestBase.addElement(chart1);
+            TestBase.addElement(chart2);
+            TestBase.addElement(merged);
 
             let chart3: UWT.ICartesianChart = {
+                title: 'Function Graph',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Line,
@@ -285,7 +298,7 @@ module LineTest {
                 isXContinuous: true
             }
             UWT.Chart.finalize(chart3);
-            TestBase.elemManager.addElement(chart3);
+            TestBase.addElement(chart3);
 
             let chart4: UWT.ICartesianChart = {
                 type: UWT.UIType.Cartesian,
@@ -324,9 +337,10 @@ module LineTest {
                 isXContinuous: true
             }
             UWT.Chart.finalize(chart4);
-            TestBase.elemManager.addElement(chart4);
+            TestBase.addElement(chart4);
 
             let chart5: UWT.ICartesianChart = {
+                title: 'Multiple Axes',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Line,
@@ -410,7 +424,7 @@ module LineTest {
                 isXContinuous: true
             }
             UWT.Chart.finalize(chart5);
-            TestBase.elemManager.addElement(chart5);
+            TestBase.addElement(chart5);
         }
 
         {
@@ -440,7 +454,7 @@ module LineTest {
             }
 
             UWT.Chart.finalize(chart);
-            TestBase.elemManager.addElement(chart);
+            TestBase.addElement(chart);
         }
     }
 }

@@ -28,7 +28,7 @@ module GridTest {
                 }
             }
 
-            TestBase.elemManager.addElement(grid, 'group2', 'group2');
+            TestBase.addElement(grid, 'group2', 'group2');
         }
 
         {
@@ -78,7 +78,7 @@ module GridTest {
                 }
             }
 
-            TestBase.elemManager.addElement(grid, 'group2', 'group2');
+            TestBase.addElement(grid, 'group2', 'group2');
 
             var columnDefs2 = [
                 { headerName: "Make", field: "make" },
@@ -97,7 +97,9 @@ module GridTest {
             var gridOptions2 = {
                 columnDefs: columnDefs2,
                 rowData: rowData2,
-                enableSorting: true,
+                defaultColDef: {
+                    sortable: true
+                },
                 animateRows: true,
                 enableSingleKeyboardSelection: true
             };
@@ -107,7 +109,7 @@ module GridTest {
                 gridOptions: gridOptions2
             };
 
-            TestBase.elemManager.addElement(gridDef2, 'group2', 'group2');
+            TestBase.addElement(gridDef2, 'group2', 'group2');
         }
     }
 }

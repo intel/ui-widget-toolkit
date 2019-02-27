@@ -1,12 +1,12 @@
 import { IOptions, UIType, UIElement } from '../../interface/ui-base';
 import { IConnectedGraph } from '../../interface/graph';
-import { addClickHelper, D3SVGRenderer } from '../svg-helper';
+import { addClickHelper, SVGRenderer } from '../svg-helper';
 import { D3Renderer } from '../renderer';
 
 import * as d3 from 'd3';
 import { sankey } from 'd3-sankey';
 
-import { D3ConnectedGraphSVG } from './base';
+import { D3ConnectedGraphSVG, ConnectedGraphBase } from './base';
 
 export class D3SankeyDiagram extends D3ConnectedGraphSVG {
     /** the sankey object for this flow chart */
@@ -17,7 +17,7 @@ export class D3SankeyDiagram extends D3ConnectedGraphSVG {
 
         super(element, renderer, parent);
 
-        this._graphHelper.initializeGraph(element as IConnectedGraph);
+        ConnectedGraphBase.prototype.initializeGraph.call(this, element);
     }
 
     protected renderLinks(graphArea: d3.Selection<any, any, d3.BaseType, any>):
@@ -69,12 +69,12 @@ export class D3SankeyDiagram extends D3ConnectedGraphSVG {
                     return d;
                 })
                 .on('start', function () {
-                    D3SVGRenderer.IS_RESIZING = true;
+                    SVGRenderer.IS_RESIZING = true;
                     this.parentNode.appendChild(this);
                 })
                 .on('drag', dragMove)
                 .on('end', function () {
-                    D3SVGRenderer.IS_RESIZING = false;
+                    SVGRenderer.IS_RESIZING = false;
                 }));
 
         addClickHelper(nodes, diagram.onClick, diagram.onDoubleClick, diagram.contextMenuItems,
@@ -161,9 +161,8 @@ export class D3SankeyDiagram extends D3ConnectedGraphSVG {
         let graphArea = self.initializeGraphArea(options);
         let links = this.renderLinks(graphArea);
         this.renderNodes(graphArea, dragMove);
-        this.renderLegend();
 
-        self.configureViewSizeAndBrush(height, self._options.width);
+        self.configureView();
     }
 }
 D3Renderer.register(UIType.FlowDiagram, D3SankeyDiagram);

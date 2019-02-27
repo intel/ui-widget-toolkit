@@ -54,16 +54,23 @@ export interface IGridOptions {
     rowData?: any[];
     columnDefs?: (IColDef | IColGroupDef)[];
     gridClass?: string;
-    enableSorting?: boolean;
+    defaultColDef?: {
+        sortable?: boolean;
+    };
     enableSingleKeyboardSelection?: boolean;
     animateRows?: boolean;
     api?: any;
+    /** called when a row is selected */
     onRowSelected?: (event: IEvent) => void;
+    /** called when a row is clicked */
     onRowClicked?: (event: IEvent) => void;
+    /** called when a row is double clicked */
     onRowDoubleClicked?: (event: IEvent) => void;
+    /** used when there is a period in field data to ignore the dot */
     suppressFieldDotNotation?: boolean,
     /** the context menu definitions for when the user right clicks */
     contextMenuItems?: IContextMenuItem[];
+    /** called after the grid is rendered */
     onGridReady?: (event: any) => void;
     selectionKey?: any;
 }

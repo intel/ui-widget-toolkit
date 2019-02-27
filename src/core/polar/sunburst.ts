@@ -8,7 +8,7 @@ import {
 import { getSelectionName } from '../utilities';
 
 import { CustomDivTooltip } from '../tooltip';
-import { D3SVGRenderer } from '../svg-helper';
+import { SVGRenderer } from '../svg-helper';
 import { D3Renderer } from '../renderer';
 
 import * as d3 from 'd3';
@@ -351,7 +351,7 @@ export class D3Sunburst extends D3Polar {
                 angle += D3Sunburst.TWO_PI;
             }
 
-            if (D3SVGRenderer.IS_RESIZING) {
+            if (SVGRenderer.IS_RESIZING) {
                 return;
             }
 
@@ -406,12 +406,12 @@ export class D3Sunburst extends D3Polar {
         let newInfo = self._decimator.decimateValues(sunburstChart.data[0]);
         let newArcs: any = newInfo.arcs;
         let newRenderedArcs: any = newInfo.renderedArcs;
-        let newArcMap = {};
+        let newArcMap: { [index: string]: any } = {};
 
         let fromAngle = 0;
         let oldRootArcInOldChart: IPolarSegment;
         let oldRootArcInNewChart: IPolarSegment;
-        let oldArcMap = {};
+        let oldArcMap: { [index: string]: any } = {};
         if (oldArcs) {
             oldRootArcInOldChart = oldArcs[0];
 
@@ -467,7 +467,7 @@ export class D3Sunburst extends D3Polar {
                 let end = d3.interpolate(oldArc.endAngle, newArc.endAngle);
                 let inner = d3.interpolate(oldArc.innerRadius, newArc.innerRadius);
                 let outer = d3.interpolate(oldArc.outerRadius, newArc.outerRadius);
-                return function (t) {
+                return function (t: any) {
                     let transitionObj = {
                         startAngle: start(t),
                         endAngle: end(t),
@@ -501,7 +501,10 @@ export class D3Sunburst extends D3Polar {
                     return transition;
                 }
 
-                let start, end, inner, outer;
+                let start: (d: any) => number,
+                    end: (d: any) => number,
+                    inner: (d: any) => number,
+                    outer: (d: any) => number;
                 start = d.startAngle > fromAngle ?
                     d3.interpolate(d.startAngle, twoPI) :
                     d3.interpolate(d.startAngle, 0);
@@ -559,7 +562,10 @@ export class D3Sunburst extends D3Polar {
                     return transition;
                 }
 
-                let start, end, inner, outer;
+                let start: (d: any) => number,
+                    end: (d: any) => number,
+                    inner: (d: any) => number,
+                    outer: (d: any) => number;
                 if (oldRootArcInNewChart) {
                     // we are going up the stack since the old root is also
                     // in the new chart

@@ -1,5 +1,7 @@
 const path = require('path');
 const libraryName = 'UWT';
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+var TypedocWebpackPlugin = require('typedoc-webpack-plugin');
 
 module.exports = [
     {
@@ -104,6 +106,24 @@ module.exports = [
                     }
                 }
             ]
-        }
+        },
+        plugins: [
+            new TypedocWebpackPlugin({
+                name: "UI Widget Toolkit",
+                module: "commonjs",
+                out: "../docs",
+                includeDeclarations: true,
+                ignoreCompilerErrors: true,
+                excludeExternals: true,
+                moduleResolution: "node",
+                theme: "minimal",
+                excludePrivate: true
+            }, ['src/core', 'src/interface']),
+            new CopyWebpackPlugin([
+                { from: './examples/**/*.js', to: '../docs/.' },
+                { from: './examples/**/*.html', to: '../docs/.' },
+                { from: './dist/**/*', to: '../docs/.' },
+            ])
+        ]
     }
 ]

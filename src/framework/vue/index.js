@@ -33,21 +33,22 @@ export {
   UWTTreeMap
 }
 
-const UWTVue = Vue => {
-  Vue.component(UWTChart.name, UWTChart)
-  Vue.component(UWTCheckboxTree.name, UWTCheckboxTree)
-  Vue.component(UWTFlowDiagram.name, UWTFlowDiagram)
-  Vue.component(UWTGraph.name, UWTGraph)
-  Vue.component(UWTGrid.name, UWTGrid)
-  Vue.component(UWTHierarchyGraph.name, UWTHierarchyGraph)
-  Vue.component(UWTPieChart.name, UWTPieChart)
-  Vue.component(UWTSunburstChart.name, UWTSunburstChart)
-  Vue.component(UWTSwimlaneChart.name, UWTSwimlaneChart)
-  Vue.component(UWTTreeMap.name, UWTTreeMap)
+const UWTVue = {
+  install: Vue => {
+    Vue.component(UWTChart.name, UWTChart)
+    Vue.component(UWTCheckboxTree.name, UWTCheckboxTree)
+    Vue.component(UWTCheckboxTreeNode.name, UWTCheckboxTreeNode)
+    Vue.component(UWTFlowDiagram.name, UWTFlowDiagram)
+    Vue.component(UWTGraph.name, UWTGraph)
+    Vue.component(UWTGrid.name, UWTGrid)
+    Vue.component(UWTHierarchyGraph.name, UWTHierarchyGraph)
+    Vue.component(UWTPieChart.name, UWTPieChart)
+    Vue.component(UWTSunburstChart.name, UWTSunburstChart)
+    Vue.component(UWTSwimlaneChart.name, UWTSwimlaneChart)
+    Vue.component(UWTTreeMap.name, UWTTreeMap)
+  }
 }
 
 UWTVue.version = '__VERSION__'
 
-export default {
-  UWTVue
-};
+export default UWTVue;

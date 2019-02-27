@@ -5,7 +5,7 @@ import { D3Renderer } from '../renderer';
 
 import * as d3 from 'd3';
 
-import { D3ConnectedGraphSVG } from './base';
+import { ConnectedGraphBase, D3ConnectedGraphSVG } from './base';
 
 export class D3SimpleGraph extends D3ConnectedGraphSVG {
     constructor(element: UIElement, renderer: D3Renderer,
@@ -13,7 +13,7 @@ export class D3SimpleGraph extends D3ConnectedGraphSVG {
 
         super(element, renderer, parent);
 
-        this._graphHelper.initializeGraph(element as IConnectedGraph);
+        ConnectedGraphBase.prototype.initializeGraph.call(this, element as IConnectedGraph);
 
         // here we convert link.source/link.target to their actual nodes to match as
         // this is what the base graph helpers expect
@@ -114,7 +114,7 @@ export class D3SimpleGraph extends D3ConnectedGraphSVG {
             node.y = d3.event.y;
 
             graphArea.selectAll('.' + node.key + '.link')
-                .each(function (link) {
+                .each(function (link: any) {
                     // Transform to d3 Object
                     if (node.key === link.source.key) {
                         d3.select(this).attr('x1', function (d: any) { return d.source.x; })
@@ -131,19 +131,7 @@ export class D3SimpleGraph extends D3ConnectedGraphSVG {
         this.renderLinks(graphArea);
         this.renderNodes(graphArea, undefined, dragMove, undefined);
 
-        // TODO MERGE WITH PORT.TS CODE WHEN WE NEED TO LIMIT PANNING
-        let height = -Number.MAX_VALUE;
-
-        let graph = self._element as IConnectedGraph;
-        graph.nodes.forEach(function (node: any) {
-            if (node.y) {
-                height = Math.max(height, node.y);
-            }
-        });
-
-        height = this.renderLegend(height);
-
-        self.configureViewSizeAndBrush(height, self._options.width);
+        self.configureView();
     }
 }
 D3Renderer.register(UIType.SimpleGraph, D3SimpleGraph);

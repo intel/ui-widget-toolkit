@@ -15,18 +15,18 @@ import {
 } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 
-import { D3XYSeries } from './xy';
+import { XYSeries } from './xy';
 
 import * as d3 from 'd3';
 
-export class D3XYGroupSeries implements ICartesianSeriesPlugin {
+export class XYGroupSeries implements ICartesianSeriesPlugin {
     public static canRender(layer: ILayer): boolean {
         // not a bar chart, not a flame chart or markers and multiple layers of data
         let possible = ((layer.renderType & RenderType.Line) || (layer.renderType & RenderType.Area) ||
             (layer.renderType & RenderType.Scatter) || layer.renderType & RenderType.DirectionalArrow);
 
         let isXY = true;
-        layer.data.forEach(dataSet => {
+        layer.data.forEach((dataSet: any) => {
             isXY = isXY && dataSet.hasOwnProperty('values');
         })
         return possible && isXY && layer.data.length > 1;
@@ -35,7 +35,7 @@ export class D3XYGroupSeries implements ICartesianSeriesPlugin {
     protected _d3Chart: ID3Chart;
     protected _layer: ILayer;
     protected _data: IXYSeries[];
-    protected _d3SeriesList: D3XYSeries[];
+    protected _d3SeriesList: XYSeries[];
     protected _isXContinuous: boolean;
     protected _worker: Worker;
     protected _svg: any;
@@ -60,7 +60,7 @@ export class D3XYGroupSeries implements ICartesianSeriesPlugin {
         if (layer.data.length !== this._d3SeriesList.length) {
             this._d3SeriesList = [];
             for (let i = 0; i < layer.data.length; ++i) {
-                let series = new D3XYSeries(this._d3Chart, layer, this._svg, this._xAxis,
+                let series = new XYSeries(this._d3Chart, layer, this._svg, this._xAxis,
                     this._yAxis, this._isXContinuous);
                 this._d3SeriesList.push(series);
             }
@@ -185,7 +185,7 @@ export class D3XYGroupSeries implements ICartesianSeriesPlugin {
 
         let xScale = xAxis.getScale();
         let yScale = yAxis.getScale();
-        if (this.isXContinuousSeries() && this._layer['decimator']) {
+        if (this.isXContinuousSeries() && (this._layer as any).decimator) {
 
             let inputNames: string[] = [];
             let inputValues: IBuffer<IXYValue>[] = [];
@@ -201,8 +201,8 @@ export class D3XYGroupSeries implements ICartesianSeriesPlugin {
                 inputValues.push(values);
             }
 
-            let decimator = this._layer['decimator'] as IXYStackedDecimator;
-            if (!self._layer.disableWebWorkers && !self._d3Chart.getOptions().disableWebWorkers &&
+            let decimator = (this._layer as any).decimator as IXYStackedDecimator;
+            if ((self._layer.enableWebWorkers || self._d3Chart.getOptions().enableWebWorkers) &&
                 InternalDecimatorMap[decimator.getKey()]) {
                 return new Promise<any>(function (resolve, reject) {
                     let values: IXYValue[][] = [];
@@ -210,13 +210,13 @@ export class D3XYGroupSeries implements ICartesianSeriesPlugin {
                         values[i] = inputValues[i].getData();
                     }
                     self._worker = createDecimatorWorker(decimator, xStart, xEnd, xAxis,
-                        yAxis, values, inputNames, function (output) {
+                        yAxis, values, inputNames, function (output: IXYValue[][]) {
                             self._worker = null;
                             for (let dataIdx = 0; dataIdx < self._d3SeriesList.length; ++dataIdx) {
                                 self._d3SeriesList[dataIdx].setOutputData(output[dataIdx]);
                             }
                             resolve();
-                        }, function (error) {
+                        }, function (error: any) {
                             self._worker = null;
 
                             // if stacked a custom decimator would deal with all
@@ -300,7 +300,7 @@ export class D3XYGroupSeries implements ICartesianSeriesPlugin {
                 map(Number.prototype.valueOf, 0);
 
             for (let dataIdx = 0; dataIdx < this._d3SeriesList.length; ++dataIdx) {
-                (this._d3SeriesList[dataIdx] as D3XYSeries).render(yOffsets);
+                (this._d3SeriesList[dataIdx] as XYSeries).render(yOffsets);
             }
         }
     }
@@ -325,4 +325,4 @@ export class D3XYGroupSeries implements ICartesianSeriesPlugin {
         return domain;
     }
 }
-D3Chart.register(D3XYGroupSeries);
+D3Chart.register(XYGroupSeries);

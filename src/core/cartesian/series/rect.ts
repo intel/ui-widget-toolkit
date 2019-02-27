@@ -15,11 +15,13 @@ import {
     ID3Chart, D3Axis, D3Chart
 } from '../chart';
 
-import { D3BaseSeries } from './baseSeries';
+import { BaseSeries } from './baseSeries';
 
 import * as d3 from 'd3';
 
-export class D3RectSeries extends D3BaseSeries implements ICartesianSeriesPlugin {
+let seriesTypeName = 'chart-rect';
+
+export class RectSeries extends BaseSeries implements ICartesianSeriesPlugin {
     public static canRender(layer: ILayer): boolean {
         return layer.data[0] && layer.data[0].hasOwnProperty('rects');
     }
@@ -44,7 +46,7 @@ export class D3RectSeries extends D3BaseSeries implements ICartesianSeriesPlugin
         this._data = layer.data[0] as IRectSeries;
         this._showTitleText = (layer.data[0] as IRectSeries).showTitleText;
         this._values = new SimpleBuffer(this._data.rects);
-        this._classes = this.getClassNames();
+        this._classes = this.getClassNames(seriesTypeName);
     }
 
     protected applyStyles(): void {
@@ -85,7 +87,7 @@ export class D3RectSeries extends D3BaseSeries implements ICartesianSeriesPlugin
             return [d.x, d.x1];
         }
 
-        let keys = getKeys(this._data, xMap);
+        let keys = getKeys(this._data.rects, xMap);
         return keys;
     }
 
@@ -95,7 +97,7 @@ export class D3RectSeries extends D3BaseSeries implements ICartesianSeriesPlugin
             return [d.y, d.y1];
         }
 
-        let keys = getKeys(this._data, yMap);
+        let keys = getKeys(this._data.rects, yMap);
         return keys.reverse();
     }
 
@@ -140,9 +142,6 @@ export class D3RectSeries extends D3BaseSeries implements ICartesianSeriesPlugin
         });
     }
 
-    private getTooltipText(value: any) {
-    }
-
     /** fill in tooltip information  */
     public getTooltipMetrics(elem: UIElement, event: IEvent): ITooltipData[] {
         return [];
@@ -185,7 +184,7 @@ export class D3RectSeries extends D3BaseSeries implements ICartesianSeriesPlugin
             return yValue + ySeriesOffset;
         }
 
-        let selectName = this.getSelectionClasses();
+        let selectName = this.getSelectionClasses(seriesTypeName);
 
         let color: string;
         if (self._data.css) {
@@ -204,7 +203,14 @@ export class D3RectSeries extends D3BaseSeries implements ICartesianSeriesPlugin
             .attr('stroke', color)
             .each(function (d: any) {
                 self.configureItemInteraction(d3.select(this));
-            });
+            })
+            .attr('x', function (d: any) { return self.xMap(d.x); })
+            .attr('width', function (d: any) { return self.xMap(d.x1) - self.xMap(d.x); })
+            .attr('y', function (d: any) { return self.yMap(d.y1); })
+            .attr('height', function (d: any) { return self.yMap(d.y) - self.yMap(d.y1); })
+            .each(function () {
+                self._d3Elems.push(d3.select(this));
+            })
 
         dataUpdate
             .attr('x', function (d: any) { return self.xMap(d.x); })
@@ -213,7 +219,7 @@ export class D3RectSeries extends D3BaseSeries implements ICartesianSeriesPlugin
             .attr('height', function (d: any) { return self.yMap(d.y) - self.yMap(d.y1); })
 
         if (this._showTitleText) {
-            let text = self._d3svg.selectAll(self.getSelectionClasses() + '.' + self._layer.data[0].name).filter('text').data(this._data.rects);
+            let text = self._d3svg.selectAll(self.getSelectionClasses(seriesTypeName) + '.' + self._layer.data[0].name).filter('text').data(this._data.rects);
             text.exit().remove();
             text.enter()
                 .append('text')
@@ -234,8 +240,7 @@ export class D3RectSeries extends D3BaseSeries implements ICartesianSeriesPlugin
                 })
 
         }
-        this._d3Elems.push(dataUpdate);
         self.applyStyles();
     }
 }
-D3Chart.register(D3RectSeries);
+D3Chart.register(RectSeries);

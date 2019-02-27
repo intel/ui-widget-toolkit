@@ -27,6 +27,8 @@ export interface ITooltipPlacementFunc {
  * response to the mouse entering some region.
  */
 export class BaseTooltip {
+    /** the targets who this tooltip is listening to */
+    protected _targets: any[];
 
     /** div containing the tooltip to be displayed */
     protected _tooltipDiv: HTMLDivElement;
@@ -164,6 +166,7 @@ export class BaseTooltip {
             this._tooltipDiv = document.querySelector(id) as HTMLDivElement;
         }
 
+        this._targets = [];
         this._analyticsName = '';
         this._disabled = false;
         this._visibilityTimeoutSecs = 0;
@@ -580,11 +583,14 @@ export class BaseTooltip {
      * @param target - The object to have any tooltip listeners reset.
      */
 
-    public static releaseListeners(target: any): void {
-        target
-            .on('mouseenter.tooltip', null)
-            .on('mouseleave.tooltip', null)
-            .on('mousemove.tooltip', null);
+    public releaseListeners(): void {
+        this._targets.forEach(target => {
+            target
+                .on('mouseenter.tooltip', null)
+                .on('mouseleave.tooltip', null)
+                .on('mousemove.tooltip', null);
+        })
+        this._targets = [];
     }
 
     /**
@@ -626,7 +632,8 @@ export class BaseTooltip {
      */
     public setBackgroundColor(color: string): BaseTooltip {
         this._tooltipBackgroundColor = color;
-        this._tooltipDiv.style['background-color'] = this._tooltipBackgroundColor;
+        (this._tooltipDiv.style as any)['background-color'] =
+            this._tooltipBackgroundColor;
         return this;
     }
 
@@ -711,6 +718,7 @@ export class BaseTooltip {
                 .on('mouseenter.tooltip', this.onMouseEnter)
                 .on('mouseleave.tooltip', this.onMouseLeave)
                 .on('mousemove.tooltip', this.onMouseMove);
+            this._targets.push(target);
         }
         return this;
     }   // Target

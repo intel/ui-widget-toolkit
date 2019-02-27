@@ -1,16 +1,16 @@
 <template>
-    <div>
-        <div class='graph-title'>{{graphTitle}}</div>
-        <div ref='graph'></div>
-    </div>
+  <div>
+    <div class="graph-title">{{graphTitle}}</div>
+    <div ref="graph"></div>
+  </div>
 </template>
 
 <script lang=ts>
-import { ColorManager } from '../../../../core/color-manager';
-import { D3Renderer } from '../../../../core/renderer';
+import { ColorManager } from "../../../../core/color-manager";
+import { D3Renderer } from "../../../../core/renderer";
 
 export default {
-  name: 'UWTHierarchyGraph',
+  name: "uwtHierarchyGraph",
   props: {
     graphTitle: {
       type: String,
@@ -44,7 +44,7 @@ export default {
     this.renderer.setOnRenderCallback(this.onRender);
 
     if (this.graphDef) {
-      this.renderer.setDiv(this.$refs['graph']);
+      this.renderer.setDiv(this.$refs["graph"]);
       this.renderer.invalidate(this.graphDef, this.renderOptions);
     }
   },
@@ -75,21 +75,21 @@ export default {
 
 <style scoped>
 .h-node {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .h-node rect {
-    shape-rendering: crispEdges;
+  shape-rendering: crispEdges;
 }
 
 .h-link {
-    cursor: pointer;
-    stroke-opacity: .4;
+  cursor: pointer;
+  stroke-opacity: 0.4;
 }
 
 .link {
-    fill: none;
-    stroke: #888;
-    stroke-opacity: .4;
+  fill: none;
+  stroke: #888;
+  stroke-opacity: 0.4;
 }
 </style>

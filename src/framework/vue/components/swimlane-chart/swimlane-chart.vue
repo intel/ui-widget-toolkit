@@ -14,14 +14,14 @@
 </template>
 
 <script lang=ts>
-import { IOptions } from '../../../../interface/ui-base';
-import { ColorManager } from '../../../../core/color-manager';
-import { D3Renderer } from '../../../../core/renderer';
-import { ChartGroup } from '../../../../core/cartesian/chart';
-import UWTChart from '../chart';
+import { ILegend, IOptions } from "../../../../interface/ui-base";
+import { ColorManager } from "../../../../core/color-manager";
+import { D3Renderer } from "../../../../core/renderer";
+import { ChartGroup } from "../../../../core/cartesian/chart";
+import UWTChart from "../chart";
 
 export default {
-  name: 'UWTSwimlaneChart',
+  name: "uwtSwimlaneChart",
   components: {
     UWTChart: UWTChart
   },
@@ -37,7 +37,7 @@ export default {
     },
     chartDefs: {
       type: Array,
-      default: () => {
+      default: (): any[] => {
         return [];
       }
     },
@@ -107,7 +107,7 @@ export default {
           chartMap.set(this.chartDefs[i], true);
         }
       }
-      let legends = [];
+      let legends: ILegend[] = [];
       let oldList = this.chartDefWrappers;
       if (oldList) {
         for (let i = 0; i < oldList.length; ++i) {

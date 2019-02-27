@@ -9,7 +9,7 @@ import {
 } from '../../interface/chart/chart';
 import { copy, getSelectionName } from '../utilities';
 import {
-    Brush, D3SVGRenderer, D3Legend, mergeKeys, Spinner
+    Brush, SVGRenderer, D3Legend, mergeKeys, Spinner
 } from '../svg-helper';
 import { D3Renderer } from '../renderer';
 
@@ -369,6 +369,13 @@ export class D3Axis implements IRenderedAxis {
     /** the rendered rect for the axis */
     private _renderedRect: Rect;
 
+    protected cache = {
+        pixels: -1,
+        domain: new Array()
+    }
+
+    protected _formatter: (d: any) => string;
+
     /**
      * Create an axis
      *
@@ -432,7 +439,19 @@ export class D3Axis implements IRenderedAxis {
                     .text(this._axis.axisDesc.label);
             }
         }
+        this._formatter = function (d: any): any {
+            return d;
+        };
     }   // constructor
+
+    /**
+     * get the width of the axis
+     */
+    public setRangePixels(pixels: number): D3Axis {
+        this._axisPixels = pixels;
+        this.getScale().range([0, pixels]);
+        return this;
+    }
 
     /**
      * get the width of the axis
@@ -762,34 +781,117 @@ export class D3Axis implements IRenderedAxis {
             });
     }
 
-    private removeXOverlappingTicks() {
+    private removeOverlappingTicksAsc(axis: any, useTickFunc: (base: any, test: any) => boolean) {
         let ticks = this._axisSVG.selectAll('.tick').selectAll('text').nodes();
         if (ticks.length > 0) {
-            let validText = []
-            ticks.forEach((tickText: any) => {
-                d3.select(tickText).style('display', 'block');
+            let domain: any = {};
 
-                // filter out those nodes that have no text to make the code easier to read
-                if (tickText.innerHTML.length > 0) {
-                    validText.push(tickText);
-                }
-            });
+            // find the first tick with text
+            let i = 0;
+            let currTick = ticks[i] as any;
+            for (; i < ticks.length && currTick.innerHTML.length === 0; ++i) {
+                currTick = ticks[i];
+            }
+            domain[currTick.__data__] = true;
 
             // for all text nodes hide overlapping text
-            for (let i = 0; i < validText.length;) {
-                let currTick = validText[i] as any;
-
-                // pad this with a couple pixels
-                let right = currTick.getBoundingClientRect().right + 10;
+            while (i < ticks.length) {
+                // this is the tick with text farthest from the origin
+                let currTickRect = currTick.getBoundingClientRect();
 
                 // remove all ticks that overlap with the current one
-                for (let text = validText[++i] as any;
-                    text && text.getBoundingClientRect().left < right || currTick.innerHTML.length === 0;
-                    text = validText[++i]) {
-                    d3.select(text).style('display', 'none');
+                for (++i; i < ticks.length; ++i) {
+                    let tick = ticks[i] as any;
+                    let testTickRect = tick.getBoundingClientRect();
+                    if (tick.innerHTML.length !== 0 && useTickFunc(currTickRect, testTickRect)) {
+                        break;
+                    }
+                }
+                currTick = ticks[i];
+                if (currTick) {
+                    domain[currTick.__data__] = true;
                 }
             }
+            let requiresRerender = Object.keys(domain).length !== ticks.length;
+            if (requiresRerender) {
+                // rerender with only the visible ticks
+                axis.tickFormat((d: any) => {
+                    if (domain[d]) {
+                        return this._formatter(d);
+                    }
+                });
+                this._axisSVG.call(axis);
+                axis.tickFormat(this._formatter);
+            }
         }
+    }
+
+    private removeOverlappingTicksDesc(axis: any, useTickFunc: (base: any, test: any) => boolean) {
+        let ticks = this._axisSVG.selectAll('.tick').selectAll('text').nodes();
+        if (ticks.length > 0) {
+            let domain: any = {};
+
+            // find the first tick with text
+            let i = ticks.length - 1;
+            let currTick = ticks[i] as any;
+            for (; i >= 0 && currTick.innerHTML.length === 0; --i) {
+                currTick = ticks[i];
+            }
+            domain[currTick.__data__] = true;
+
+            // for all text nodes hide overlapping text
+            while (i >= 0) {
+                // this is the tick with text farthest from the origin
+                let currTickRect = currTick.getBoundingClientRect();
+
+                // remove all ticks that overlap with the current one
+                for (--i; i >= 0; --i) {
+                    let tick = ticks[i] as any;
+                    let testTickRect = tick.getBoundingClientRect();
+                    if (tick.innerHTML.length !== 0 && useTickFunc(currTickRect, testTickRect)) {
+                        break;
+                    }
+                }
+                currTick = ticks[i];
+                if (currTick) {
+                    domain[currTick.__data__] = true;
+                }
+            }
+            let requiresRerender = Object.keys(domain).length !== ticks.length;
+            if (requiresRerender) {
+                // rerender with only the visible ticks
+                axis.tickFormat((d: any) => {
+                    if (domain[d]) {
+                        return this._formatter(d);
+                    }
+                });
+                this._axisSVG.call(axis);
+                axis.tickFormat(this._formatter);
+            }
+        }
+    }
+
+    private removeYOverlappingTicks(axis: any) {
+        let testFunc = (base: any, test: any) => {
+            return base.bottom < (test.top + 2);
+        };
+
+        if (this.isBanded()) {
+            this.removeOverlappingTicksAsc(axis, testFunc);
+        } else {
+            this.removeOverlappingTicksDesc(axis, testFunc);
+        }
+    }
+
+    private removeXOverlappingTicks(axis: any) {
+        this.removeOverlappingTicksDesc(axis, (base: any, test: any) => {
+            return base.left > (test.right + 5);
+        });
+    }
+
+    public saveState() {
+        this.cache.pixels = this.getRangePixels();
+        this.cache.domain = this.getDomain();
     }
 
     public render() {
@@ -802,32 +904,29 @@ export class D3Axis implements IRenderedAxis {
             return;
         }
 
+        // check if we can just reposition and not rerender an axis
         let alignment = self._axis.alignment;
+        let pixels = this.getRangePixels();
+        let domain = this.getDomain();
+        let requiresRender = this.cache.pixels !== pixels ||
+            JSON.stringify(this.cache.domain) !== JSON.stringify(domain);
+
         self._nestedAxes = [];
 
-        // bound the number of ticks based on avaiable vertical space
-        let tickCount: number = undefined;
+        // bound the number of ticks based on available vertical space
 
-        switch (alignment) {
-            case Alignment.Left:
-            case Alignment.Right:
-                tickCount = Math.floor(self._axisPixels / 15);
-                break;
-        }
-
-        let scalingInfo;
+        let scalingInfo: IScalingInfo;
         if (self._axis.axisDesc.scalingInfo) {
             scalingInfo = self._axis.axisDesc.scalingInfo
         } else {
             scalingInfo = new ScalingInfo();
         }
         if (self._axis.axisDesc.scaleType === AxisType.Ordinal) {
-            self._d3axes[0]
-                .tickFormat(function (d: any) {
-                    let ret = d;
-                    ret += scalingInfo.baseScale.units;
-                    return ret;
-                });
+            this._formatter = function (d: any) {
+                let ret: any = d;
+                ret += scalingInfo.baseScale.units;
+                return ret;
+            };
         } else {
             let domain = self.getScale().domain();
             let range = domain[1] - domain[0];
@@ -835,16 +934,15 @@ export class D3Axis implements IRenderedAxis {
                 let scalar = getScalar(scalingInfo, range);
                 switch (self._axis.axisDesc.scaleType) {
                     case AxisType.Linear:
-                        self._d3axes[0]
-                            .tickFormat(function (d: number) {
-                                if (self._axis.axisDesc.precision) {
-                                    return d3.format(',.' + self._axis.axisDesc.precision + 'f')(d * scalar.scalar) +
-                                        scalar.units
-                                } else {
-                                    return d3.format(',')(d * scalar.scalar) +
-                                        scalar.units
-                                }
-                            });
+                        this._formatter = function (d: number) {
+                            if (self._axis.axisDesc.precision) {
+                                return d3.format(',.' + self._axis.axisDesc.precision + 'f')(d * scalar.scalar) +
+                                    scalar.units
+                            } else {
+                                return d3.format(',')(d * scalar.scalar) +
+                                    scalar.units
+                            }
+                        }
                         break;
                 }
             }
@@ -853,15 +951,7 @@ export class D3Axis implements IRenderedAxis {
         // Render the axis. This will update it if this isn't the first call
         if (self._axis.options) {
             if (self._axis.options.tickCount !== undefined) {
-                tickCount = self._axis.options.tickCount;
-                if (self._axis.axisDesc.scaleType === AxisType.Ordinal) {
-                    if (tickCount > 0) {
-                        let showTickEvery = Math.floor(self.getScale().domain().length / tickCount);
-                        self._d3axes[0].tickValues(self.getScale().domain().filter(function (d, i) { return !(i % showTickEvery); }))
-                    }
-                } else {
-                    self._d3axes[0].ticks(self._axis.options.tickCount);
-                }
+                self._d3axes[0].ticks(self._axis.options.tickCount);
             }
             if (self._axis.options.tickSizeInner !== undefined) {
                 self._d3axes[0].tickSizeInner(self._axis.options.tickSizeInner);
@@ -870,7 +960,8 @@ export class D3Axis implements IRenderedAxis {
                 self._d3axes[0].tickSizeOuter(self._axis.options.tickSizeOuter);
             }
             if (self._axis.options.tickMappingFunc) {
-                self._d3axes[0].tickFormat(self._axis.options.tickMappingFunc);
+                this._formatter = self._axis.options.tickMappingFunc;
+                self._d3axes[0].tickFormat(this._formatter);
             }
         }
 
@@ -890,8 +981,11 @@ export class D3Axis implements IRenderedAxis {
                         'translate(' + (self._position.x) + ', ' + self._position.y + ')');
                 }
 
-                self._d3axes[0].ticks(tickCount);
-                self._axisSVG.call(self._d3axes[0]);
+                if (requiresRender) {
+                    self._axisSVG.call(self._d3axes[0]);
+                    self.removeYOverlappingTicks(self._d3axes[0]);
+                }
+
                 node = self._axisSVG.node();
                 axisRect = node.getBoundingClientRect();
 
@@ -920,8 +1014,11 @@ export class D3Axis implements IRenderedAxis {
                 // axis requires transformation to account for the non-zero X offset...
                 self._axisSVG.attr('transform',
                     'translate(' + self._position.x + ', ' + (self._position.y) + ')');
-                self._axisSVG.call(self._d3axes[0]);
-                self.removeXOverlappingTicks();
+
+                if (requiresRender) {
+                    self._axisSVG.call(self._d3axes[0]);
+                    self.removeXOverlappingTicks(self._d3axes[0]);
+                }
 
                 if (self._axisLabel) {
                     self._axisLabel
@@ -933,6 +1030,8 @@ export class D3Axis implements IRenderedAxis {
             case Alignment.Bottom:
                 let axisLevels = self.getLevelCount();
                 if (axisLevels > 1) {
+                    // todo don't require re-render with nested axes
+                    requiresRender = true;
                     self._d3svg.selectAll('.nested-axis').remove();
                     self.renderNestedAxes(1, self._position.x);
 
@@ -943,20 +1042,22 @@ export class D3Axis implements IRenderedAxis {
                 // axis requires transformation to account for the non-zero X offset...
                 self._axisSVG.attr('transform',
                     'translate(' + self._position.x + ', ' + (self._position.y + yOffset) + ')');
-                self._axisSVG.call(self._d3axes[0] as any);
-                if (self._axis.options &&
-                    (self._axis.options.rotateText || self._axis.options.rotateTextDegrees)) {
-                    let degrees = self._axis.options.rotateTextDegrees ?
-                        self._axis.options.rotateTextDegrees : 65;
-                    self._axisSVG.selectAll("text")
-                        .style("text-anchor", "end")
-                        .attr("dx", "-.8em")
-                        .attr("dy", ".15em")
-                        .attr("transform", "rotate(-" + degrees + ")");
-                } else {
-                    this.removeXOverlappingTicks();
-                }
 
+                if (requiresRender) {
+                    self._axisSVG.call(self._d3axes[0] as any);
+                    if (self._axis.options &&
+                        (self._axis.options.rotateText || self._axis.options.rotateTextDegrees)) {
+                        let degrees = self._axis.options.rotateTextDegrees ?
+                            self._axis.options.rotateTextDegrees : 65;
+                        self._axisSVG.selectAll("text")
+                            .style("text-anchor", "end")
+                            .attr("dx", "-.8em")
+                            .attr("dy", ".15em")
+                            .attr("transform", "rotate(-" + degrees + ")");
+                    } else {
+                        this.removeXOverlappingTicks(self._d3axes[0]);
+                    }
+                }
                 node = self._axisSVG.node();
                 axisRect = node.getBoundingClientRect();
                 if (self._axisLabel) {
@@ -981,7 +1082,12 @@ export class D3Axis implements IRenderedAxis {
             top = Math.min(labelRect.top, top);
             bottom = Math.max(labelRect.bottom, bottom);
         }
+
         self._renderedRect = new Rect(left, top, right - left, bottom - top + yOffset);
+
+        // for each axis cache the previous layout so we can avoid
+        // rerendering if a simple translation is possible
+        this.saveState();
     }
 }
 
@@ -1048,7 +1154,7 @@ class D3Title {
     }
 }
 
-export class D3Chart extends D3SVGRenderer implements ID3Chart {
+export class D3Chart extends SVGRenderer implements ID3Chart {
     private static MIN_GRAPH_HEIGHT = 20;
 
     private _graphSvg: d3.Selection<d3.BaseType, {}, d3.BaseType, any>;
@@ -1148,7 +1254,7 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
         let self = this;
 
         this.onHover = function (event: IEvent) {
-            if (D3SVGRenderer.IS_RESIZING) {
+            if (SVGRenderer.IS_RESIZING) {
                 return;
             }
             let chart = self._element;
@@ -1164,7 +1270,7 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
         }
 
         function onCursorChanged(event: IEvent) {
-            if (D3SVGRenderer.IS_RESIZING) {
+            if (SVGRenderer.IS_RESIZING) {
                 return;
             }
 
@@ -1235,7 +1341,11 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
         }
 
         if (!this._element.api) {
-            this._element.api = {};
+            this._element.api = {
+                getOptions: () => {
+                    return this.getOptions();
+                }
+            };
         }
     }
 
@@ -1256,8 +1366,8 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
     public contextMenu(menu: IContextMenuItem[], opts?: any) {
         let self = this;
 
-        var openCallback,
-            closeCallback;
+        var openCallback: any,
+            closeCallback: any;
 
         if (typeof opts === 'function') {
             openCallback = opts;
@@ -1381,13 +1491,15 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
                 // render this chart using the new start/end values
                 this.render(event);
             }
+            this._options.xStart = event.xStart;
+            this._options.xEnd = event.xEnd;
+            this._options.yStart = event.yStart;
+            this._options.yEnd = event.yEnd;
         }
     }
 
     /**
      * brush event
-     *
-     * @param element to fire the brush event on
      * @param event the event to pass to the renderer
      */
     public brush(event: IEvent): void {
@@ -1556,21 +1668,21 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
         let self = this;
         let yAxis = self._axes[1];
 
-        function getX(coords: number[]) {
+        function getX(coords: any[]) {
             return self._options.enableXYZoom ? coords[0][0] : coords[0];
         }
-        function getX1(coords: number[]) {
+        function getX1(coords: any[]) {
             return self._options.enableXYZoom ? coords[1][0] : coords[1];
         }
-        function getY(coords: number[]) {
+        function getY(coords: any[]) {
             return self._options.enableXYZoom ? coords[0][1] : undefined;
         }
-        function getY1(coords: number[]) {
+        function getY1(coords: any[]) {
             return self._options.enableXYZoom ? coords[1][1] : undefined;
         }
 
         // a generic callback to handle brush selection events
-        function onBrushCallback(coords: number[], eventType: EventType): boolean {
+        function onBrushCallback(coords: any[], eventType: EventType): boolean {
             let chart = self._element;
             let options: IEvent = {
                 event: eventType,
@@ -1790,7 +1902,7 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
         // based on the position of the mouse, and displays a line on all
         // graphs which share the same group name
         function showTooltipValues(): boolean {
-            if (D3SVGRenderer.IS_RESIZING) {
+            if (SVGRenderer.IS_RESIZING) {
                 return;
             }
 
@@ -1945,7 +2057,7 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
                 .classed('chart-handle horizontal bottom', true)
                 .call(d3.drag()
                     .on('start', function () {
-                        D3SVGRenderer.IS_RESIZING = true;
+                        SVGRenderer.IS_RESIZING = true;
                     })
                     .on('drag', function () {
                         if (d3.event.dy === 0) {
@@ -1965,7 +2077,7 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
                         self.render(options);
                     })
                     .on('end', function () {
-                        D3SVGRenderer.IS_RESIZING = false;
+                        SVGRenderer.IS_RESIZING = false;
                     })
                 );
         }
@@ -2065,19 +2177,6 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
             return;
         }
 
-        for (let seriesIdx = 0; seriesIdx < layers.length; ++seriesIdx) {
-            let layer = layers[seriesIdx];
-            if ((layer.renderType & RenderType.MinMaxValue) === RenderType.MinMaxValue ||
-                (layer.renderType & RenderType.Bar) === RenderType.Bar ||
-                chart.axes[layer.xAxisIdx].axisDesc.scaleType === AxisType.Ordinal) {
-                if (chart.isXContinuous) {
-                    throw 'Error cannot render continuous and banded data in one chart';
-                } else {
-                    isXBanded = true;
-                }
-            }
-        }
-
         // create the lane for the data series to share
         // put graph last so it's on top for selections
         self._graphSvg = this._svg.append('g').attr('class', 'graphGroup').append('svg');
@@ -2094,6 +2193,14 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
                 continue;
             }
 
+            if (!d3Series.isXContinuousSeries()) {
+                if (chart.isXContinuous) {
+                    throw 'Error cannot render continuous and banded data in one chart';
+                } else {
+                    isXBanded = true;
+                }
+            }
+
             self._minGraphHeight = Math.max(d3Series.getRequiredHeight(), self._minGraphHeight);
 
             // Compute the ranges for the Y Axis
@@ -2104,15 +2211,16 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
                 let keys = d3Series.getDiscreteXValues(isStacked);
 
                 // TODO FIX HARDCORD FOR BAR CHARTS
-                if (d3Series['getBarsPerDomain'] && d3Series['getLevelKeys']) {
+                let series = d3Series as any;
+                if (series['getBarsPerDomain'] && series['getLevelKeys']) {
                     // right now only bar series have multiple keys, we could extend this
                     // by making other datatypes support it.  We would then move the
                     // code that computes the keys for each object and creates the extra
                     // axes up to this level.
 
                     // Right now rendering of these even happens in the barseries
-                    xD3Axis.setKeysPerDomain(d3Series['getBarsPerDomain'](isStacked));
-                    let levelKeys = d3Series['getLevelKeys']();
+                    xD3Axis.setKeysPerDomain(series['getBarsPerDomain'](isStacked));
+                    let levelKeys = series['getLevelKeys']();
                     for (let levelIdx = 0; levelIdx < levelKeys.length; ++levelIdx) {
                         xD3Axis.appendDomain(levelKeys[levelIdx], levelIdx);
                     }
@@ -2211,7 +2319,7 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
             }
 
             if (!this._options.disableAutoResizeHeight && d3YAxis.isBanded()) {
-                self._minGraphHeight = Math.max(d3YAxis.getDomain().length * 15, self._minGraphHeight);
+                // self._minGraphHeight = Math.max(d3YAxis.getDomain().length * 15, self._minGraphHeight);
             }
         }
 
@@ -2254,16 +2362,15 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
                 let layer: ILayer = layers[seriesIdx];
                 let decimationChars = 0;
 
-                if (layer['decimator']) {
-                    decimationChars = layer['decimator'] ?
-                        layer['decimator'].getName().length : 0;
+                if ((layer as any).decimator) {
+                    decimationChars = (layer as any).decimator.getName().length;
                 }
 
                 let d3Series = self._seriesMap.get(layer);
                 for (let i = 0; i < layer.data.length; ++i) {
                     let nameChars = d3Series.getName().length;
                     if (d3Series.hasOwnProperty('getMaxNameLength')) {
-                        nameChars = d3Series['getMaxNameLength']();
+                        nameChars = (d3Series as any).getMaxNameLength();
                     }
                     legendChars = Math.max(nameChars + decimationChars, legendChars);
                 }
@@ -2301,7 +2408,7 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
             }
         }
 
-        if (!self._scaleAxis.isBanded() && self._element.api.zoom) {
+        if (!self._scaleAxis.isBanded()) {
             self._defaultXScale = self._scaleAxis.getScale().copy();
             self._defaultYScale = self._axes[1].getScale().copy();
 
@@ -2332,9 +2439,6 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
       */
     private updateLayout(options: IOptions) {
         let self = this;
-
-        // load the graph layout parameters
-        self.loadOptions(options);
 
         self.updateGraphRect();
 
@@ -2474,13 +2578,13 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
 
                 switch (d3Legend.getAlignment()) {
                     case Alignment.Left:
-                        d3Legend.setPosition(new Rect(0, self._graphRect.y, 0, 0));
+                        d3Legend.setPosition(new Rect(0, self._graphRect.y, 0, self._graphRect.height));
                         break;
                     case Alignment.Right:
                         d3Legend.setPosition(
                             new Rect(self._graphRect.x + self._graphRect.width +
                                 rightAxisWidth + self.LEGEND_PADDING.X,
-                                self._graphRect.y, 0, 0));
+                                self._graphRect.y, 0, self._graphRect.height));
                         break;
                     case Alignment.Bottom:
                         d3Legend.setPosition(new Rect(self._graphRect.x,
@@ -2556,9 +2660,6 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
     private updateLayoutToFit(options: IOptions) {
         // update the svg height/width
         let self = this;
-
-        // load the graph layout parameters
-        self.loadOptions(options);
 
         self.updateGraphRect();
 
@@ -2766,7 +2867,7 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
 
         let zoomMenuItem = {
             title: title,
-            action: function (elem, data, index) {
+            action: function (elem: any, data: any, index: number) {
                 func();
             },
             disabled: false // optional, defaults to false
@@ -2928,6 +3029,9 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
             throw 'Error no data in the chart';
         }
 
+        // load the graph layout parameters
+        self.loadOptions(options);
+
         // update the layout of things that just need to be moved/resized
         if (this._options.fitToWindow) {
             self.updateLayoutToFit(options);
@@ -2972,7 +3076,7 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
         if (self._options.enableSaveAsImage) {
             let saveImageItem = {
                 title: 'Save As Image',
-                action: function (elem, data, index) {
+                action: function (elem: any, data: any, index: number) {
                     self.saveImage();
                 },
                 disabled: false // optional, defaults to false
@@ -3034,7 +3138,7 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
             // if we are using webworkers then rendered the last data in the new
             // zoom state so the user has some context.  If not using webworkers
             // skip this to just re-render as soon as possible
-            if (d3Series && !layer.disableWebWorkers) {
+            if (d3Series && layer.enableWebWorkers) {
                 d3Series.setData(layer);
                 d3Series.render();
             }
@@ -3064,7 +3168,7 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
                             let scale = d3YAxis.getScale();
 
                             // TODO FIX HARDCODE FOR XYSERIES
-                            if (d3Series instanceof D3XYSeries || d3Series instanceof D3XYGroupSeries) {
+                            if (d3Series instanceof XYSeries || d3Series instanceof XYGroupSeries) {
                                 let domain: number[] = d3Series.getRenderedYRange();
 
                                 // set the range for the data
@@ -3119,8 +3223,8 @@ export class D3Chart extends D3SVGRenderer implements ID3Chart {
 }
 
 import * as DecimatorWorker from 'worker-loader?inline&fallback=false!./decimator/worker';
-import { D3XYSeries } from './series/xy';
-import { D3XYGroupSeries } from './series/xy-group';
+import { XYSeries } from './series/xy';
+import { XYGroupSeries } from './series/xy-group';
 
 export function createDecimatorWorker(decimator: any, xStart: number, xEnd: number, xAxis: D3Axis,
     yAxis: D3Axis, values: any, names: any, resolve: any, reject: any): any {

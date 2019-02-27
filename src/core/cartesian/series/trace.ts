@@ -14,11 +14,11 @@ import {
     ID3Chart, D3Axis, D3Chart, createDecimatorWorker
 } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
-import { D3XYSeries } from './xy';
+import { XYSeries } from './xy';
 
 import * as d3 from 'd3';
 
-export class D3TraceSeries implements ICartesianSeriesPlugin {
+export class TraceSeries implements ICartesianSeriesPlugin {
     public static canRender(layer: ILayer): boolean {
         return layer.data[0] && layer.data[0].hasOwnProperty('dx') &&
             (((layer.renderType & RenderType.Area) !== 0 ||
@@ -29,7 +29,7 @@ export class D3TraceSeries implements ICartesianSeriesPlugin {
     protected _d3Chart: ID3Chart;
     protected _layer: ITraceValueLayer;
     protected _data: ITraceValue[];
-    protected _d3SeriesList: D3XYSeries[];
+    protected _d3SeriesList: XYSeries[];
     protected _isXContinuous: boolean;
     protected _worker: Worker;
     protected _svg: any;
@@ -43,7 +43,7 @@ export class D3TraceSeries implements ICartesianSeriesPlugin {
         xAxis: D3Axis, yAxis: D3Axis, isXContinuous: boolean) {
 
         this._d3Chart = chart;
-        this._isXContinuous = isXContinuous;
+        this._isXContinuous = true;
         this._svg = svg;
         this._xAxis = xAxis;
         this._yAxis = yAxis;
@@ -75,7 +75,7 @@ export class D3TraceSeries implements ICartesianSeriesPlugin {
                     }]
                 }
 
-                let series = new D3XYSeries(this._d3Chart, dataLayer, this._svg, this._xAxis,
+                let series = new XYSeries(this._d3Chart, dataLayer, this._svg, this._xAxis,
                     this._yAxis, this._isXContinuous);
                 this._d3SeriesList.push(series);
             }
@@ -88,7 +88,7 @@ export class D3TraceSeries implements ICartesianSeriesPlugin {
                 }]
             }
 
-            let series = new D3XYSeries(this._d3Chart, dataLayer, this._svg, this._xAxis,
+            let series = new XYSeries(this._d3Chart, dataLayer, this._svg, this._xAxis,
                 this._yAxis, this._isXContinuous);
             this._d3SeriesList.push(series);
         }
@@ -197,15 +197,15 @@ export class D3TraceSeries implements ICartesianSeriesPlugin {
             }
         }
 
-        if (!self._layer.disableWebWorkers && !self._d3Chart.getOptions().disableWebWorkers &&
+        if ((self._layer.enableWebWorkers || self._d3Chart.getOptions().enableWebWorkers) &&
             InternalDecimatorMap[decimator.getKey()]) {
             return new Promise<any>(function (resolve, reject) {
                 self._worker = createDecimatorWorker(decimator, xStart, xEnd, xAxis,
-                    yAxis, self._layer.data, self._states, function (output) {
+                    yAxis, self._layer.data, self._states, function (output: any[]) {
                         self._worker = null;
                         copyData(output);
                         resolve();
-                    }, function (error) {
+                    }, function (error: any) {
                         self._worker = null;
 
                         // if stacked a custom decimator would deal with all
@@ -280,10 +280,10 @@ export class D3TraceSeries implements ICartesianSeriesPlugin {
                 map(Number.prototype.valueOf, 0);
 
             for (let dataIdx = 0; dataIdx < this._d3SeriesList.length; ++dataIdx) {
-                (this._d3SeriesList[dataIdx] as D3XYSeries).render(yOffsets);
+                (this._d3SeriesList[dataIdx] as XYSeries).render(yOffsets);
             }
         }
     }
 }
 
-D3Chart.register(D3TraceSeries)
+D3Chart.register(TraceSeries)

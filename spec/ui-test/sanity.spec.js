@@ -62,7 +62,7 @@ describe('sanity', function () {
                 });
                 graphs[0].findElement(By.className('lane-title')).then(function (title) {
                     title.getText().then(function (text) {
-                        expect(text).toBe('D');
+                        expect(text).toBe('Alpha Area');
                     });
                 });
             })
@@ -143,7 +143,7 @@ describe('sanity', function () {
                 });
                 graphs[0].findElement(By.className('lane-title')).then(function (title) {
                     title.getText().then(function (text) {
-                        expect(text).toBe('E');
+                        expect(text).toBe('Stacked Area');
                     });
                 });
             })
@@ -164,7 +164,7 @@ describe('sanity', function () {
                 });
                 graphs[0].findElement(By.className('lane-title')).then(function (title) {
                     title.getText().then(function (text) {
-                        expect(text).toBe('F');
+                        expect(text).toBe('Computed Residency');
                         done();
                     });
                 });
@@ -206,7 +206,7 @@ describe('sanity', function () {
             });
             graph.findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
-                    expect(text).toBe('Chart Level 1');
+                    expect(text).toBe('Basic Bar');
                 });
             });
             graph.findElements(By.className('chart-bar')).then(function (bars) {
@@ -252,7 +252,7 @@ describe('sanity', function () {
             });
             graph.findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
-                    expect(text).toBe('Chart Level 2');
+                    expect(text).toBe('Multi Bar');
                 });
             });
             graph.findElements(By.className('chart-bar')).then(function (bars) {
@@ -297,7 +297,7 @@ describe('sanity', function () {
             });
             graph.findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
-                    expect(text).toBe('Chart Level 2b');
+                    expect(text).toBe('Stacked Bar');
                 });
             });
             graph.findElements(By.className('chart-bar')).then(function (bars) {
@@ -353,9 +353,36 @@ describe('sanity', function () {
                 done();
             });
         });
+        driver.findElement(By.id('graphArea5')).then(function (graph) {
+            graph.findElements(By.className('chart-bar')).then(function (bars) {
+                expect(bars.length).toBe(3);
+            });
+            graph.findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+                done();
+            });
+        });
+        driver.findElement(By.id('graphArea6')).then(function (graph) {
+            graph.findElements(By.className('chart-bar')).then(function (bars) {
+                expect(bars.length).toBe(9);
+            });
+            graph.findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+                done();
+            });
+        });
+        driver.findElement(By.id('graphArea7')).then(function (graph) {
+            graph.findElements(By.className('chart-bar')).then(function (bars) {
+                expect(bars.length).toBe(1);
+            });
+            graph.findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+                done();
+            });
+        });
     }, 10000);
 
-    it('connectedGraph', function (done) {
+    it('connected-graph', function (done) {
         driver.get('file://' + path.join(__dirname + '../../../examples/connectedGraph/connectedGraphTest.html'));
         driver.findElement(By.id('graphArea0')).then(function (graph) {
             graph.findElements(By.className('link')).then(function (links) {
@@ -382,7 +409,7 @@ describe('sanity', function () {
         });
     }, 10000);
 
-    it('flameSunburst', function (done) {
+    it('flame-sunburst', function (done) {
         driver.get('file://' + path.join(__dirname + '../../../examples/flameSunburst/flameSunburstTest.html'));
         driver.findElement(By.id('graphArea0')).then(function (graph) {
             graph.findElement(By.className('segments')).then(function (segment) {
@@ -457,9 +484,16 @@ describe('sanity', function () {
                 expect(axes.length).toBe(2);
             });
         });
+        driver.findElement(By.id('graphArea5')).then(function (graph) {
+            graph.findElements(By.tagName('canvas')).then(function (canvas) {
+                expect(canvas.length).toBe(1);
+                done();
+            });
+        });
+
     }, 10000);
 
-    it('hierarchyGraph', function (done) {
+    it('hierarchy-graph', function (done) {
         driver.get('file://' + path.join(__dirname + '../../../examples/hierarchyGraph/hierarchyGraphTest.html'));
 
         const element = By.className('link');
@@ -669,7 +703,7 @@ describe('sanity', function () {
             });
             graph.findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
-                    expect(text).toBe('Chart Level 2b');
+                    expect(text).toBe('Ordinal X');
                 });
             });
             driver.wait(until.elementLocated(By.className('cell')), 1000).then(function () {
@@ -797,7 +831,7 @@ describe('sanity', function () {
         driver.findElements(By.tagName('svg')).then(function (graphs) {
             graphs[0].findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
-                    expect(text).toBe('Events');
+                    expect(text).toBe('Ordinal Y');
                 });
             });
             graphs[0].findElements(By.className('axis')).then(function (axes) {
@@ -805,7 +839,7 @@ describe('sanity', function () {
             });
             graphs[2].findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
-                    expect(text).toBe('A');
+                    expect(text).toBe('Scatter+Line');
                 });
             });
             graphs[2].findElements(By.className('axis')).then(function (axes) {
@@ -813,7 +847,7 @@ describe('sanity', function () {
             });
             graphs[4].findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
-                    expect(text).toBe('B');
+                    expect(text).toBe('Same Scatter/Line');
                 });
             });
             graphs[4].findElements(By.className('axis')).then(function (axes) {
@@ -821,7 +855,7 @@ describe('sanity', function () {
             });
             graphs[6].findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
-                    expect(text).toBe('Decimators');
+                    expect(text).toBe('One Data, Many Decimators');
                 });
             });
             graphs[6].findElements(By.className('axis')).then(function (axes) {
@@ -846,6 +880,139 @@ describe('sanity', function () {
                     });
                 });
             });
+        });
+    }, 10000);
+
+    it('min-max', function (done) {
+        driver.get('file://' + path.join(__dirname + '../../../examples/minMaxValue/minMaxValueTest.html'));
+        driver.findElements(By.tagName('svg')).then(function (graphs) {
+            expect(graphs.length).toBe(6);
+            graphs[1].findElements(By.tagName('circle')).then(function (circles) {
+                expect(circles.length).toBe(3);
+            });
+            graphs[1].findElements(By.className('chart-min-max-value-line')).then(function (lines) {
+                expect(lines.length).toBe(3);
+            });
+            graphs[0].findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+            });
+            graphs[3].findElements(By.tagName('circle')).then(function (circles) {
+                expect(circles.length).toBe(3);
+            });
+            graphs[3].findElements(By.className('chart-min-max-value-line')).then(function (lines) {
+                expect(lines.length).toBe(3);
+            });
+            graphs[2].findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+            });
+            graphs[5].findElements(By.tagName('circle')).then(function (circles) {
+                expect(circles.length).toBe(3);
+            });
+            graphs[5].findElements(By.className('chart-min-max-value-line')).then(function (lines) {
+                expect(lines.length).toBe(3);
+            });
+            graphs[4].findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+                done();
+            });
+        });
+    }, 10000);
+
+    it('box-plot', function (done) {
+        driver.get('file://' + path.join(__dirname + '../../../examples/boxPlot/boxPlotTest.html'));
+        driver.findElements(By.tagName('svg')).then(function (graphs) {
+            expect(graphs.length).toBe(6);
+            graphs[1].findElements(By.tagName('rect')).then(function (rect) {
+                expect(rect.length).toBe(3);
+            });
+            graphs[1].findElements(By.className('chart-box-plot-line')).then(function (lines) {
+                expect(lines.length).toBe(12);
+            });
+            graphs[0].findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+            });
+            graphs[3].findElements(By.tagName('rect')).then(function (rect) {
+                expect(rect.length).toBe(3);
+            });
+            graphs[3].findElements(By.className('chart-box-plot-line')).then(function (lines) {
+                expect(lines.length).toBe(12);
+            });
+            graphs[2].findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+            });
+            graphs[5].findElements(By.tagName('rect')).then(function (rect) {
+                expect(rect.length).toBe(3);
+            });
+            graphs[5].findElements(By.className('chart-box-plot-line')).then(function (lines) {
+                expect(lines.length).toBe(12);
+            });
+            graphs[4].findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+                done();
+            });
+        });
+    }, 10000);
+
+    it('gradient-legend', function (done) {
+        driver.get('file://' + path.join(__dirname + '../../../examples/gradientLegend/gradientLegendTest.html'));
+        driver.findElements(By.tagName('svg')).then(function (graphs) {
+            expect(graphs.length).toBe(2);
+            graphs[0].findElements(By.className('gradient')).then(function (rect) {
+                expect(rect.length).toBe(4);
+                done();
+            });
+        });
+    }, 10000);
+
+    it('heat-map', function (done) {
+        driver.get('file://' + path.join(__dirname + '../../../examples/heatMap/heatMapTest.html'));
+        driver.findElements(By.tagName('canvas')).then(function (canvas) {
+            expect(canvas.length).toBe(3);
+            done();
+        });
+    }, 10000);
+
+    it('port-diagram', function (done) {
+        driver.get('file://' + path.join(__dirname + '../../../examples/portDiagram/portDiagramTest.html'));
+        driver.findElements(By.tagName('svg')).then(function (graphs) {
+            expect(graphs.length).toBe(3);
+            graphs[0].findElements(By.className('node')).then(function (nodes) {
+                expect(nodes.length).toBe(8);
+            });
+            graphs[0].findElements(By.className('port')).then(function (ports) {
+                expect(ports.length).toBe(17);
+            });
+            graphs[0].findElements(By.className('link')).then(function (links) {
+                expect(links.length).toBe(9);
+            });
+            graphs[1].findElements(By.className('border')).then(function (nodes) {
+                expect(nodes.length).toBe(7);
+            });
+            graphs[1].findElements(By.className('title-box')).then(function (nodes) {
+                expect(nodes.length).toBe(7);
+            });
+            graphs[1].findElements(By.className('port')).then(function (ports) {
+                expect(ports.length).toBe(17);
+            });
+            graphs[1].findElements(By.className('link')).then(function (links) {
+                expect(links.length).toBe(9);
+            });
+            graphs[2].findElements(By.className('border')).then(function (nodes) {
+                expect(nodes.length).toBe(7);
+            });
+            graphs[2].findElements(By.className('title-box')).then(function (nodes) {
+                expect(nodes.length).toBe(7);
+            });
+            graphs[2].findElements(By.className('port')).then(function (ports) {
+                expect(ports.length).toBe(17);
+            });
+            graphs[2].findElements(By.className('link')).then(function (links) {
+                expect(links.length).toBe(9);
+            });
+        });
+        driver.findElements(By.tagName('canvas')).then(function (graphs) {
+            expect(graphs.length).toBe(3);
+            done();
         });
     }, 10000);
 });

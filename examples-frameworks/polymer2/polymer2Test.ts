@@ -1,3 +1,6 @@
+/// <reference path='../../examples/testBase.ts' />
+/// <reference path='../../examples/testData.ts' />
+
 module PolymerTest {
     window.onload = () => {
         TestBase.configureButtons();
@@ -87,7 +90,8 @@ module PolymerTest {
                 }],
                 isXContinuous: true
             }
-            TestBase.elemManager.addElement(chart, 'group1', 'group1');
+
+            TestBase.addElement(chart, 'group1', 'group1');
             let div: any = document.getElementById('chart1');
             div['chartTitle'] = 'Carteisan Chart 1';
             div['chartDef'] = chart;
@@ -103,7 +107,7 @@ module PolymerTest {
                 isXContinuous: false
             }
             UWT.Chart.finalize(chart4);
-            TestBase.elemManager.addElement(chart4, 'group1', 'group1');
+            TestBase.addElement(chart4, 'group1', 'group1');
 
             let div4: any = document.getElementById('chart4');
             div4['chartTitle'] = 'Carteisan Chart4';
@@ -122,7 +126,7 @@ module PolymerTest {
                 isXContinuous: false
             }
             UWT.Chart.finalize(chart5);
-            TestBase.elemManager.addElement(chart5, 'group1', 'group1');
+            TestBase.addElement(chart5, 'group1', 'group1');
 
             let div5: any = document.getElementById('chart5');
             div5['chartTitle'] = 'Carteisan chart5';
@@ -141,7 +145,7 @@ module PolymerTest {
                 isXContinuous: false
             }
             UWT.Chart.finalize(chart6);
-            TestBase.elemManager.addElement(chart6, 'group1', 'group1');
+            TestBase.addElement(chart6, 'group1', 'group1');
             let div6: any = document.getElementById('chart6');
             div6['chartTitle'] = 'Carteisan chart6';
             div6['chartDef'] = chart6;
@@ -156,7 +160,7 @@ module PolymerTest {
                 data: { 'data-0': 45, 'data-1': 32, 'data-2': 12 },
                 innerRadius: .25
             };
-            TestBase.elemManager.addElement(pieDef, 'group1', 'group1');
+            TestBase.addElement(pieDef, 'group1', 'group1');
             div['chartDef'] = pieDef;
 
             let div2: any = document.getElementById('pieTestId2');
@@ -167,7 +171,7 @@ module PolymerTest {
                 data: { 'data-0': 123, 'data-1': 32, 'data-2': 88 },
                 colors: { 'data-0': 'yellow', 'data-1': 'orange', 'data-2': 'green' }
             };
-            TestBase.elemManager.addElement(pieDef2, 'group1', 'group1');
+            TestBase.addElement(pieDef2, 'group1', 'group1');
             div2['renderOptions'] = { height: 150 };
             div2['chartDef'] = pieDef2;
             div2['colorManager'] = TestBase.colorManager;
@@ -200,10 +204,14 @@ module PolymerTest {
                 gridOptions: gridOptions
             };
 
-            TestBase.elemManager.addElement(gridDef, 'group1', 'group1');
+            TestBase.addElement(gridDef, 'group1', 'group1');
             let div: any = document.getElementById('grid1');
             div['gridTitle'] = 'Test Grid';
             div['gridDef'] = gridDef;
+
+            let collapsibleGrid: any = document.getElementById('grid2');
+            collapsibleGrid['gridTitle'] = 'Collapsible Grid';
+            collapsibleGrid['gridDef'] = gridDef;
         }
 
         {
@@ -224,7 +232,7 @@ module PolymerTest {
                 legend: { alignment: UWT.Alignment.Bottom }
             }
 
-            TestBase.elemManager.addElement(flow, 'group1', 'group1');
+            TestBase.addElement(flow, 'group1', 'group1');
             div['diagramDef'] = flow;
             div['colorManager'] = TestBase.colorManager;
         }
@@ -246,7 +254,7 @@ module PolymerTest {
                 legend: { alignment: UWT.Alignment.Left }
             }
 
-            TestBase.elemManager.addElement(graph, 'group1', 'group1');
+            TestBase.addElement(graph, 'group1', 'group1');
             div['graphDef'] = graph;
             div['colorManager'] = TestBase.colorManager;
         }
@@ -269,7 +277,7 @@ module PolymerTest {
             }
             UWT.Chart.finalize(chart7);
 
-            TestBase.elemManager.addElement(chart7);
+            TestBase.addElement(chart7);
             TestBase.elemManager.addToHighlightGroup(chart7, 'trace');
             let div: any = document.getElementById('flamechart1');
             div['chartTitle'] = 'Flame Chart';
@@ -281,12 +289,64 @@ module PolymerTest {
                 data: UWT.convertTraceToTrees(calltrace)
             }
 
-            TestBase.elemManager.addElement(chart8);
+            TestBase.addElement(chart8);
             TestBase.elemManager.addToHighlightGroup(chart8, 'trace');
             let div2: any = document.getElementById('sunburst1');
             div2['chartTitle'] = 'Sunburst Chart';
             div2['chartDef'] = chart8;
             div2['colorManager'] = TestBase.colorManager;
+        }
+        {
+            let eventSelection: any = document.getElementById('checkboxTree');
+            eventSelection['onCheckChanged'] = function (node: any) {
+                console.log(node);
+            }
+            eventSelection['data'] = {
+                "name": "Media Center",
+                "open": true,
+                "children": [
+                    {
+                        "name": "Movies",
+                        "children": [{
+                            "name": "Interstellar",
+                        }, {
+                            "name": "The Godfather",
+                        }, {
+                            "name": "Pulp Fiction",
+                        }]
+                    }, {
+                        "name": "TV Shows",
+                        "children": [{
+                            "name": "Breaking Bad"
+                        }, {
+                            "name": "Game of Thrones",
+                            "children": [{
+                                "name": "Khalesi"
+                            }, {
+                                "name": "Jon Snow",
+                                "children": [{
+                                    "name": "Sansa"
+                                }, {
+                                    "name": "Little Finger"
+                                }]
+                            }]
+                        }]
+                    }]
+            };
+        }
+        {
+            let heatmap = [];
+            for (let i = 0; i < 400; ++i) {
+                heatmap.push(
+                    {
+                        name: 'foobar' + i,
+                        value: Math.random() * 100
+                    }
+                );
+            }
+            let div2: any = document.getElementById('heatmap');
+            div2['title'] = 'Heatmap';
+            div2['chicletDefs'] = heatmap;
         }
     }
 };

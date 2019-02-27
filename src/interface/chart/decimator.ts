@@ -1,4 +1,4 @@
-import { IXYValue, IFlameChartValue, IMinMaxValue, ICandlestickValue } from './series-data';
+import { IXYValue, IFlameChartValue, ICandlestickValue } from './series-data';
 import { IBuffer } from '../ui-base';
 
 /**
@@ -7,7 +7,7 @@ import { IBuffer } from '../ui-base';
 export interface IDecimator {
     initialize?(xValueToCoord: (value: any) => number,
         xCoordToValue: (value: any) => number,
-        yValueToCoord: (value: any) => number);
+        yValueToCoord: (value: any) => number): void;
 
     /**
      * the name of this decimation scheme
@@ -50,7 +50,7 @@ export interface INEWSDecimationValue extends ICandlestickValue {
 export interface IXYDecimator extends IDecimator {
     initialize(xValueToCoord: (value: any) => number,
         xCoordToValue: (value: any) => number,
-        yValueToCoord: (value: any) => number);
+        yValueToCoord: (value: any) => number): void;
 
     /**
      * Returns the decimated list of data
@@ -74,7 +74,7 @@ export interface IXYStackedDecimator extends IDecimator {
     initialize(xValueToCoord: (value: any) => number,
         xCoordToValue: (value: any) => number,
         yValueToCoord: (value: any) => number,
-        seriesNames?: string[]);
+        seriesNames?: string[]): void;
 
     /**
      * Returns the decimated list of data
@@ -98,7 +98,7 @@ export interface IXYStackedDecimator extends IDecimator {
 export interface IFlameChartDecimator extends IDecimator {
     initialize?(xValueToCoord: (value: any) => number,
         xCoordToValue: (value: any) => number,
-        yValueToCoord: (value: any) => number);
+        yValueToCoord: (value: any) => number): void;
 
     /**
      * Returns the key of this decimator
@@ -124,7 +124,7 @@ export interface IFlameChartDecimator extends IDecimator {
      */
     decimateValues(xStart: number, xEnd: number, values: any): IFlameChartValue[];
 }
-11
+
 /*************************************************************
  * TRACE DATA DECIMATORS
  */
@@ -133,7 +133,7 @@ export interface ITraceResidencyDecimator extends IDecimator {
     initialize?(xValueToCoord: (value: any) => number,
         xCoordToValue: (value: any) => number,
         yValueToCoord: (value: any) => number,
-        seriesNames?: string[]);
+        seriesNames?: string[]): void;
 
     /**
      * Returns the key of this decimator
@@ -164,7 +164,7 @@ export interface ITraceStateDecimator extends IDecimator {
     initialize?(xValueToCoord: (value: any) => number,
         xCoordToValue: (value: any) => number,
         yValueToCoord: (value: any) => number,
-        seriesNames?: string[]);
+        seriesNames?: string[]): void;
 
     /**
      * Returns the key of this decimator
@@ -237,5 +237,5 @@ export interface ISunburstDecimator {
     /**
      * reset the decimator
      */
-    reset();
+    reset(): void;
 }

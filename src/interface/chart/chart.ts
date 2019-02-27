@@ -48,7 +48,12 @@ export enum RenderType {
      * requires image/decimation image in series*/
     Marker = 128,
     /** render the data as an arrow */
-    DirectionalArrow = 256
+    DirectionalArrow = 256,
+    /** render the data as a box plot */
+    BoxPlot = 512,
+    /** render the data as a heat map */
+    HeatMap = 1024
+
 };   // bitmask RenderType
 
 /**
@@ -72,13 +77,24 @@ export enum InterpolateType {
 }
 
 export interface IScalar {
+    /** the multiplier used on the base scale to get this scale */
     scalar: number;
+
+    /** the units for this scale */
     units: string;
+
+    /** the maximum range for this scale.  For example if this is .1,
+     * any value above .1 will use the next scale and any value below .1
+     * will use this scale (until the next lower scale)
+    */
     maxRange: number;
 }
 
 export interface IScalingInfo {
+    /** the base scale for the axis */
     baseScale: IScalar;
+
+    /** the list of scalars for the axis */
     scalars?: IScalar[];
 }
 
@@ -147,17 +163,23 @@ export interface IRenderedAxis {
 /** a series of IXYValues, their description and any rendering css options */
 export interface IXYSeries {
     values?: IXYValue[] | IBuffer<IXYValue>
+
+    /** a function that is run per X value to generate the output Y value*/
     functionMap?: IFunctionMap;
+    /** the name for this series may be used by the
+     * [[SelectionHelper]] and [[ColorManager]]
+     *  */
     name?: string;
+    /** CSS for this rectangle */
     css?: ICss;
 
-    /** EXPERIMENTAL */
-    /* this flag enables text rendering for each XY scatter point*/
+    /** EXPERIMENTAL: this flag enables text rendering for each XY scatter point*/
     showTitleText?: boolean;
 
-    /* the description is drawn along the line/area graph*/
+    /** the description is drawn along the line/area graph */
     description?: string;
 
+    /** this describes where along the line/area the description is drawn*/
     descriptionPosition?: {
         percentage?: number;
         alignment?: Alignment;
@@ -166,11 +188,13 @@ export interface IXYSeries {
 
 /** a series of IXYValues, their description and any rendering css options */
 export interface IRectSeries {
+    /** a list of rectangles to render in the chart */
     rects: IXYRect[];
+    /** the name for this series */
     name?: string;
+    /** CSS for this rectangle */
     css?: ICss;
-
-    /* the description is drawn along the line/area graph*/
+    /** EXPERIMENTAL: draws some text along the rectangle */
     showTitleText?: string;
 }
 
@@ -185,7 +209,10 @@ export interface IBaseLayer {
     /** index of the axis in the associated chart that is the y-axis for this data */
     yAxisIdx?: number;
 
+    /** scaling info for the X axis */
     xScalingInfo?: IScalingInfo;
+
+    /** scaling info for the Y axis */
     yScalingInfo?: IScalingInfo;
 
     /** hide this data series in the legend for some reason */
@@ -212,8 +239,11 @@ export interface IBaseLayer {
     /** the context menu definitions for when the user right clicks */
     contextMenuItems?: IContextMenuItem[];
 
-    /** disable using web workers for decimation */
+    /** DEPRECATED disable using web workers for decimation */
     disableWebWorkers?: boolean;
+
+    /** enable web workers for this data set */
+    enableWebWorkers?: boolean;
 
     /** force a from one time from scratch redraw if layer changes */
     forceUpdate?: boolean;
@@ -221,6 +251,7 @@ export interface IBaseLayer {
 
 /** a set of xy data. line/area/scatter plots */
 export interface IXYLayer extends IBaseLayer {
+    /** a set of list of XY to render */
     data: IXYSeries[];
     /** any transformation to do before rendering the data */
     decimator?: IXYDecimator | IXYStackedDecimator;
@@ -231,25 +262,9 @@ export interface IXYLayer extends IBaseLayer {
     getAbsolutePosition?: (value: IXYValue) => IXYValue;
 }
 
-/** defines a roofline.  A value above the rooflin will be rendered with the
- * specified color.
- */
-export interface IRooflineDescription {
-    name: string;
-    color: string;
-    getValue: (x: any) => any;
-}
-
-/** the layer of data is a set of data and how to render it */
-export interface IRooflineLayer extends IXYLayer {
-    /** rooflines in ascending order. For now do not support crossing rooflines as
-     * although possible it is more expensive to render */
-    rooflines: IRooflineDescription[];
-    useHorizontal: boolean;
-}
-
 /** a set of summary data. bar graphs */
 export interface ISummaryLayer extends IBaseLayer {
+    /** a set of summary values to render */
     data: ISummaryValue[];
     /** extra color information for the bar series type */
     colors?: { [index: string]: string };
@@ -257,11 +272,13 @@ export interface ISummaryLayer extends IBaseLayer {
 
 /** a set of min/max/value data */
 export interface IMinMaxValueLayer extends IBaseLayer {
+    /** a list of min max values to render */
     data: IMinMaxValue[];
 }
 
 /** a set of flame chart data */
 export interface ITraceValueLayer extends IBaseLayer {
+    /** a list of trace values to render */
     data: ITraceValue[];
     /** any transformation to do before rendering the data */
     decimator?: IFlameChartDecimator | ITraceResidencyDecimator;
@@ -275,6 +292,7 @@ export interface ITraceValueLayer extends IBaseLayer {
 
 /** a set of markert data */
 export interface IMarkerLayer extends IBaseLayer {
+    /** a list of marker values to render */
     data: ITraceValue[];
 
     /** the image to use to render raw data */
@@ -292,7 +310,7 @@ export interface IRectLayer extends IBaseLayer {
 }
 
 export type ILayer = IXYLayer | ISummaryLayer | IMinMaxValueLayer | ITraceValueLayer |
-    IRooflineLayer | IRectLayer | IMarkerLayer;
+    IRectLayer | IMarkerLayer;
 
 export interface ITooltipEvent extends IEvent {
     defaultTitle?: string;
@@ -303,11 +321,19 @@ export interface ITooltipEvent extends IEvent {
 /** base chart class */
 export interface IChart extends UIElement {
     category?: string;
+
+    /** a title for this chart that may be displayed */
     title?: string;
 
+    /** context menu items that will be added to the context menu */
     contextMenuItems?: IContextMenuItem[];
+
+    /** a callback that will be fired when the tooltip is triggered */
     onTooltip?: (event: ITooltipEvent) => any;
 
+    /** once the chart is rendered this API object is filled with callbacks to
+     * interact with the chart
+     */
     api?: {
         /**
          * fire a hover event for this element
@@ -342,14 +368,27 @@ export interface IChart extends UIElement {
          */
         brush?: (event?: IEvent) => void;
 
+        /** [[createImage]] is triggered and prompts the user to save it via
+         * the browser save dialog
+         */
         saveImage?: () => void;
+
+        /** creates and image and loads it into memory */
         createImage?: () => void;
 
+        /** reset the zoom for the chart to the original value */
         zoomReset?: () => void;
+
+        /** zoom in by one step */
         zoomIn?: () => void;
+
+        /** zoom out by one step */
         zoomOut?: () => void;
 
+        /** pan right by one step */
         panRight?: () => void;
+
+        /** pan left by one step */
         panLeft?: () => void;
     }
 }
@@ -393,7 +432,9 @@ export interface IPolarChart extends IChart {
 
 /** defines a simple pie chart */
 export interface IPieChart extends IPolarChart {
-    /** the data for the pie, each key/value pair is a pie segment */
+    /** the data for the pie, each key/value pair is a pie segment
+     * the index is used by [[SelectionHelper]] and [[ColorManager]]
+    */
     data: { [index: string]: number };
     /** specify what colors to use for each key in the bar */
     colors?: { [index: string]: string };

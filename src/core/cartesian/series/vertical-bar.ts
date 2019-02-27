@@ -11,11 +11,11 @@ import { addClickHelper } from '../../svg-helper';
 import {
     ID3Chart, D3Chart, D3Axis, MAX_DISCRETE_WIDTH
 } from '../chart';
-import { D3BaseSeries } from './baseSeries';
+import { BaseSeries } from './baseSeries';
 
 import * as d3 from 'd3';
 
-export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSeriesPlugin {
+export class VerticalBarSeries extends BaseSeries implements ICartesianSeriesPlugin {
     public static canRender(layer: ILayer): boolean {
         return (layer.renderType & RenderType.Bar) !== 0;
     }
@@ -33,7 +33,7 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
         svg: d3.Selection<d3.BaseType, {}, d3.BaseType, any>,
         xAxis: D3Axis, yAxis: D3Axis, isXContinuous: boolean) {
 
-        super(chart, layer, xAxis, yAxis, isXContinuous, svg);
+        super(chart, layer, xAxis, yAxis, false, svg);
         if (layer.colors) {
             this._colors = layer.colors;
         } else {
@@ -88,7 +88,7 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
 
         if (Array.isArray(value.data)) {
             for (let i = 0; i < value.data.length; ++i) {
-                D3VerticalBarSeries.formatDataPerLevelHelper(levelKeys, levelKeyList, leafData,
+                VerticalBarSeries.formatDataPerLevelHelper(levelKeys, levelKeyList, leafData,
                     myKeys, value.data[i], level + 1);
             }
         } else {
@@ -122,7 +122,7 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
         this._levelKeyList = [];
         this._leafData = {};
         for (let i = 0; i < this._data.length; ++i) {
-            D3VerticalBarSeries.formatDataPerLevelHelper(this._levelKeys,
+            VerticalBarSeries.formatDataPerLevelHelper(this._levelKeys,
                 this._levelKeyList, this._leafData, [], this._data[i], 0);
         }
 
@@ -173,7 +173,7 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
         let ret: number = 0;
         if (Array.isArray(value.data)) {
             for (let i = 0; i < value.data.length; ++i) {
-                ret += D3VerticalBarSeries.getBarsPerDomainHelper(value.data[i], isStacked)
+                ret += VerticalBarSeries.getBarsPerDomainHelper(value.data[i], isStacked)
             }
         } else {
             let data = value.data as { [index: string]: number };
@@ -198,7 +198,7 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
             maxBars = 1;
         } else {
             for (let i = 0; i < this._data.length; ++i) {
-                maxBars = Math.max(maxBars, D3VerticalBarSeries.getBarsPerDomainHelper(this._data[i], isStacked));
+                maxBars = Math.max(maxBars, VerticalBarSeries.getBarsPerDomainHelper(this._data[i], isStacked));
             }
         }
         return maxBars;
@@ -217,7 +217,7 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
     private static getYMinMaxHelper(yMinMax: number[], value: ISummaryValue, isStacked: boolean) {
         if (Array.isArray(value.data)) {
             for (let i = 0; i < value.data.length; ++i) {
-                D3VerticalBarSeries.getYMinMaxHelper(yMinMax, value.data[i], isStacked)
+                VerticalBarSeries.getYMinMaxHelper(yMinMax, value.data[i], isStacked)
             }
         } else {
             let data = value.data as { [index: string]: number };
@@ -247,7 +247,7 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
 
         let yMinMax: number[] = [0, 0];
         for (let i = 0; i < this._data.length; ++i) {
-            D3VerticalBarSeries.getYMinMaxHelper(yMinMax, this._data[i], isStacked);
+            VerticalBarSeries.getYMinMaxHelper(yMinMax, this._data[i], isStacked);
         }
 
         return yMinMax;
@@ -328,7 +328,7 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
         value: ISummaryValue) {
         if (Array.isArray(value.data)) {
             for (let i = 0; i < value.data.length; ++i) {
-                D3VerticalBarSeries.getLegendInfoHelper(keys, value.data[i])
+                VerticalBarSeries.getLegendInfoHelper(keys, value.data[i])
             }
         } else {
             let data = value.data as { [index: string]: number };
@@ -346,7 +346,7 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
 
         let keys: { [index: string]: boolean } = {};
         for (let i = 0; i < this._data.length; ++i) {
-            D3VerticalBarSeries.getLegendInfoHelper(keys, this._data[i]);
+            VerticalBarSeries.getLegendInfoHelper(keys, this._data[i]);
         }
 
         for (let key in keys) {
@@ -364,7 +364,7 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
     private configureHover(elem: d3.Selection<d3.BaseType, {}, d3.BaseType, any>,
         value: any) {
         let self = this;
-        elem.node()['__data__'] = value;
+        (elem.node() as any)['__data__'] = value;
         elem
             .on('mouseenter', function () {
                 self._d3Chart.cursorEnter();
@@ -402,11 +402,8 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
             scales.push(self._d3XAxis.getScale(i));
         }
 
-        let xBandOffset = scales[0] ? scales[0].bandwidth() / 2 : 0;
-        let yBandOffset = yScale.bandwidth ? yScale.bandwidth() / 2 : 0;
-
         // Build list of class names to apply
-        let classes = self.getClassNames();
+        let classes = self.getClassNames('chart-bar');
         if (self._layer.css) {
             for (let className in self._layer.css.classes) {
                 classes += className + ' ';
@@ -434,6 +431,16 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
             let elemWidth = Math.min(
                 scales[0].bandwidth(),
                 MAX_DISCRETE_WIDTH);
+
+            // first find zero which may be anywhere
+            let yStart: number;
+            if (domain[0] >= 0) {
+                yStart = yScale(domain[0]);
+            } else if (domain[1] <= 0) {
+                yStart = yScale(domain[1]);
+            } else if (domain[0] < 0 && domain[1] > 0) {
+                yStart = yScale(0);
+            }
 
             // in this case we have multiple data bars per domain
             let graphHeight = yScale.range()[0];
@@ -487,6 +494,25 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
                     }
                 }
             } else {
+                // this is just a helper to animate bars
+                let renderBar = (elem: any, value: number) => {
+                    let yOffset = yScale(value);
+                    let y = 0;
+                    let height = 0;
+                    if (value > 0) {
+                        y = yOffset;
+                        height = yStart - yOffset;
+                    } else {
+                        y = yStart;
+                        height = yOffset - yStart;
+                    }
+
+                    elem.transition('add')
+                        .duration(animateDuration)
+                        .attr('y', y)
+                        .attr('height', height);
+                }
+
                 if (this._hasLevels) {
                     let keys = this._levelKeyList[this._levelKeyList.length - 1];
                     for (let i = 0; i < keys.length; ++i) {
@@ -504,8 +530,7 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
                             if (!leafData.data.hasOwnProperty(key)) {
                                 continue;
                             }
-                            let yOffset =
-                                yScale((leafData.data as { [index: string]: number })[key]);
+
                             let x = 0;
                             for (let level = 0; level < leafData.data.keys.length; ++level) {
                                 x += scales[level](leafData.data.keys[level])
@@ -518,13 +543,10 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
                                 .attr('class', sanitizedGroupName + ' ' + sanitiedKey)
                                 .classed(classes, true)
                                 .attr('fill', self._colors[key])
-                                .attr('y', yScale(domain[0]))
+                                .attr('y', yStart)
                                 .attr('height', 0);
 
-                            elem.transition('add')
-                                .duration(animateDuration)
-                                .attr('y', yOffset)
-                                .attr('height', graphHeight - yOffset);
+                            renderBar(elem, (leafData.data as { [index: string]: number })[key]);
 
                             self.configureHover(elem, leafData);
                             self._d3Elems.push(elem);
@@ -533,23 +555,26 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
                 } else {
                     let summary: { [index: string]: number } =
                         (self._data[0] as ISummaryValue).data as { [index: string]: number };
+
                     for (let key in summary) {
                         if (key !== 'key' && key !== 'keys') {
+                            let barColor = color;
+                            if (self._colors && self._colors.hasOwnProperty(key)) {
+                                barColor = self._colors[key];
+                            }
+
                             let elem = self._d3svg.append('rect')
                                 .attr('x', scales[0](key))
                                 .attr('width', elemWidth)
                                 .attr('class', getSelectionName(key))
-                                .attr('fill', color)
+                                .attr('fill', barColor)
                                 .classed(classes, true)
-                                .attr('y', yScale(domain[0]))
+                                .attr('y', yStart)
                                 .attr('height', 0);
 
-                            elem.transition('add')
-                                .duration(animateDuration)
-                                .attr('y', yScale(summary[key]))
-                                .attr('height', yScale(domain[1] - summary[key]));
+                            renderBar(elem, summary[key]);
 
-                            let data = {};
+                            let data: { [index: string]: number } = {};
                             data[key] = summary[key];
                             self.configureHover(elem, data);
                             self._d3Elems.push(elem);
@@ -568,4 +593,4 @@ export class D3VerticalBarSeries extends D3BaseSeries implements ICartesianSerie
         self.applyStyles();
     }
 }
-D3Chart.register(D3VerticalBarSeries);
+D3Chart.register(VerticalBarSeries);

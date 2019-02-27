@@ -18,7 +18,7 @@ import Vue from "vue";
 import UWTCheckboxTreeNode from "../checkbox-tree-node/checkbox-tree-node.vue";
 
 export default {
-  name: "UWTCheckboxTree",
+  name: "uwtCheckboxTree",
   components: {
     UWTCheckboxTreeNode
   },

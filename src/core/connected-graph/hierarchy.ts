@@ -2,6 +2,10 @@ import {
     IOptions, Alignment, Rect, UIElement, UIType
 } from '../../interface/ui-base';
 import {
+    IXYValue
+} from '../../interface/chart/series-data';
+
+import {
     IHierarchyGraphLink, IHierarchyNode, IHierarchyGraph,
     IGraphNodeDecimator
 } from '../../interface/graph';
@@ -58,7 +62,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
         this.getLinkStartXY = function (link: IRenderedDiagramLink) {
             let from = this._nodes[link.source.node.def.key];
             let fromRect = getCoordsAndCache(self._svg, from);
-            let fromXY = { x: undefined, y: undefined };
+            let fromXY: IXYValue = { x: undefined, y: undefined };
 
             let linkOffset = 0;
             // get the exit point of the from node
@@ -94,7 +98,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
         this.getLinkEndXY = function (link: IRenderedDiagramLink) {
             let to = this._nodes[link.target.node.def.key];
             let toRect = getCoordsAndCache(self._svg, to);
-            let toXY = { x: undefined, y: undefined };
+            let toXY: IXYValue = { x: undefined, y: undefined };
 
             let linkOffset = 0;
 
@@ -728,8 +732,8 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
         for (let childIdx = 0; childIdx < D3HierarchyGraph.CHILDREN.length; ++childIdx) {
             let children = D3HierarchyGraph.CHILDREN[childIdx];
             if (node.hasOwnProperty(children)) {
-                for (let i = 0; i < node[children].length; ++i) {
-                    self.renderNodes(node, node[children][i], childGroup, depth + 1);
+                for (let i = 0; i < (node as any)[children].length; ++i) {
+                    self.renderNodes(node, (node as any)[children][i], childGroup, depth + 1);
                 }
             }
         }
@@ -1108,7 +1112,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
             let oldRootInNewTree: IRenderedDiagramNode;
             let oldGraphNode = oldGraph.select('rect').node();
             if (oldGraphNode) {
-                oldRootInNewTree = self._nodes[oldGraphNode['__data__'].key];
+                oldRootInNewTree = self._nodes[(oldGraphNode as any)['__data__'].key];
             }
 
             if (newRootInOldTree) {

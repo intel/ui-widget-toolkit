@@ -186,7 +186,7 @@ class AgGrid {
                 let helper = function (index: number) {
                     previousCell = params.previousCellDef;
                     // set selected cell on current cell + 1
-                    self._element.gridOptions.api.forEachNode((node) => {
+                    self._element.gridOptions.api.forEachNode((node: any) => {
                         if (index === node.rowIndex) {
                             node.setSelected(true);
                         } else if (!params.event.shiftKey) {
@@ -411,7 +411,7 @@ class AgGrid {
                     innerRenderer: (params: any) => { return params.data[groupCol.field] },
                     suppressCount: true
                 };
-                gridOptions.getNodeChildDetails = (rowItem) => {
+                gridOptions.getNodeChildDetails = (rowItem: any) => {
                     if (rowItem.children) {
                         return {
                             group: true,

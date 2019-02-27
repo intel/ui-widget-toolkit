@@ -1,9 +1,10 @@
-import { merge } from './utilities';
+import { merge, getSelectionName } from './utilities';
 import {
     IEvent, ILegend, ILegendItem, IOptions, Alignment, Css, EventType,
     IRect, Rect, UIElement, LegendItemShape, LegendOrientation,
-    IContextMenuItem, UIRenderer
+    IContextMenuItem, UIRenderer, LegendType
 } from '../interface/ui-base';
+import { IXYValue } from '../interface/chart/series-data';
 import { showContextMenu } from './context-menu';
 import { BaseTooltip, CustomDivTooltip } from './tooltip';
 import { SelectionHelper } from './selection';
@@ -13,7 +14,7 @@ import { UIElementRenderer } from './renderer';
 
 import * as d3 from 'd3';
 
-export function getStyle(target: d3.Selection<d3.BaseType, any, d3.BaseType, any>) {
+export function getStyle(target: d3.Selection<d3.BaseType, any, d3.BaseType, any>): any {
     let node: any = target.node();
     let style = window.getComputedStyle(node);
     return style;
@@ -36,11 +37,11 @@ export function mergeKeys(arr1: string[], arr2: string[]): void {
     }
 }
 
-export function getKeys(data: any, accessor: (value: any) => string[]) {
+export function getKeys(data: any[], accessor: (value: any) => string[]) {
     let keyMap: { [index: string]: boolean } = {};
     let keyList: string[] = [];
-    for (let i = 0; i < data.values.length; ++i) {
-        let keys = accessor(data.values[i]);
+    for (let i = 0; i < data.length; ++i) {
+        let keys = accessor(data[i]);
         for (let i = 0; i < keys.length; ++i) {
             if ((typeof keys[i] === 'string' || typeof keys[i] === 'number') &&
                 !keyMap.hasOwnProperty(keys[i])) {
@@ -165,6 +166,18 @@ export function convertToSVGCoords(svg: d3.Selection<any, any, d3.BaseType, any>
     };
 }
 
+export function getTextRect(svg: d3.Selection<any, any, d3.BaseType, any>,
+    text: string): IRect {
+    // temporarily append to DOM to get text size
+    let textRenderer = svg
+        .append('text')
+        .text(text);
+
+    let ret: IRect = convertToSVGCoords(svg, textRenderer);
+    textRenderer.remove();
+    return ret;
+}
+
 export function animatePath(path: d3.Selection<d3.BaseType, {}, any, any>,
     duration: number) {
     let pathLength = (path.node() as any).getTotalLength();
@@ -177,15 +190,15 @@ export function animatePath(path: d3.Selection<d3.BaseType, {}, any, any>,
 }
 
 export class Arrow {
-    public static getAngle(start, end) {
+    public static getAngle(start: IXYValue, end: IXYValue) {
         return Math.atan2(end.y - start.y, end.x - start.x) * 180 / Math.PI;
     }
 
     // Returns an attrTween for translating along the specified path element.
-    private static translateArrow(path) {
+    private static translateArrow(path: any) {
         // Approximate tangent
-        return function (d, i, a) {
-            return function (t) {
+        return function (d: any, i: number, a: any[]) {
+            return function (t: number) {
                 var l = path.getTotalLength();
                 var pos = path.getPointAtLength(t * l);
 
@@ -234,7 +247,7 @@ export class Spinner {
             .attr('d', arc)
             .call(spin, 1500)
 
-        function spin(selection, duration) {
+        function spin(selection: any, duration: number) {
             selection.transition()
                 .ease(d3.easeLinear)
                 .duration(duration)
@@ -494,8 +507,12 @@ export class D3Legend {
             this.addItems(items);
         }
 
-        this._classes = 'legendOrdinal ' + this._title +
-            ' align-' + this._legend.alignment;
+        let type = 'ordinal';
+        if (this._legend.definition &&
+            this._legend.definition.type === LegendType.Gradient) {
+            type = 'gradient';
+        }
+        this._classes = `legend ${type} ${this._title} align-${this._legend.alignment}`;
         this._legendSvg = svg.append('g')
             .classed(this._classes, true);
 
@@ -570,7 +587,7 @@ export class D3Legend {
         }
     }
 
-    public render() {
+    protected renderDiscreteLegend(orientation: any) {
         let names: string[] = [];
         let colors: string[] = [];
         for (let i = 0; i < this._items.length; ++i) {
@@ -588,23 +605,10 @@ export class D3Legend {
             colors.push(color);
         }
 
-        let orientation: any;
-
-        if (this._legend.orientation === LegendOrientation.Vertical) {
-            orientation = 'vertical';
-        } else if (this._legend.orientation === LegendOrientation.Horizontal) {
-            orientation = 'horizontal';
-        } else if (this._legend.alignment === Alignment.Left ||
-            this._legend.alignment === Alignment.Right) {
-            orientation = 'vertical';
-        } else {
-            orientation = 'horizontal';
-        }
-
         let itemPadding = 2;
         let itemSize = 0;
         let self = this;
-        let addLegend = function (group, names, colors) {
+        let addLegend = function (group: any, names: string[], colors: string[]) {
             let ordinal = d3.scaleOrdinal()
                 .domain(names)
                 .range(colors);
@@ -613,7 +617,7 @@ export class D3Legend {
             // typescript definitions for the legend component
             let legendOrdinal = legendColor();
             legendOrdinal
-                .on('cellover', function (d) {
+                .on('cellover', function (d: any) {
                     this.setAttribute('title', d);
                 })
                 .orient(orientation)
@@ -625,7 +629,7 @@ export class D3Legend {
                 .scale(ordinal);
 
             if (self._legend.onClick) {
-                legendOrdinal.on('cellclick', function (d) {
+                legendOrdinal.on('cellclick', function (d: any) {
                     self._legend.onClick(
                         {
                             event: EventType.Click,
@@ -636,7 +640,7 @@ export class D3Legend {
             }
 
             if (self._legend.contextMenuItems) {
-                legendOrdinal.on('cellcontextmenu', function (d) {
+                legendOrdinal.on('cellcontextmenu', function (d: any) {
                     showContextMenu(d3.event, d, self._legend.contextMenuItems);
                 })
             }
@@ -650,7 +654,6 @@ export class D3Legend {
         if ((this._legend.alignment === Alignment.Top ||
             this._legend.alignment === Alignment.Bottom) &&
             this._legend.orientation !== LegendOrientation.Vertical) {
-            let horizontalRows = 1;
 
             itemPadding = 0;
             let cells = this._legendSvg.select('.legendCells').selectAll('.cell').each(function () {
@@ -662,7 +665,7 @@ export class D3Legend {
 
             let itemsPerRow = Math.max(1, Math.min(names.length,
                 Math.floor(this._position.width / itemSize)));
-            horizontalRows = Math.ceil(names.length / itemsPerRow);
+            Math.ceil(names.length / itemsPerRow);
             xPixelOffset = this._position.x + this._position.width / 2 -
                 itemSize * itemsPerRow / 2;
 
@@ -684,6 +687,116 @@ export class D3Legend {
 
         this._legendSvg
             .attr('transform', 'translate(' + xPixelOffset + ',' + this._position.y + ')')
+    }
+
+    protected renderGradientLegend() {
+        this._legendSvg.selectAll('*').remove();
+        let items = this._legend.definition.items;
+
+        let id: string = getSelectionName(`${this._title}align-${this._legend.alignment}`);
+        let gradient = this._legendSvg
+            .append('linearGradient')
+            .attr('id', id)
+            .attr('x1', '0%')
+            .attr('y1', '0%');
+
+        items.forEach((item) => {
+            gradient.append('stop')
+                .attr('offset', `${item.key}%`)
+                .attr('style', `stop-color:${item.color};stop-opacity:${item.opacity}`)
+        })
+
+        let scale = d3.scaleLinear()
+            .domain(d3.extent(items, (datum: ILegendItem) => {
+                return Number(datum.key);
+            }));
+
+        let rect = this._legendSvg.append('rect');
+        let axisSVG = this._legendSvg.append('g');
+        let legend: any;
+        let barWidth = 40;
+        let barPadding = 5;
+        switch (this._legend.alignment) {
+            case Alignment.Left:
+                gradient.attr('x2', '0%')
+                    .attr('y2', '100%');
+
+                rect.attr('x', 30)
+                    .attr('width', barWidth)
+                    .attr('y', 0)
+                    .attr('height', this._position.height);
+
+                scale.range([0, this._position.height]);
+                axisSVG.attr('transform', `translate(30, 0)`);
+                legend = d3.axisLeft(scale);
+                break;
+            case Alignment.Right:
+                gradient.attr('x2', '0%')
+                    .attr('y2', '100%');
+
+                rect.attr('x', barPadding)
+                    .attr('width', barWidth)
+                    .attr('y', 0)
+                    .attr('height', this._position.height);
+
+                scale.range([0, this._position.height]);
+                axisSVG.attr('transform', `translate(${barWidth + barPadding}, 0)`);
+                legend = d3.axisRight(scale);
+                break;
+            case Alignment.Top:
+                gradient.attr('x2', '100%')
+                    .attr('y2', '0%');
+
+                rect.attr('x', 0)
+                    .attr('width', this._position.width)
+                    .attr('y', 10)
+                    .attr('height', barWidth);
+
+                scale.range([0, this._position.width]);
+                axisSVG.attr('transform', 'translate(0, 10)');
+                legend = d3.axisTop(scale);
+                break;
+            case Alignment.Bottom:
+                gradient.attr('x2', '100%')
+                    .attr('y2', '0%');
+
+                rect.attr('x', 0)
+                    .attr('width', this._position.width)
+                    .attr('y', 5)
+                    .attr('height', barWidth);
+
+                scale.range([0, this._position.width]);
+                axisSVG.attr('transform', `translate(0, ${barWidth + barPadding})`)
+                legend = d3.axisBottom(scale);
+                break;
+        }
+        rect.attr('fill', `url(#${id})`);
+        axisSVG.call(legend);
+
+        this._legendSvg
+            .attr('transform', 'translate(' + this._position.x + ',' + this._position.y + ')')
+    }
+
+    public render() {
+        let orientation: any;
+
+        if (this._legend.orientation === LegendOrientation.Vertical) {
+            orientation = 'vertical';
+        } else if (this._legend.orientation === LegendOrientation.Horizontal) {
+            orientation = 'horizontal';
+        } else if (this._legend.alignment === Alignment.Left ||
+            this._legend.alignment === Alignment.Right) {
+            orientation = 'vertical';
+        } else {
+            orientation = 'horizontal';
+        }
+
+        if (this._legend.definition && this._legend.definition.type &&
+            this._legend.definition.type === LegendType.Gradient) {
+            this.renderGradientLegend();
+        } else {
+            this.renderDiscreteLegend(orientation);
+        }
         let node: any = this._legendSvg.node();
         let svgRect: any = node.getBoundingClientRect();
         this._renderedRect = new Rect(svgRect.left, svgRect.top,
@@ -692,7 +805,7 @@ export class D3Legend {
     }
 }
 
-export class D3SVGRenderer extends UIElementRenderer {
+export class SVGRenderer extends UIElementRenderer {
     /** used to disable cross graph calls when in redraw mode */
     static IS_RESIZING: boolean;
 
@@ -877,11 +990,13 @@ export class D3SVGRenderer extends UIElementRenderer {
 
     public removeHover(selection: any) {
         let self = this;
-        self._svg.selectAll('.' + selection)
-            .each(function () {
-                let d3Obj = d3.select(this);
-                removeHover(d3Obj, self._fillColors, self._strokeColors);
-            });;
+        if (selection.length > 0) {
+            self._svg.selectAll('.' + selection)
+                .each(function () {
+                    let d3Obj = d3.select(this);
+                    removeHover(d3Obj, self._fillColors, self._strokeColors);
+                });;
+        }
     }
     public invalidate(options: IOptions) {
         // clear the SVG
@@ -931,7 +1046,7 @@ export class D3SVGRenderer extends UIElementRenderer {
                 .classed('chart-handle vertical left', true)
                 .call(d3.drag()
                     .on('start', function () {
-                        D3SVGRenderer.IS_RESIZING = true;
+                        SVGRenderer.IS_RESIZING = true;
                     })
                     .on('drag', function () {
                         if (d3.event.dx === 0) {
@@ -957,7 +1072,7 @@ export class D3SVGRenderer extends UIElementRenderer {
                         }
                     })
                     .on('end', function () {
-                        D3SVGRenderer.IS_RESIZING = false;
+                        SVGRenderer.IS_RESIZING = false;
                     })
                 );
         }
@@ -970,7 +1085,7 @@ export class D3SVGRenderer extends UIElementRenderer {
                 .classed('chart-handle vertical right', true)
                 .call(d3.drag()
                     .on('start', function () {
-                        D3SVGRenderer.IS_RESIZING = true;
+                        SVGRenderer.IS_RESIZING = true;
                     })
                     .on('drag', function () {
                         if (d3.event.dx === 0) {
@@ -996,7 +1111,7 @@ export class D3SVGRenderer extends UIElementRenderer {
                         }
                     })
                     .on('end', function () {
-                        D3SVGRenderer.IS_RESIZING = false;
+                        SVGRenderer.IS_RESIZING = false;
                     })
                 );
         }

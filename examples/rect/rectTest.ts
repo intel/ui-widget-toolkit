@@ -19,7 +19,7 @@ module AreaTest {
             isXContinuous: true
         }
         UWT.Chart.finalize(chart);
-        TestBase.elemManager.addElement(chart);
+        TestBase.addElement(chart);
 
         let renderer = new UWT.D3ChartRenderer('div#graphArea0');
         renderer.invalidate(chart);
@@ -38,7 +38,7 @@ module AreaTest {
             isXContinuous: true
         }
         UWT.Chart.finalize(chart2);
-        TestBase.elemManager.addElement(chart2);
+        TestBase.addElement(chart2);
 
         let renderer2 = new UWT.D3ChartRenderer('div#graphArea1');
         renderer.invalidate(chart2);
