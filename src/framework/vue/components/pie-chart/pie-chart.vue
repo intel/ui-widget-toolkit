@@ -6,12 +6,12 @@
 </template>
 
 <script lang=ts>
-import { ColorManager } from '../../../../core/color-manager';
-import { D3Renderer } from '../../../../core/renderer';
-
+import { ColorManager } from "../../../../core/color-manager";
+import { D3Renderer } from "../../../../core/renderer";
+import { IPolarChart } from "../../../../interface/chart/chart";
 
 export default {
-  name: 'UWTPieChart',
+  name: "uwtPieChart",
   props: {
     chartTitle: {
       type: String,
@@ -49,7 +49,7 @@ export default {
     }
   },
   watch: {
-    chartDef: function(newValue, oldValue) {
+    chartDef: function(newValue: IPolarChart, oldValue: IPolarChart) {
       if (this.renderer && this.chartDef) {
         if (oldValue) {
           this.renderer.destroy(oldValue);

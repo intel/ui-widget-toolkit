@@ -63,15 +63,15 @@ export class ColorManager {
         return this._colorMap[key];
     }
 
-    static IntToHex(value) {
+    static IntToHex(value: number): string {
         return '#' + value.toString(16).padStart(6, '0');
     }
 
-    static RgbToHex(color) {
+    static RgbToHex(color: string): string {
         return '#' + rgbToHex(color);
     }
 
-    static RgbToInt(color) {
+    static RgbToInt(color: string): number {
         return parseInt(rgbToHex(color), 16);
     }
 }

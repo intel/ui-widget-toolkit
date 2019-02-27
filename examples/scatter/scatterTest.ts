@@ -23,7 +23,7 @@ module ScatterTest {
 
         {
             let lane = {
-                title: 'Events',
+                title: 'Ordinal Y',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Scatter,
@@ -45,12 +45,12 @@ module ScatterTest {
                 isXContinuous: true
             }
             UWT.Chart.finalize(lane);
-            TestBase.elemManager.addElement(lane, 'group2', 'group2', 'redrawGroup2');
+            TestBase.addElement(lane, 'group2', 'group2', 'redrawGroup2');
         }
 
         {
             let lane = {
-                title: 'A',
+                title: 'Scatter+Line',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Line,
@@ -80,12 +80,12 @@ module ScatterTest {
                 isXContinuous: true
             }
             UWT.Chart.finalize(lane);
-            TestBase.elemManager.addElement(lane, 'group2', 'group2', 'redrawGroup2');
+            TestBase.addElement(lane, 'group2', 'group2', 'redrawGroup2');
         }
 
         {
             let lane = {
-                title: 'B',
+                title: 'Same Scatter/Line',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Line,
@@ -105,13 +105,13 @@ module ScatterTest {
                 isXContinuous: true
             }
             UWT.Chart.finalize(lane);
-            TestBase.elemManager.addElement(lane, 'group2', 'group2', 'redrawGroup2');
+            TestBase.addElement(lane, 'group2', 'group2', 'redrawGroup2');
         }
 
 
         {
             let lane = {
-                title: 'Decimators',
+                title: 'One Data, Many Decimators',
                 type: UWT.UIType.Cartesian,
                 dataSets: [
                     {
@@ -146,7 +146,7 @@ module ScatterTest {
                 isXContinuous: true
             }
             UWT.Chart.finalize(lane);
-            TestBase.elemManager.addElement(lane);
+            TestBase.addElement(lane);
         }
     }
 }

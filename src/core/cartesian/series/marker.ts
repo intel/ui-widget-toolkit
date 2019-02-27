@@ -11,11 +11,11 @@ import {
     ID3Chart, D3Chart, D3Axis, createDecimatorWorker
 } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
-import { D3BaseSeries } from './baseSeries';
+import { BaseSeries } from './baseSeries';
 
 import * as d3 from 'd3';
 
-export class D3MarkerSeries extends D3BaseSeries implements ICartesianSeriesPlugin {
+export class MarkerSeries extends BaseSeries implements ICartesianSeriesPlugin {
     public static canRender(layer: ILayer): boolean {
         return (layer.renderType & RenderType.Marker) !== 0;
     }
@@ -115,22 +115,23 @@ export class D3MarkerSeries extends D3BaseSeries implements ICartesianSeriesPlug
 
         if (self._layer.decimator) {
             self._decimator = self._layer.decimator;
+        } else {
+            self._decimator = new SimpleMarkerDecimator(); ''
         }
 
         let xScale = xAxis.getScale();
         let yScale = yAxis.getScale();
 
         // get just the visible rects first
-        if (!self._layer.disableWebWorkers && !self._d3Chart.getOptions().disableWebWorkers &&
+        if ((self._layer.enableWebWorkers || self._d3Chart.getOptions().enableWebWorkers) &&
             !self._decimator) {
-            self._decimator = new SimpleMarkerDecimator();
             return new Promise<any>(function (resolve, reject) {
                 self._worker = createDecimatorWorker(self._decimator, xStart, xEnd, self._d3XAxis,
-                    self._d3YAxis, self._data, undefined, function (decimatedData) {
+                    self._d3YAxis, self._data, undefined, function (decimatedData: ITraceValue[]) {
                         self.setOutputData(decimatedData);
                         self._worker = null;
                         resolve();
-                    }, function (error) {
+                    }, function (error: any) {
                         self._worker = null;
                         // in this case we failed to create the worker
                         self._decimator.initialize(xScale, xScale.invert, yScale);
@@ -160,10 +161,10 @@ export class D3MarkerSeries extends D3BaseSeries implements ICartesianSeriesPlug
     }
 
     public getTooltipMetrics(elem: UIElement, event: IEvent): ITooltipData[] {
-        let ret = [];
+        let ret: any[] = [];
 
         if (this._selection) {
-            let metrics = {};
+            let metrics: { [index: string]: number } = {};
             metrics[this.getDataName(this._selection)] = this.getDataDuration(this._selection);
             ret.push({ source: elem, group: '', metrics: metrics });
         }
@@ -218,14 +219,14 @@ export class D3MarkerSeries extends D3BaseSeries implements ICartesianSeriesPlug
         let xScale = self._d3XAxis.getScale();
 
         // Build list of class names to apply
-        let classes: string = this.getClassNames();
+        let classes: string = this.getClassNames('chart-marker');
         if (this._layer.css) {
             for (let className in this._layer.css.classes) {
                 classes += className + ' ';
             }
         }
 
-        let markerSeries = self._d3svg.selectAll(this.getSelectionClasses());
+        let markerSeries = self._d3svg.selectAll(this.getSelectionClasses('chart-marker'));
         markerSeries.remove();
 
         let outputData = this.getOutputData();
@@ -250,4 +251,4 @@ export class D3MarkerSeries extends D3BaseSeries implements ICartesianSeriesPlug
         this.applyStyles();
     }
 }
-D3Chart.register(D3MarkerSeries);
+D3Chart.register(MarkerSeries);

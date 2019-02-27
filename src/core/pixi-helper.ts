@@ -14,17 +14,18 @@ export class GraphicsManager {
         this._renderer = renderer;
     }
 
-    public add(mainKey: string, altKey: string, create: () => PIXI.DisplayObject): any {
+    public add(mainKey: string, altKey: string, scaleMode: any, resolution: number,
+        create: () => PIXI.DisplayObject): any {
         // create a texture and save it for faster rendering
         let sprite;
         if (mainKey) {
             if (!this._graphicsMap[mainKey]) {
-                this._graphicsMap[mainKey] = this._renderer.generateTexture(create(), PIXI.SCALE_MODES.LINEAR, 5);
+                this._graphicsMap[mainKey] = this._renderer.generateTexture(create(), scaleMode, resolution);
             }
             sprite = new PIXI.Sprite(this._graphicsMap[mainKey]);
         } else {
             if (!this._graphicsMap[altKey]) {
-                this._graphicsMap[altKey] = this._renderer.generateTexture(create(), PIXI.SCALE_MODES.LINEAR, 5);
+                this._graphicsMap[altKey] = this._renderer.generateTexture(create(), scaleMode, resolution);
             }
             sprite = new PIXI.Sprite(this._graphicsMap[altKey]);
         }
@@ -36,7 +37,7 @@ export class PIXIHelper {
     protected _stage: PIXI.Container;
     protected _renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
     protected _rectTexture: PIXI.Texture;
-    protected _selectionItems = {};
+    protected _selectionItems: { [index: string]: any } = {};
 
     constructor(useWebGLRenderer = true) {
         if (useWebGLRenderer) {
@@ -49,10 +50,10 @@ export class PIXIHelper {
 
         let rect = new PIXI.Graphics();
         rect.beginFill(0xFFFFFF);
-        rect.drawRect(0, 0, 2, 2); // draw rect)
+        rect.drawRect(0, 0, 1, 1); // draw rect)
         rect.endFill();
 
-        this._rectTexture = this._renderer.generateTexture(rect);
+        this._rectTexture = this._renderer.generateTexture(rect, PIXI.SCALE_MODES.LINEAR, 128);
     }
 
     public getRenderer() {
@@ -102,8 +103,8 @@ export class PIXIHelper {
         return foreignObject;
     }
 
-    public createRectangle(x, y, width, height,
-        backgroundColor, borderColor) {
+    public createRectangleContainer(x: number, y: number, width: number,
+        height: number, backgroundColor: number) {
 
         var box = new PIXI.Container();
         var background = new PIXI.Sprite(this._rectTexture);
@@ -117,6 +118,26 @@ export class PIXIHelper {
         return box;
     };
 
+    public renderText(name: string, parent: any, color: number = 0,
+        resolution: number = 2, scaling: number = .5) {
+        // double font resolution for sharpness
+        let fontSize = parent.style('font-size');
+        fontSize =
+            Number(fontSize.substring(0, fontSize.length - 2)) * resolution + 'px';
+        let text = new PIXI.Text(name,
+            {
+                fill: color,
+                fontFamily: parent.style('font-family'),
+                fontSize: fontSize,
+                fontWeight: parent.style('font-weight')
+            });
+
+        // scale text down
+        text.scale = new PIXI.Point(scaling, scaling);
+        return text;
+    }
+
+    private _tooltipTarget: any;
     public addInteractionHelper(target: PIXI.DisplayObject,
         onClick: (event: IEvent) => void, onDoubleClick: (event: IEvent) => void,
         contextMenuItems: IContextMenuItem[], hoverStart: (event: IEvent) => void,
@@ -124,6 +145,7 @@ export class PIXIHelper {
         tooltip: BaseTooltip, caller: UIElement, value: any) {
 
         target.interactive = true;
+        let self = this;
 
         let wait: any;
         if (onClick || onDoubleClick) {
@@ -158,7 +180,7 @@ export class PIXIHelper {
             });
         }
 
-        function showMenu(e) {
+        function showMenu(e: any) {
             e.stopPropagation();
             if (tooltip) {
                 tooltip.onMouseLeave(e);
@@ -171,6 +193,7 @@ export class PIXIHelper {
                 .on('rightupoutside', showMenu)
                 .on('rightup', showMenu);
         }
+
         if (hoverStart) {
             target.on('mouseover', function (e) {
                 if (e.target) {
@@ -178,6 +201,7 @@ export class PIXIHelper {
                     hoverStart.call(this);
 
                     if (tooltip) {
+                        self._tooltipTarget = e.target;
                         tooltip.onMouseEnter(value);
                         tooltip.onMouseMove(value, e.data.originalEvent);
                     }
@@ -188,25 +212,29 @@ export class PIXIHelper {
         if (hoverEnd) {
             target.on('mouseout', function (e) {
                 hoverEnd.call(this);
-                if (tooltip) {
+                if (tooltip && e.currentTarget === self._tooltipTarget) {
                     tooltip.onMouseLeave(value);
                 }
             });
         }
     }
 
-    public clearSelections() {
+    public clearSelections(): void {
         this._selectionItems = {};
     }
-    public addSelection(key, item) {
+    public addSelection(key: string, item: any): void {
         if (!this._selectionItems.hasOwnProperty(key)) {
             this._selectionItems[key] = [];
         }
         this._selectionItems[key].push(item);
     }
 
-    public getSelection(key): any[] {
+    public getSelection(key: string): any[] {
         return this._selectionItems[key];
+    }
+
+    public getStage(): PIXI.Container {
+        return this._stage;
     }
 
     public render(stage?: PIXI.Container) {

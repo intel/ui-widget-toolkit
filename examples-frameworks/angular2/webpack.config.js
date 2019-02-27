@@ -1,6 +1,6 @@
 module.exports = {
     entry: {
-        angular2test: './examples/angular2/main.ts',
+        angular2test: './examples-frameworks/angular2/main.ts',
     },
     output: {
         filename: 'angular2test.js',

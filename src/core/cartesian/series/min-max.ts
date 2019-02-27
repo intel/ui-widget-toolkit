@@ -9,11 +9,13 @@ import {
 } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 
-import { D3BaseSeries } from './baseSeries';
+import { BaseSeries } from './baseSeries';
 
 import * as d3 from 'd3';
 
-export class D3MinMaxSeries extends D3BaseSeries implements ICartesianSeriesPlugin {
+let seriesTypeName = 'chart-min-max-value';
+
+export class MinMaxSeries extends BaseSeries implements ICartesianSeriesPlugin {
     public static canRender(layer: ILayer): boolean {
         return (layer.renderType & RenderType.MinMaxValue) !== 0;
     }
@@ -24,7 +26,7 @@ export class D3MinMaxSeries extends D3BaseSeries implements ICartesianSeriesPlug
         svg: d3.Selection<d3.BaseType, {}, d3.BaseType, any>,
         xAxis: D3Axis, yAxis: D3Axis, isXContinuous: boolean) {
 
-        super(chart, layer, xAxis, yAxis, isXContinuous, svg);
+        super(chart, layer, xAxis, yAxis, false, svg);
         this.setData(layer);
     }
 
@@ -67,9 +69,13 @@ export class D3MinMaxSeries extends D3BaseSeries implements ICartesianSeriesPlug
     public getYMinMax(): number[] {
         let yMinMax: number[] = [0, 0];
         if (this._data.length > 0) {
-            yMinMax = d3.extent(this._data,
-                function (value: IMinMaxValue, index: number,
-                    arr: IMinMaxValue[]): number {
+            yMinMax[0] = d3.min(this._data,
+                function (value: IMinMaxValue): number {
+                    return value.min;
+                });
+
+            yMinMax[1] = d3.max(this._data,
+                function (value: IMinMaxValue): number {
                     return value.max;
                 });
             yMinMax[0] = yMinMax[0] > 0 ? 0 : yMinMax[0];
@@ -146,11 +152,8 @@ export class D3MinMaxSeries extends D3BaseSeries implements ICartesianSeriesPlug
         let xScale = self._d3XAxis.getScale();
         let yScale = self._d3YAxis.getScale();
 
-        let xBandOffset = xScale.bandwidth ? xScale.bandwidth() / 2 : 0;
-        let yBandOffset = yScale.bandwidth ? yScale.bandwidth() / 2 : 0;
-
         // Build list of class names to apply
-        let classes: string = this.getClassNames();
+        let classes: string = this.getClassNames(seriesTypeName);
         if (this._layer.css) {
             for (let className in this._layer.css.classes) {
                 classes += className + ' ';
@@ -199,7 +202,7 @@ export class D3MinMaxSeries extends D3BaseSeries implements ICartesianSeriesPlug
             return d.y ? 2.5 : 0;
         }
         // add none so we don't actually select old stuff laying around
-        let elem = self._d3svg.selectAll(this.getSelectionClasses()).data(this._data);
+        let elem = self._d3svg.selectAll(this.getSelectionClasses(seriesTypeName)).data(this._data);
         elem
             .enter()
             .append('circle')
@@ -209,17 +212,19 @@ export class D3MinMaxSeries extends D3BaseSeries implements ICartesianSeriesPlug
             .attr('cx', xMap)
             .attr('cy', yMap)
             .attr('fill', color)
-            .attr('stroke', color);
-        this._d3Elems.push(elem);
+            .attr('stroke', color)
+            .each(function (d, i) {
+                self._d3Elems.push(d3.select(this));
+            })
 
         // Appending lines onto the SVG
         //
         // Note that here we hardcode the CSS class for min max value
-        // Each line is appended independentlyand it overlays its corresponding average value 'circle',
+        // Each line is appended independently and it overlays its corresponding average value 'circle',
         // because it is added after the circle. To change the overlay, change the order of rendering
 
         let animateDuration = self._d3Chart.getAnimateDuration();
-        elem = self._d3svg.selectAll('.chart-min-max-value-line' + this.getSelectionClasses())
+        elem = self._d3svg.selectAll('.chart-min-max-value-line' + this.getSelectionClasses(seriesTypeName))
             .data(this._data)
             .enter()
             .append('line')
@@ -231,7 +236,10 @@ export class D3MinMaxSeries extends D3BaseSeries implements ICartesianSeriesPlug
             .attr('stroke', color)
             .attr('stroke-width', 1)
             .attr('y1', yMap)       // y position of the bottom of the line
-            .attr('y2', yMap);       // y position of the bottom of the line
+            .attr('y2', yMap)       // y position of the bottom of the line
+            .each(function (d, i) {
+                self._d3Elems.push(d3.select(this));
+            })
 
         elem
             .transition()
@@ -246,4 +254,4 @@ export class D3MinMaxSeries extends D3BaseSeries implements ICartesianSeriesPlug
         this.applyStyles();
     }
 }
-D3Chart.register(D3MinMaxSeries);
+D3Chart.register(MinMaxSeries);

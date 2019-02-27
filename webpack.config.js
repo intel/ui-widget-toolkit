@@ -121,7 +121,8 @@ module.exports = [
                 { from: './css/**/*', to: '.' },
                 { from: './package.json', to: '.' },
                 { from: './README.md', to: '.' },
-                { from: './LICENSE', to: '.' }
+                { from: './LICENSE', to: '.' },
+                { from: './third-party-programs.txt', to: '.' }
             ])
         ]
     }

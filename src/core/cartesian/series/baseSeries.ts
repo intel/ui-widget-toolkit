@@ -16,7 +16,7 @@ import { ID3Chart, D3Axis } from '../chart';
 
 import * as d3 from 'd3';
 
-export class D3BaseSeries {
+export class BaseSeries {
     /** the chart that owns this series */
     protected _d3Chart: ID3Chart;
 
@@ -130,29 +130,10 @@ export class D3BaseSeries {
         return '';
     }
 
-    protected getClassNames(name?: string) {
-        let classNames: string;
-        if (this._layer.data.length &&
-            this._layer.data[0].hasOwnProperty('rects')) {
-            classNames = ' chart-rect';
-        } else if (this._layer.renderType & RenderType.Bar) {
-            classNames = ' chart-bar';
-        } else if (this._layer.renderType & RenderType.MinMaxValue) {
-            classNames = ' chart-min-max-value';
-        } else if (this._layer.renderType & RenderType.Scatter) {
-            classNames = ' chart-scatter';
-        } else if (this._layer.renderType & RenderType.Line) {
-            classNames = ' chart-line';
-        } else if (this._layer.renderType & RenderType.Area) {
-            classNames = ' chart-area';
-        } else if (this._layer.renderType & RenderType.FlameChart) {
-            classNames = ' chart-flame';
-        } else if (this._layer.renderType & RenderType.Marker) {
-            classNames = ' chart-marker';
-        } else if (this._layer.renderType & RenderType.DirectionalArrow) {
-            classNames = ' chart-arrow';
-        }
-
+    protected getClassNames(type: string, name?: string) {
+        // there is intentionally a space here so we can convert
+        // this to a CSS class by converting spaces to periods
+        let classNames = ` ${type}`;
         if (!name) {
             name = this.getName();
         }
@@ -177,8 +158,8 @@ export class D3BaseSeries {
         return 1;
     }
 
-    protected getSelectionClasses(): string {
-        return this.getClassNames().replace(/\s+/g, '.');
+    protected getSelectionClasses(type: string): string {
+        return this.getClassNames(type).replace(/\s+/g, '.');
     }
 
     /** handle on select events if we want to */
@@ -272,7 +253,7 @@ export class D3BaseSeries {
 
                     let brush = self._d3Chart.getGraphGroup().select('.brush');
                     let brushStart: any = brush.on('touchstart.brush');
-                    let event = new MouseEvent('mousedown touchstart', d3.event);
+                    let event: any = new MouseEvent('mousedown touchstart', d3.event);
                     event['changedTouches'] = d3.event.changedTouches;
                     event['touches'] = d3.event.touches;
                     let target = brush.select('.overlay').node();
@@ -284,7 +265,7 @@ export class D3BaseSeries {
                 })
                 .on('touchmove touchend', function () {
                     let brushOverlay = self._d3Chart.getGraphGroup().select('.overlay');
-                    let event = new MouseEvent(d3.event.type, d3.event);
+                    let event: any = new MouseEvent(d3.event.type, d3.event);
                     event['changedTouches'] = d3.event.changedTouches;
                     event['touches'] = d3.event.touches;
                     (brushOverlay.node() as any).dispatchEvent(event);
@@ -339,7 +320,7 @@ export class D3BaseSeries {
                 self._contextMenuItems,
                 self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
         } else {
-            elem.on('rightclick', function (event) {
+            elem.on('rightclick', function (event: any) {
                 showContextMenu(d3.event, undefined, self._contextMenuItems);
             })
                 .on('mousedown', function (e: any) {

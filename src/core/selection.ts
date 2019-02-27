@@ -9,10 +9,10 @@ export class SelectionHelper {
     protected _doBlink: boolean;
     protected _highlightTimer: any;
     protected _currSelections: any[];
-    protected _addSelection: (any) => void;
-    protected _removeSelection: (any) => void
+    protected _addSelection: (d: any) => void;
+    protected _removeSelection: (d: any) => void
 
-    constructor(onAdd: (any) => void, onRemove: (any) => void,
+    constructor(onAdd: (d: any) => void, onRemove: (d: any) => void,
         doBlink = false) {
         this._currSelections = [];
         this._addSelection = onAdd;

@@ -46,7 +46,7 @@ let barChart = {
 }
 
 UWT.Chart.finalize(barChart);
-TestBase.elemManager.addElement(barChart, 'group1', 'group1');
+TestBase.addElement(barChart, 'group1', 'group1');
 
 
 let chartDef = {
@@ -61,7 +61,7 @@ let chartDef = {
     }],
     isXContinuous: true
 }
-TestBase.elemManager.addElement(chartDef, 'group1', 'group1');
+TestBase.addElement(chartDef, 'group1', 'group1');
 
 let pieDef = {
     title: 'Test Chart 1',
@@ -69,7 +69,7 @@ let pieDef = {
     data: { 'data-0': 45, 'data-1': 32, 'data-2': 12 },
     innerRadius: .25
 };
-TestBase.elemManager.addElement(pieDef, 'group1', 'group1');
+TestBase.addElement(pieDef, 'group1', 'group1');
 
 let pieDef2 = {
     type: UWT.UIType.Pie,
@@ -77,7 +77,7 @@ let pieDef2 = {
     data: { 'data-0': 123, 'data-1': 32, 'data-2': 88 },
     colors: { 'data-0': 'yellow', 'data-1': 'orange', 'data-2': 'green' }
 };
-TestBase.elemManager.addElement(pieDef2, 'group1', 'group1');
+TestBase.addElement(pieDef2, 'group1', 'group1');
 
 var columnDefs = [
     { headerName: "Make", field: "make" },
@@ -105,7 +105,7 @@ let gridDef = {
 };
 let gridStyle = { height: '200px' };
 
-TestBase.elemManager.addElement(gridDef, 'group1', 'group1');
+TestBase.addElement(gridDef, 'group1', 'group1');
 
 let flow = {
     type: UWT.UIType.FlowDiagram,
@@ -121,7 +121,7 @@ let flow = {
     legend: { alignment: UWT.Alignment.Bottom }
 }
 
-TestBase.elemManager.addElement(flow, 'group1', 'group1');
+TestBase.addElement(flow, 'group1', 'group1');
 
 let forceGraph = {
     type: UWT.UIType.ForceDirectedGraph,
@@ -137,7 +137,7 @@ let forceGraph = {
     legend: { alignment: UWT.Alignment.Left }
 }
 
-TestBase.elemManager.addElement(forceGraph, 'group1', 'group1');
+TestBase.addElement(forceGraph, 'group1', 'group1');
 
 let root = {
     key: 'root',
@@ -886,7 +886,7 @@ let flameChart = {
 }
 
 UWT.Chart.finalize(flameChart);
-TestBase.elemManager.addElement(flameChart);
+TestBase.addElement(flameChart);
 TestBase.elemManager.addToHighlightGroup(flameChart, 'trace');
 
 let sunburst = {
@@ -894,7 +894,7 @@ let sunburst = {
     data: UWT.convertTraceToTrees(calltrace)
 }
 
-TestBase.elemManager.addElement(sunburst);
+TestBase.addElement(sunburst);
 TestBase.elemManager.addToHighlightGroup(sunburst, 'trace');
 
 let swimChart = {
@@ -937,9 +937,9 @@ let swimChart3 = {
     isXContinuous: true
 }
 
-TestBase.elemManager.addElement(swimChart, 'lanes', 'lanes', 'lanes');
-TestBase.elemManager.addElement(swimChart2, 'lanes', 'lanes', 'lanes');
-TestBase.elemManager.addElement(swimChart3, 'lanes', 'lanes', 'lanes');
+TestBase.addElement(swimChart, 'lanes', 'lanes', 'lanes');
+TestBase.addElement(swimChart2, 'lanes', 'lanes', 'lanes');
+TestBase.addElement(swimChart3, 'lanes', 'lanes', 'lanes');
 
 let swimlaneDefs = [swimChart, swimChart2, swimChart3];
 let swimlaneOptions = {

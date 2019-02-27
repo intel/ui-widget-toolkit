@@ -5,27 +5,36 @@
 <head>
 	<meta charset='utf-8' />
 	<title>API Graph Test</title>
-	<link rel='stylesheet' href='../dist/css/ui-widget-toolkit.css' type='text/css' />
-	<link rel='stylesheet' href='../dist/css/ag-grid/ag-grid.css' type='text/css' />
-	<link rel='stylesheet' href='../dist/css/ag-grid/ag-theme-fresh.css' type='text/css' />
+	<link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css' , type='text/css' />
+	<link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-theme-fresh.css' ,
+		type='text/css' />
+	<script src='https://d3js.org/d3.v5.js'></script>
+	<script src='https://pixijs.download/v4.8.6/pixi.min.js'></script>
+	<script src='https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js'></script>
 
-	<script src='../node_modules/d3/dist/d3.js'></script>
-	<script src='../node_modules/pixi.js/dist/pixi.min.js'></script>
-	<script src='../node_modules/ag-grid-community/dist/ag-grid-community.min.js'></script>
+
+	<link rel='stylesheet' href='../dist/css/ui-widget-toolkit.css' type='text/css' />
 	<script src='../dist/js/ui-widget-toolkit.js'></script>
 	<script src='./testBase.js'></script>
 	<script src='./testData.js'></script>
 	<script src='./line/lineTest.js'></script>
 	<script src='./area/areaTest.js'></script>
 	<script src='./bar/barTest.js'></script>
+	<script src='./minMaxValue/minMaxValueTest.js'></script>
+	<script src='./boxPlot/boxPlotTest.js'></script>
 	<script src='./pie/pieTest.js'></script>
 	<script src='./scatter/scatterTest.js'></script>
 	<script src='./connectedGraph/connectedGraphTest.js'></script>
+	<script src='./portDiagram/data.js'></script>
 	<script src='./portDiagram/portDiagramTest.js'></script>
+	<script src='./flameSunburst/data.js'></script>
 	<script src='./flameSunburst/flameSunburstTest.js'></script>
 	<script src='./grid/gridTest.js'></script>
 	<script src='./treemap/treeMap.js'></script>
-	<script src='./UITest.js'></script>
+	<script src='./heatMap/data.js'></script>
+	<script src='./heatMap/heatMapTest.js'></script>
+	<script src='./gradientLegend/gradientLegendTest.js'></script>
+	<script src='./uiTest.js'></script>
 
 </head>
 
@@ -83,9 +92,9 @@
 	<div id='graphArea29'></div>
 	<div id='graphArea30'></div>
 	<div id='graphArea31'></div>
-	<div id='graphArea32' class='ag-theme-fresh' style='height: 200px'></div>
-	<div id='graphArea33' class='ag-theme-fresh' style='height: 200px'></div>
-	<div id='graphArea34' class='ag-theme-fresh' style='height: 200px'></div>
+	<div id='graphArea32'></div>
+	<div id='graphArea33'></div>
+	<div id='graphArea34'></div>
 	<div id='graphArea35'></div>
 	<div id='graphArea36'></div>
 	<div id='graphArea37'></div>
@@ -96,6 +105,35 @@
 	<div id='graphArea42'></div>
 	<div id='graphArea43'></div>
 	<div id='graphArea44'></div>
+	<div id='graphArea45'></div>
+	<div id='graphArea46'></div>
+	<div id='graphArea47'></div>
+	<div id='graphArea48'></div>
+	<div id='graphArea49'></div>
+	<div id='graphArea50'></div>
+	<div id='graphArea51'></div>
+	<div id='graphArea52'></div>
+	<div id='graphArea53' class='ag-theme-fresh' style='height: 200px'></div>
+	<div id='graphArea54' class='ag-theme-fresh' style='height: 200px'></div>
+	<div id='graphArea55' class='ag-theme-fresh' style='height: 200px'></div>
+	<div id='graphArea56'></div>
+	<div id='graphArea57'></div>
+	<div id='graphArea58'></div>
+	<div id='graphArea59'></div>
+	<div id='graphArea60'></div>
+	<div id='graphArea61'></div>
+	<div id='graphArea62'></div>
+	<div id='graphArea63'></div>
+	<div id='graphArea64'></div>
+	<div id='graphArea65'></div>
+	<div id='graphArea66'></div>
+	<div id='graphArea67'></div>
+	<div id='graphArea68'></div>
+	<div id='graphArea69'></div>
+	<div id='graphArea70'></div>
+	<div id='graphArea71'></div>
+	<div id='graphArea72'></div>
+	<div id='graphArea73'></div>
 </body>
 
 </html>

@@ -5,15 +5,14 @@ import {
 
 import { showContextMenu } from './context-menu';
 import { CustomDivTooltip } from './tooltip';
-import {
-    D3SVGRenderer
-} from './svg-helper';
-import { D3Renderer } from './renderer';
+import { SVGRenderer } from './svg-helper';
+import { D3Renderer, getTextWidth } from './renderer';
 import { ITreeMap, ITreeMapNode } from '../interface/treemap';
 
 import * as d3 from 'd3';
+import { ColorManager } from './color-manager';
 
-function getColor(colorMgr, node) {
+function getColor(colorMgr: ColorManager, node: any) {
     if (node.data.color) {
         return node.data.color;
     }
@@ -29,19 +28,12 @@ function getColor(colorMgr, node) {
     return 'gray';
 }
 
-let testContext;
-if (document) {
-    testContext = document.createElement('canvas').getContext('2d');
-}
-export function getTextWidth(text: string, font: string) {
-    testContext.font = font;
-    return testContext.measureText(text).width;
-};
 
-function updateNodeText(renderedNode) {
+function updateNodeText(renderedNode: d3.Selection<any, any, d3.BaseType, any>) {
     let node = renderedNode.data()[0];
     let textWidth = getTextWidth(node.data.name,
-        renderedNode.node().style['font-family']);
+        renderedNode.node().style['font-family'],
+        renderedNode.node().style['font-size']);
 
     if ((node.y1 - node.y0) > 15 &&
         textWidth < (node.x1 - node.x0)) {
@@ -53,7 +45,7 @@ function updateNodeText(renderedNode) {
     }
 }
 
-export class D3TreeMap extends D3SVGRenderer {
+export class TreeMap extends SVGRenderer {
     protected _radius: number;
     protected _hoverItem: any;
     protected _graphArea: d3.Selection<any, any, d3.BaseType, any>;
@@ -68,7 +60,7 @@ export class D3TreeMap extends D3SVGRenderer {
     protected _navBarHeight: number;
     protected _navBarText: string;
     protected _navBarSvg: d3.Selection<any, any, d3.BaseType, any>;
-    protected _childMap;
+    protected _childMap: any;
 
     constructor(element: UIElement, renderer: D3Renderer,
         parent: d3.Selection<any, any, d3.BaseType, any>) {
@@ -110,7 +102,7 @@ export class D3TreeMap extends D3SVGRenderer {
 
         let myPrevHover: any; // used in callbacks
         self._onHoverChanged = function (event?: IEvent) {
-            if (D3SVGRenderer.IS_RESIZING) {
+            if (SVGRenderer.IS_RESIZING) {
                 return;
             }
             let hoverCallback = self._element.onHover;
@@ -148,7 +140,7 @@ export class D3TreeMap extends D3SVGRenderer {
     // check if this tree map node has children
     protected _showChildMap(target: any, node: any) {
         let self = this;
-        let tooltipData;
+        let tooltipData: string;
 
         self._graphArea.selectAll('.childmap').remove();
 
@@ -216,7 +208,7 @@ export class D3TreeMap extends D3SVGRenderer {
         return childMap;
     }
 
-    protected _hasChildMap(node) {
+    protected _hasChildMap(node: any) {
         return (this._element as any).showChildrenOnHover &&
             node !== this._currentRoot && node.children
     }
@@ -277,14 +269,14 @@ export class D3TreeMap extends D3SVGRenderer {
             });
         }
         if (contextMenuItems && contextMenuItems.length) {
-            target.on('contextmenu', function (d) {
+            target.on('contextmenu', function (d: any) {
                 self._dataTooltip.onMouseLeave(d3.event);
                 showContextMenu(d3.event, d.data, contextMenuItems);
             });
         }
 
         target
-            .on('mouseenter', function (node) {
+            .on('mouseenter', function (node: any) {
                 if (self._hasChildMap(node)) {
                     self._childMap = self._showChildMap(target, node);
                 } else {
@@ -293,10 +285,10 @@ export class D3TreeMap extends D3SVGRenderer {
                     self._dataTooltip.onMouseMove(node.data, node.evt);
                 }
             })
-            .on('mousemove', function (node) {
+            .on('mousemove', function (node: any) {
                 self._dataTooltip.onMouseMove(node.data, node.evt);
             })
-            .on('mouseleave', function (node) {
+            .on('mouseleave', function (node: any) {
                 if (!self._hasChildMap(node)) {
                     self._hoverEnd.call(this);
                     self._dataTooltip.onMouseLeave(node.data);
@@ -304,7 +296,7 @@ export class D3TreeMap extends D3SVGRenderer {
             });
     }
 
-    protected _renderTreeMap(oldRoot, newRoot) {
+    protected _renderTreeMap(oldRoot: any, newRoot: any) {
         let self = this;
         let mapDef = self._element as ITreeMap;
 
@@ -321,7 +313,7 @@ export class D3TreeMap extends D3SVGRenderer {
                     });
 
                 nodes
-                    .each(function (data) {
+                    .each(function (data: any) {
                         d3.select(this)
                             .selectAll('rect')
                             .transition()
@@ -376,7 +368,7 @@ export class D3TreeMap extends D3SVGRenderer {
             .selectAll('.tnode')
             .data([newRoot].concat(newRoot.children))
             .enter()
-            .each(function (node) {
+            .each(function (node: any) {
                 if (!node.data.id) {
                     node.data.id = node.data.name;
                 }
@@ -395,7 +387,7 @@ export class D3TreeMap extends D3SVGRenderer {
             })
             .attr('title', function (node: any) { return node.data.name; })
             .style('stroke', 'white')
-            .style('fill', function (node) {
+            .style('fill', function (node: any) {
                 return getColor(self._colorMgr, node);
             })
             .style('width', function (d: any) {
@@ -406,9 +398,10 @@ export class D3TreeMap extends D3SVGRenderer {
             });
 
         if (isZoom) {
+            let func = (d: ITreeMapNode) => { return d.value; };
             // resize will move the zoomed in view to the size of the parent
             let updatedRoot = d3.hierarchy(newRoot.data)
-                .sum(function (d: ITreeMapNode) { return d.value; });
+                .sum(func as any);
 
             self._treemap(updatedRoot);
             resizeNodes(newMap.selectAll('.tnode').data([updatedRoot].concat(updatedRoot.children)),
@@ -480,7 +473,7 @@ export class D3TreeMap extends D3SVGRenderer {
 
         function tagParents(node: any) {
             if (node.children) {
-                node.children.forEach(function (child) {
+                node.children.forEach(function (child: any) {
                     child.parent = node;
                     tagParents(child);
                 })
@@ -548,4 +541,4 @@ export class D3TreeMap extends D3SVGRenderer {
         self.updateHandles();
     }
 }
-D3Renderer.register(UIType.TreeMap, D3TreeMap);
+D3Renderer.register(UIType.TreeMap, TreeMap);

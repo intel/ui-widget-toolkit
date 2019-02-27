@@ -3,9 +3,9 @@ import { IXYSeries, ILayer, IXYLayer } from '../../../interface/chart/chart'
 import { ID3Chart, D3Axis, D3Chart } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 
-import { D3XYSeries } from './xy';
+import { XYSeries } from './xy';
 
-export class D3FunctionSeries extends D3XYSeries implements ICartesianSeriesPlugin {
+export class FunctionSeries extends XYSeries implements ICartesianSeriesPlugin {
     public static canRender(layer: ILayer): boolean {
         return layer.data[0] && layer.data[0].hasOwnProperty('functionMap');
     }
@@ -88,4 +88,4 @@ export class D3FunctionSeries extends D3XYSeries implements ICartesianSeriesPlug
         });
     }
 }
-D3Chart.register(D3FunctionSeries);
+D3Chart.register(FunctionSeries);

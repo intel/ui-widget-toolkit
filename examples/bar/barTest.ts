@@ -23,7 +23,7 @@ module BarTest {
 
         {
             let chart = {
-                title: 'Chart Level 1',
+                title: 'Basic Bar',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Bar,
@@ -65,12 +65,12 @@ module BarTest {
             }
 
             UWT.Chart.finalize(chart);
-            TestBase.elemManager.addElement(chart, 'group1', 'group1');
+            TestBase.addElement(chart, 'group1', 'group1');
         }
 
         {
             let chart = {
-                title: 'Chart Level 2',
+                title: 'Multi Bar',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Bar,
@@ -115,12 +115,12 @@ module BarTest {
             }
 
             UWT.Chart.finalize(chart);
-            TestBase.elemManager.addElement(chart, 'group1', 'group1');
+            TestBase.addElement(chart, 'group1', 'group1');
         }
 
         {
             let chart = {
-                title: 'Chart Level 2b',
+                title: 'Stacked Bar',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Bar | UWT.RenderType.Stacked,
@@ -165,7 +165,7 @@ module BarTest {
             }
 
             UWT.Chart.finalize(chart);
-            TestBase.elemManager.addElement(chart, 'group1', 'group1');
+            TestBase.addElement(chart, 'group1', 'group1');
         }
 
         {
@@ -231,9 +231,8 @@ module BarTest {
                 }
             ];
 
-            let barChartData = UWT.transposeKeys(data);
-
             let chart7: UWT.ICartesianChart = {
+                title: 'Multi X Axis',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     onClick: function (event: UWT.IEvent) {
@@ -265,9 +264,10 @@ module BarTest {
 
             UWT.Chart.finalize(chart7);
 
-            TestBase.elemManager.addElement(chart7);
+            TestBase.addElement(chart7);
 
             let chart8: UWT.ICartesianChart = {
+                title: 'Rotated X Axis',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     onClick: function (event: UWT.IEvent) {
@@ -425,7 +425,95 @@ module BarTest {
                 }]
             }
             UWT.Chart.finalize(chart8);
-            TestBase.elemManager.addElement(chart8);
+            TestBase.addElement(chart8);
+        }
+
+        {
+            let chart = {
+                title: 'Negative 2Values',
+                type: UWT.UIType.Cartesian,
+                dataSets: [{
+                    renderType: UWT.RenderType.Bar,
+                    data: [
+                        {
+                            key: 'abc',
+                            data: { 'abc': -10, 'xyz': -7, 'por': 3 }
+                        }
+                    ],
+                    colors: { abc: 'red', xyz: 'blue', por: 'green' }
+                }],
+                legends: [{ alignment: UWT.Alignment.Right }],
+                axes: [
+                    {
+                        axisDesc: leftAxis,
+                        alignment: UWT.Alignment.Left
+                    }],
+                isXContinuous: false
+            }
+
+            UWT.Chart.finalize(chart);
+            TestBase.addElement(chart, 'group1', 'group1');
+        }
+
+        {
+            let chart = {
+                title: 'Negative Multi Group',
+                type: UWT.UIType.Cartesian,
+                dataSets: [{
+                    renderType: UWT.RenderType.Bar,
+                    data: [
+                        { key: 'data-0', data: { tony: 10, jak: -15, michelle: 7 } },
+                        { key: 'data-1', data: { tony: -5, jak: 21, michelle: 3 } },
+                        { key: 'data-2', data: { tony: 15, jak: -5, michelle: -20 } }
+                    ],
+                    css: new UWT.Css().setOpacity(.5),
+                    colors: { tony: 'red', jak: 'blue', michelle: 'green' },
+                    onClick: function (event: UWT.IEvent) {
+                        console.log('click');
+                        console.log(event);
+                    },
+                    contextMenuItems: [{
+                        title: 'BarMenuItem',
+                        action(elem: any, data: any, index: any) {
+                            console.log('index: ' + index);
+                            console.log(data);
+                            console.log(elem);
+                        }
+                    }]
+                }],
+                legends: [{ alignment: UWT.Alignment.Right }],
+                axes: [
+                    {
+                        axisDesc: leftAxis,
+                        alignment: UWT.Alignment.Left
+                    },
+                    {
+                        axisDesc: discreteXAxis,
+                        alignment: UWT.Alignment.Bottom
+                    }],
+                isXContinuous: false
+            }
+
+            UWT.Chart.finalize(chart);
+            TestBase.addElement(chart, 'group1', 'group1');
+        }
+
+        {
+            let chart = {
+                title: 'Single Bar',
+                type: UWT.UIType.Cartesian,
+                dataSets: [{
+                    renderType: UWT.RenderType.Bar,
+                    data: [
+                        { key: 'data-0', data: { 'data-0': 15 } }
+                    ]
+                }],
+                legends: [{ alignment: UWT.Alignment.Right }],
+                isXContinuous: false
+            }
+
+            UWT.Chart.finalize(chart);
+            TestBase.addElement(chart, 'group1', 'group1');
         }
     }
 }

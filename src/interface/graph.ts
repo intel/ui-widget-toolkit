@@ -6,8 +6,13 @@ export interface IGraph extends UIElement {
 
 /** a node in a connected graph */
 export interface IGraphNode {
+    /** the key of the node that is used by the
+     * by the [[SelectionHelper]] and [[ColorManager]]
+    */
     key: string;
-    /** specifies that this node is part of a larger group */
+    /** specifies list of larger groups this node is part of.  Used
+     * by the [[SelectionHelper]] and [[ColorManager]]
+    */
     type?: string[];
 }
 
@@ -25,18 +30,26 @@ export interface IGraphLink {
 export interface IConnectedGraph extends IGraph {
     links: IGraphLink[];
     nodes?: IGraphNode[];
+    /** add a legend definition to render */
     legend?: ILegend;
+    /** Callback that happens on node/link click */
     onClick?: (event: IEvent) => void;
+    /** Callback that happens on node/link double click */
     onDoubleClick?: (event: IEvent) => void;
+    /** the context menu definitions for when the user right clicks */
     contextMenuItems?: IContextMenuItem[];
+    /** the context menu definitions for when the user finishes a brush action */
     brushContextMenuItems?: IContextMenuItem[];
 }
 
 export enum LinkType {
     Linear = 1,
     Elbow = 2,
+    /** adds an arrow from the input to the output */
     Directional = 4,
+    /** adds an arrow from the input to the output and vice versa */
     Bidirectional = 8,
+    /** render the link as a curve */
     Curve = 16
 }
 
@@ -96,7 +109,12 @@ export interface IHierarchyNode extends IGraphNode {
     depth?: number;
 }
 
+/** implement this interface if you want to adjust what nodes to draw */
 export interface IGraphNodeDecimator {
+    /**
+     * @param node - node to test if it passes the decimator
+     * @returns true if the node should be rendered
+      */
     isVisible: (node: IHierarchyNode) => boolean;
 }
 
@@ -105,12 +123,23 @@ export interface IHierarchyGraph extends IGraph {
     links: IHierarchyGraphLink[];
     nodes?: IHierarchyNode;
 
+    /** add a legend definition to render */
     legend?: ILegend;
+    /** Callback that happens on node/link click */
     onClick?: (event: IEvent) => void;
+    /** Callback that happens on node/link double click */
     onDoubleClick?: (event: IEvent) => void;
+    /** the context menu definitions for when the user right clicks */
     contextMenuItems?: IContextMenuItem[];
-    brushContextMenuItems?: IContextMenuItem[];
+    /** a decimator used to control graph node visibility */
     decimator?: IGraphNodeDecimator;
+}
+
+export enum NodeType {
+    /** render port nodes as a circle */
+    NodeSimple,
+    /** render port nodes as a rectangle putting the type as the title */
+    NodeRectangle
 }
 
 /** a node in a port diagram */
@@ -123,6 +152,7 @@ export interface IPortDiagramNode extends IGraphNode {
         top?: { key: string }[],
         bottom?: { key: string }[]
     },
+    renderType?: NodeType,
     width?: number,
     height?: number
 }
@@ -141,5 +171,8 @@ export interface IPortDiagram extends IConnectedGraph {
 
     // TODO remote this hack and put it where it should go
     decimator?: (node: any) => boolean;
+    /** global control of what types of render nodes to use */
+    nodeRenderType?: NodeType;
+    /** disable port rendering for performance reasons if needed */
     disablePortRendering?: boolean;
 }

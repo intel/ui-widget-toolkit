@@ -2,20 +2,9 @@
 /// <reference path='../testBase.ts' />
 /// <reference path='../testData.ts' />
 
-module AreaTest {
+module CounterAreaGraphTest {
     let leftAxis: UWT.IAxisDescription = {
-        scaleType: UWT.AxisType.Linear,
-        label: 'Values1',
-        scalingInfo: TestData.defaultScalingInfo
-    };
-
-    let percentAxis: UWT.IAxisDescription = {
-        scaleType: UWT.AxisType.Linear,
-        label: '',
-        scalingInfo: {
-            baseScale: { scalar: 1, units: '%', maxRange: Number.MAX_VALUE }
-        },
-        range: { min: 0, max: 100 }
+        scaleType: UWT.AxisType.Linear
     };
 
     window.onload = () => {
@@ -27,7 +16,7 @@ module AreaTest {
     export function createView() {
         {
             let lane1 = {
-                title: 'D',
+                title: 'Summed Counter Values',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                     renderType: UWT.RenderType.Area,
@@ -47,7 +36,7 @@ module AreaTest {
             lane1.dataSets[0].data.push({ name: 'data-0', values: TestData.xyDataSets[0] })
 
             UWT.Chart.finalize(lane1);
-            TestBase.elemManager.addElement(lane1);
+            TestBase.addElement(lane1);
         }
     }
 }

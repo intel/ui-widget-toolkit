@@ -10,6 +10,7 @@ import {
 import { D3Renderer } from '../renderer';
 
 import * as d3 from 'd3';
+import { ConnectedGraphBase } from './base';
 
 export class D3ForceGraph extends D3SimpleGraph {
     constructor(element: UIElement, renderer: D3Renderer,
@@ -17,7 +18,7 @@ export class D3ForceGraph extends D3SimpleGraph {
 
         super(element, renderer, parent);
 
-        this._graphHelper.initializeGraph(element as IConnectedGraph);
+        ConnectedGraphBase.prototype.initializeGraph.call(this, element as IConnectedGraph);
     }
 
     public render(options: IOptions) {
@@ -75,9 +76,8 @@ export class D3ForceGraph extends D3SimpleGraph {
         let graphArea = self.initializeGraphArea(options);
         let links = this.renderLinks(graphArea);
         let nodes = this.renderNodes(graphArea, dragstarted, dragged, dragended);
-        height = this.renderLegend();
 
-        self.configureViewSizeAndBrush(height, self._options.width);
+        self.configureView();
     }
 }
 D3Renderer.register(UIType.ForceDirectedGraph, D3ForceGraph);

@@ -1,6 +1,6 @@
 module.exports = {
     entry: {
-        reactTest: './examples/react/reactTest.jsx',
+        reactTest: './examples-frameworks/react/reactTest.jsx',
     },
     output: {
         filename: 'reactTest.js',

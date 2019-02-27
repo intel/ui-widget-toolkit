@@ -57,19 +57,9 @@ module TreeMapTest {
                     console.log(data);
                     console.log(elem);
                 }
-            }],
-            render: function (renderer?: UWT.UIRenderer, options?: UWT.IOptions): Promise<any> {
-                if (renderer) {
-                    renderer.invalidate(treeMap, { height: 400 });
-                } else {
-                    treeMap.renderer.invalidate(treeMap, { height: 400 });
-                }
-                return new Promise(function (resolve, reject) {
-                    resolve(true);
-                });
-            }
+            }]
         }
-        TestBase.elemManager.addElement(treeMap, '', 'group2');
+        TestBase.addElement(treeMap, '', 'group2');
 
         let treeMap2: UWT.ITreeMap = {
             type: UWT.UIType.TreeMap,
@@ -121,18 +111,8 @@ module TreeMapTest {
                     console.log(data);
                     console.log(elem);
                 }
-            }],
-            render: function (renderer?: UWT.UIRenderer, options?: UWT.IOptions): Promise<any> {
-                if (renderer) {
-                    renderer.invalidate(treeMap2, { height: 400 });
-                } else {
-                    treeMap2.renderer.invalidate(treeMap2, { height: 400 });
-                }
-                return new Promise(function (resolve, reject) {
-                    resolve(true);
-                });
-            }
+            }]
         }
-        TestBase.elemManager.addElement(treeMap2, '', 'group2');
+        TestBase.addElement(treeMap2, '', 'group2');
     }
 }

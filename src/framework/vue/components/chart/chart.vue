@@ -6,12 +6,13 @@
 </template>
 
 <script lang=ts>
-import { Chart } from '../../../../core/cartesian/chart';
-import { ColorManager } from '../../../../core/color-manager';
-import { D3Renderer } from '../../../../core/renderer';
+import { Chart } from "../../../../core/cartesian/chart";
+import { ColorManager } from "../../../../core/color-manager";
+import { D3Renderer } from "../../../../core/renderer";
+import { ICartesianChart } from "../../../../../dist";
 
 export default {
-  name: 'UWTChart',
+  name: "uwtChart",
   props: {
     chartTitle: {
       type: String,
@@ -50,7 +51,7 @@ export default {
     }
   },
   watch: {
-    chartDef: function(newValue, oldValue) {
+    chartDef: function(newValue: ICartesianChart, oldValue: ICartesianChart) {
       while (this.$refs["chart"].firstChild) {
         this.$refs["chart"].removeChild(this.$refs["chart"].firstChild);
       }

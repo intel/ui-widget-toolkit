@@ -80,8 +80,8 @@ function addRenderCallback(elem: UIElement) {
             }
         }
     }
-    if (!elem.render) {
-        elem.render = function (renderer: UIRenderer, options: IOptions): Promise<any> {
+    if (!elem.api.render) {
+        elem.api.render = function (renderer: UIRenderer, options: IOptions): Promise<any> {
             if (!renderer) {
                 renderer = elem.renderer;
             } else {

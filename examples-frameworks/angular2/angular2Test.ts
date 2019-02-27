@@ -1,5 +1,5 @@
-/// <reference path='../testBase.ts' />
-/// <reference path='../testData.ts' />
+/// <reference path='../../examples/testBase.ts' />
+/// <reference path='../../examples/testData.ts' />
 
 import * as UWT from '../../dist';
 import { Component } from '@angular/core';
@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
 let options = {
     selectionBlink: false,
     height: 30,
-    leftMargin: 30
+    leftMargin: 100
 };
 let optionsBigLaneBlink = {
     selectionBlink: true,
@@ -135,9 +135,9 @@ export class TestApp {
             isXContinuous: true
         }
 
-        TestBase.elemManager.addElement(swimChart, 'lanes', 'lanes', 'lanes');
-        TestBase.elemManager.addElement(swimChart2, 'lanes', 'lanes', 'lanes');
-        TestBase.elemManager.addElement(swimChart3, 'lanes', 'lanes', 'lanes');
+        TestBase.addElement(swimChart, 'lanes', 'lanes', 'lanes');
+        TestBase.addElement(swimChart2, 'lanes', 'lanes', 'lanes');
+        TestBase.addElement(swimChart3, 'lanes', 'lanes', 'lanes');
 
         let swimlaneDefs = [swimChart, swimChart2, swimChart3];
         self.swimDef = swimlaneDefs;
@@ -158,7 +158,7 @@ export class TestApp {
             brushContextMenuItems: []
         };
 
-        TestBase.elemManager.addElement(chart, 'group1', 'group1');
+        TestBase.addElement(chart, 'group1', 'group1');
         self.chartDef = chart;
 
         let pieDef: UWT.IPieChart = {
@@ -176,7 +176,7 @@ export class TestApp {
                 }
             }
         };
-        TestBase.elemManager.addElement(pieDef, 'group1', 'group1');
+        TestBase.addElement(pieDef, 'group1', 'group1');
 
         this.pieTitle = 'Pie Chart';
         this.pieDef = pieDef;
@@ -206,9 +206,9 @@ export class TestApp {
             gridOptions: gridOptions
         };
         this.gridTitle = 'Grid 1';
-        this.gridDef = gridDef;
         this.gridStyle = { height: '400px' };
         this.gridClass = ['ag-theme-fresh'];
+        this.gridDef = gridDef;
 
         this.flowTitle = 'Sankey Diagram';
 
@@ -226,7 +226,7 @@ export class TestApp {
             legend: { alignment: UWT.Alignment.Bottom }
         }
 
-        TestBase.elemManager.addElement(flow, 'group1', 'group1');
+        TestBase.addElement(flow, 'group1', 'group1');
         this.diagramDef = flow;
 
         this.graphTitle = 'Force Graph';
@@ -245,7 +245,7 @@ export class TestApp {
             legend: { alignment: UWT.Alignment.Left }
         }
 
-        TestBase.elemManager.addElement(graph, 'group1', 'group1');
+        TestBase.addElement(graph, 'group1', 'group1');
         this.graphDef = graph;
 
         let calltrace: any[] = [
@@ -266,7 +266,7 @@ export class TestApp {
         }
         UWT.Chart.finalize(chart7);
 
-        TestBase.elemManager.addElement(chart7);
+        TestBase.addElement(chart7);
         TestBase.elemManager.addToHighlightGroup(chart7, 'trace');
         this.flameTitle = 'Flame Chart';
         this.flameChart = chart7;
@@ -277,7 +277,7 @@ export class TestApp {
             data: UWT.convertTraceToTrees(calltrace)
         }
 
-        TestBase.elemManager.addElement(chart8);
+        TestBase.addElement(chart8);
         TestBase.elemManager.addToHighlightGroup(chart8, 'trace');
         UWT.addCallbacks(chart8);
         this.sunTitle = 'Sunburst Chart';

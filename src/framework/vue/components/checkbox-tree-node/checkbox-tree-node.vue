@@ -43,7 +43,7 @@ import "vue-material/dist/theme/default.css";
 Vue.use(MdCheckbox);
 
 export default {
-  name: "UWTCheckboxTreeNode",
+  name: "uwtCheckboxTreeNode",
   data() {
     return {
       indeterminate: false,
@@ -60,7 +60,7 @@ export default {
     },
     children: {
       type: Array,
-      default: () => {
+      default: (): any[] => {
         return [];
       }
     },

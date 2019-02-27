@@ -34,7 +34,7 @@ module PieTest {
                 legend: { alignment: UWT.Alignment.Right }
             }
 
-            TestBase.elemManager.addElement(pie1, 'group2', 'group2');
+            TestBase.addElement(pie1, 'group2', 'group2');
         }
 
         {
@@ -62,7 +62,7 @@ module PieTest {
                 innerRadius: .5
             }
 
-            TestBase.elemManager.addElement(pie1, 'group2', 'group2');
+            TestBase.addElement(pie1, 'group2', 'group2');
         }
     }
 }

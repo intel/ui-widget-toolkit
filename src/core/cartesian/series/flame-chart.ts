@@ -21,12 +21,14 @@ import {
 } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 
-import { D3BaseSeries } from './baseSeries';
+import { BaseSeries } from './baseSeries';
 
 import * as d3 from 'd3';
 import * as PIXI from 'pixi.js';
 
-export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeriesPlugin {
+let seriesTypeName = 'chart-flame';
+
+export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlugin {
     public static canRender(layer: ILayer): boolean {
         return layer.renderType === RenderType.FlameChart;
     }
@@ -94,7 +96,7 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
             return allRects;
         }
 
-        let visibleRects = [];
+        let visibleRects: IFlameChartValue[] = [];
         allRects.forEach(function (rect) {
             let rectEnd = rect.traceValue.x + rect.traceValue.dx;
             if ((rect.traceValue.x < xEnd && rect.traceValue.x >= xStart) ||
@@ -106,8 +108,8 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
         return visibleRects;
     }
 
-    private generateBackground(xScale: (value: any) => number, rects: IFlameChartValue[]) {
-        let background = [];
+    private generateBackground(xScale: (value: any) => number, rects: IFlameChartValue[]): any {
+        let background: any[] = [];
 
         let stack: IFlameChartValue[] = []; // used to represent the current stack state
         let currCoord = 0;
@@ -124,8 +126,7 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
                     background.push({
                         x: parentEnd,
                         min: 0,
-                        max: stack.length,
-                        y: undefined
+                        max: stack.length
                     });
                     currCoord = coord;
                 } else {
@@ -145,8 +146,7 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
                 background.push({
                     x: value.traceValue.x,
                     min: 0,
-                    max: stack.length,
-                    y: undefined
+                    max: stack.length
                 });
                 currCoord = coord;
             } else {
@@ -168,8 +168,7 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
                 background.push({
                     x: parentEnd,
                     min: 0,
-                    max: stack.length,
-                    y: undefined
+                    max: stack.length
                 });
                 currCoord = coord;
             } else {
@@ -207,7 +206,7 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
             return d.dx;
         }
 
-        let classes = self.getClassNames();
+        let classes = self.getClassNames(seriesTypeName);
         self._d3svg.append('path')
             .classed(classes, true)
             .classed('background', true)
@@ -224,12 +223,12 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
             .classed('labels', true);
 
         // bind the appropriate renderer
-        if (chart.getOptions().forceWebGLRenderer || chart.getOptions().forceCanvasRenderer) {
+        if (chart.getOptions().forceSvgRenderer) {
+            self.render = D3SVGFlameChart.prototype.render.bind(this);
+        } else {
             self.render = D3PIXIFlameChart.prototype.render.bind(this);
             self.addHover = D3PIXIFlameChart.prototype.addHover.bind(this);
             self.removeHover = D3PIXIFlameChart.prototype.removeHover.bind(this);
-        } else {
-            self.render = D3SVGFlameChart.prototype.render.bind(this);
         }
     }
 
@@ -310,14 +309,14 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
         if (!self._decimator) {
             self._decimator = new FlameChartMergeRectDecimator();
         }
-        if (!self._layer.disableWebWorkers && !self._d3Chart.getOptions().disableWebWorkers) {
+        if (self._layer.enableWebWorkers || self._d3Chart.getOptions().enableWebWorkers) {
             return new Promise<any>(function (resolve, reject) {
                 self._worker = createDecimatorWorker(self._decimator, xStart, xEnd, self._d3XAxis,
-                    self._d3YAxis, visibleRects, undefined, function (decimatedData) {
+                    self._d3YAxis, visibleRects, undefined, function (decimatedData: IFlameChartValue[]) {
                         self.setOutputData(decimatedData);
                         self._worker = null;
                         resolve();
-                    }, function (error) {
+                    }, function (error: any) {
                         self._worker = null;
                         // in this case we failed to create the worker
                         let decimatedData = self._decimator.decimateValues(xStart, xEnd,
@@ -345,10 +344,10 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
     }
 
     public getTooltipMetrics(elem: UIElement, event: IEvent): ITooltipData[] {
-        let ret = [];
+        let ret: any[] = [];
 
         if (this._selection) {
-            let metrics = {};
+            let metrics: { [index: string]: number } = {};
             metrics[this.getDataName(this._selection)] = this.getDataDuration(this._selection);
             ret.push({ source: elem, group: '', metrics: metrics });
         }
@@ -436,9 +435,6 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
     }
 
     protected renderBackground(): void {
-        // append webGL canvas
-        let forceWebGLRenderer = this._d3Chart.getOptions().forceWebGLRenderer;
-
         let self = this;
 
         // If there's already data remove it
@@ -456,7 +452,7 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
             });
 
         if (this._backgroundData) {
-            let background = self._d3svg.select(this.getSelectionClasses() + '.background')
+            let background = self._d3svg.select(this.getSelectionClasses(seriesTypeName) + '.background')
                 .attr('d', backgroundFunc(this._backgroundData));
 
             this.configureItemInteraction(background);
@@ -466,7 +462,7 @@ export class D3FlameChartSeries extends D3BaseSeries implements ICartesianSeries
     public render() { }
 }
 
-class D3SVGFlameChart extends D3FlameChartSeries {
+class D3SVGFlameChart extends FlameChartSeries {
     public render(): void {
         let self = this;
 
@@ -475,7 +471,7 @@ class D3SVGFlameChart extends D3FlameChartSeries {
         let xScale = self._d3XAxis.getScale();
 
         // Build list of class names to apply
-        let classes: string = this.getClassNames();
+        let classes: string = this.getClassNames(seriesTypeName);
         if (this._layer.css) {
             for (let className in this._layer.css.classes) {
                 classes += className + ' ';
@@ -539,7 +535,7 @@ class D3SVGFlameChart extends D3FlameChartSeries {
     }
 }
 
-class D3PIXIFlameChart extends D3FlameChartSeries {
+class D3PIXIFlameChart extends FlameChartSeries {
     protected _textMap: any;
 
     public addHover(selection: string) {
@@ -584,7 +580,7 @@ class D3PIXIFlameChart extends D3FlameChartSeries {
         let labelGroup = this._d3svg.select('.labels');
         labelGroup.selectAll('*').remove();
 
-        let classes: string = this.getClassNames();
+        let classes: string = this.getClassNames(seriesTypeName);
         if (this._layer.css) {
             for (let className in this._layer.css.classes) {
                 classes += className + ' ';
@@ -625,11 +621,10 @@ class D3PIXIFlameChart extends D3FlameChartSeries {
             let xEnd = xScale(this.getDataStart(value) + this.getDataDuration(value));
             let xWidth = xEnd - xStart;
 
-            let rect = this._pixiHelper.createRectangle(xStart, yStart,
+            let rect = this._pixiHelper.createRectangleContainer(xStart, yStart,
                 xWidth, this._stackHeight,
                 parseInt(this._d3Chart.getRenderer().getColorManager().
-                    getColor(name).substring(1), 16),
-                0x000000);
+                    getColor(name).substring(1), 16));
 
             let selection = rect.children[0]; // only highlight the main rect
 
@@ -659,30 +654,14 @@ class D3PIXIFlameChart extends D3FlameChartSeries {
 
             stage.addChild(rect);
 
-            let renderText = function (name: string) {
-                // double font resolution for sharpness
-                let fontSize = labelGroup.style('font-size');
-                fontSize =
-                    Number(fontSize.substring(0, fontSize.length - 2)) * 2 + 'px';
-                let text = new PIXI.Text(name,
-                    {
-                        fill: 0x000000,
-                        fontFamily: labelGroup.style('font-family'),
-                        fontSize: fontSize,
-                        fontWeight: labelGroup.style('font-weight')
-                    });
-                // scale text down
-                text.scale = new PIXI.Point(.5, .5);
-                return text;
-            }
-            if (!this._textMap.hasOwnProperty(name)) {
-                let text = renderText(name);
-                this._textMap[name] = text.width;
+            let text: PIXI.Text = this._textMap[name];
+            if (!text) {
+                text = this._pixiHelper.renderText(name, labelGroup);
+                this._textMap[name] = text;
             }
 
-            let textWidth = this._textMap[name];
+            let textWidth = text.width;
             if (textWidth < rect.width) {
-                let text = renderText(name);
                 text.x = xWidth * .5 - text.width * .5;
                 text.y = this._stackHeight * .5 - text.height * .5;
                 rect.addChild(text);
@@ -694,4 +673,4 @@ class D3PIXIFlameChart extends D3FlameChartSeries {
     }
 }
 
-D3Chart.register(D3FlameChartSeries);
+D3Chart.register(FlameChartSeries);

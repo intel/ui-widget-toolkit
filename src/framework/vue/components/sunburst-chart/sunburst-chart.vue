@@ -6,11 +6,12 @@
 </template>
 
 <script lang=ts>
-import { ColorManager } from '../../../../core/color-manager';
-import { D3Renderer } from '../../../../core/renderer';
+import { ColorManager } from "../../../../core/color-manager";
+import { D3Renderer } from "../../../../core/renderer";
+import { ISunburstChart } from "../../../../interface/chart/chart";
 
 export default {
-  name: 'UWTSunburstChart',
+  name: "uwtSunburstChart",
   props: {
     chartTitle: {
       type: String,
@@ -48,7 +49,7 @@ export default {
     }
   },
   watch: {
-    chartDef: function(newValue, oldValue) {
+    chartDef: function(newValue: ISunburstChart, oldValue: ISunburstChart) {
       if (this.renderer && this.chartDef) {
         if (oldValue) {
           this.renderer.destroy(oldValue);

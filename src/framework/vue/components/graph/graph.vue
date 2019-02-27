@@ -6,11 +6,12 @@
 </template>
 
 <script lang=ts>
-import { ColorManager } from '../../../../core/color-manager';
-import { D3Renderer } from '../../../../core/renderer';
+import { ColorManager } from "../../../../core/color-manager";
+import { D3Renderer } from "../../../../core/renderer";
+import { IGraph } from "../../../../interface/graph";
 
 export default {
-  name: 'UWTGraph',
+  name: "uwtGraph",
   props: {
     graphTitle: {
       type: String,
@@ -49,7 +50,7 @@ export default {
     }
   },
   watch: {
-    graphDef: function(newValue, oldValue) {
+    graphDef: function(newValue: IGraph, oldValue: IGraph) {
       while (this.$refs["graph"].firstChild) {
         this.$refs["graph"].removeChild(this.$refs["graph"].firstChild);
       }

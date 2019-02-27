@@ -22,13 +22,13 @@ import {
 } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 
-import { D3BaseSeries } from './baseSeries';
+import { BaseSeries } from './baseSeries';
 
 import * as d3 from 'd3';
 import * as PIXI from 'pixi.js';
 import { number } from 'prop-types';
 
-export class D3XYSeries extends D3BaseSeries implements ICartesianSeriesPlugin {
+export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
     public static canRender(layer: ILayer): boolean {
         let possible = ((layer.renderType & RenderType.Line) || (layer.renderType & RenderType.Area) ||
             (layer.renderType & RenderType.Scatter) || layer.renderType & RenderType.DirectionalArrow);
@@ -59,9 +59,20 @@ export class D3XYSeries extends D3BaseSeries implements ICartesianSeriesPlugin {
     }
 
     protected initializeClasses() {
+        let className: string;
+        if (this._layer.renderType & RenderType.Scatter) {
+            className = 'chart-scatter';
+        } else if (this._layer.renderType & RenderType.Line) {
+            className = 'chart-line';
+        } else if (this._layer.renderType & RenderType.Area) {
+            className = 'chart-area';
+        } else if (this._layer.renderType & RenderType.DirectionalArrow) {
+            className = 'chart-arrow';
+        }
+
         // Build list of class names to apply
-        this._classes = this.getClassNames();
-        this._selectionClasses = this.getSelectionClasses();
+        this._classes = this.getClassNames(className);
+        this._selectionClasses = this.getSelectionClasses(className);
 
         // set up the shared things all types will need
         if (this._layer.renderType & RenderType.Stacked) {
@@ -144,7 +155,7 @@ export class D3XYSeries extends D3BaseSeries implements ICartesianSeriesPlugin {
             return [d.x];
         }
 
-        let keys = getKeys(this._data, xMap);
+        let keys = getKeys(this._data.values as IXYValue[], xMap);
         return keys;
     }
 
@@ -154,7 +165,7 @@ export class D3XYSeries extends D3BaseSeries implements ICartesianSeriesPlugin {
             return [d.y];
         }
 
-        let keys = getKeys(this._data, yMap);
+        let keys = getKeys(this._data.values as IXYValue[], yMap);
         return keys.reverse();
     }
 
@@ -229,15 +240,15 @@ export class D3XYSeries extends D3BaseSeries implements ICartesianSeriesPlugin {
 
             let xScale = xAxis.getScale();
             let yScale = yAxis.getScale();
-            if (!self._layer.disableWebWorkers && !self._d3Chart.getOptions().disableWebWorkers &&
+            if ((self._layer.enableWebWorkers || self._d3Chart.getOptions().enableWebWorkers) &&
                 InternalDecimatorMap[decimator.getKey()]) {
                 return new Promise<any>(function (resolve, reject) {
                     self._worker = createDecimatorWorker(decimator, xStart, xEnd, self._d3XAxis,
-                        self._d3YAxis, self._values.getData(), undefined, function (data) {
+                        self._d3YAxis, self._values.getData(), undefined, function (data: IXYValue[]) {
                             self._worker = null;
                             self.setOutputData(data);
                             resolve();
-                        }, function (error) {
+                        }, function (error: any) {
                             self._worker = null;
 
                             // in this case we failed to create the worker
@@ -803,9 +814,9 @@ export class D3XYSeries extends D3BaseSeries implements ICartesianSeriesPlugin {
         return domain;
     }
 }
-D3Chart.register(D3XYSeries);
+D3Chart.register(XYSeries);
 
-class D3SVGXYSeries extends D3XYSeries {
+class D3SVGXYSeries extends XYSeries {
     public renderCirclePoints(indices: number[], color: string, radius: number) {
         let self = this;
 
@@ -898,7 +909,7 @@ class D3SVGXYSeries extends D3XYSeries {
             .each(configureItem);
 
         if (this._data.showTitleText) {
-            let text = self._d3svg.selectAll(self.getSelectionClasses()).filter('text').data(indices);
+            let text = self._d3svg.selectAll(self.getSelectionClasses('chart-scatter')).filter('text').data(indices);
             text.exit().remove();
             text.enter()
                 .append('text')
@@ -922,12 +933,12 @@ class D3SVGXYSeries extends D3XYSeries {
                 .each(configureItem);
         }
 
-        let elem = self._d3svg.selectAll(this.getSelectionClasses());
+        let elem = self._d3svg.selectAll(this.getSelectionClasses('chart-scatter'));
         this._d3Elems.push(elem);
     }
 }
 
-class D3PIXIXYSeries extends D3XYSeries {
+class D3PIXIXYSeries extends XYSeries {
     public renderCirclePoints(indices: number[], color: string, radius: number) {
         let self = this;
 

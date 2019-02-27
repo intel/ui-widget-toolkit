@@ -6,11 +6,12 @@
 </template>
 
 <script lang=ts>
-import { ColorManager } from '../../../../core/color-manager';
-import { AgGridRenderer } from '../../../../core/ag-grid/ag-grid-renderer';
+import { ColorManager } from "../../../../core/color-manager";
+import { AgGridRenderer } from "../../../../core/ag-grid/ag-grid-renderer";
+import { IGrid } from "../../../../interface/grid";
 
 export default {
-  name: 'UWTGrid',
+  name: "uwtGrid",
   props: {
     gridTitle: {
       type: String,
@@ -58,7 +59,7 @@ export default {
     }
   },
   watch: {
-    gridDef: function(newVal, oldVal) {
+    gridDef: function(newVal: IGrid, oldVal: IGrid) {
       if (oldVal && oldVal.gridOptions && oldVal.gridOptions.gridClass) {
         this.$refs["grid"].classList.remove(oldVal.gridOptions.gridClass);
       }
@@ -76,12 +77,12 @@ export default {
         this.renderer.invalidate(this.gridDef);
       }
     },
-    gridStyle: function(newVal, oldVal) {
+    gridStyle: function(newVal: any, oldVal: any) {
       for (let key in newVal) {
         this.$refs["grid"].style[key] = newVal[key];
       }
     },
-    colorManager: function(newVal, oldVal) {
+    colorManager: function(newVal: ColorManager, oldVal: ColorManager) {
       if (this.renderer) {
         this.renderer.setColorManager(this.colorManager);
       }

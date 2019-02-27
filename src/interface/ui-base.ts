@@ -1,27 +1,44 @@
 import { ColorManager } from "../core/color-manager";
 
 export interface ITooltipData {
+    /** the element that triggered this tooltip */
     source: UIElement,
+    /** the name of the group for this tooltip */
     group: string,
+    /** a list of data to be shown in the tooltip */
     metrics: { [index: string]: string }
 };
 
 export interface IEvent {
+    /** specifies the type of event from
+     * [[EventType]]
+     */
     event?: EventType,
     selection?: string,
     selectionKey?: string,
+    /** data associated with the event */
     data?: any,
+    /** the original caller who caused this event to be fired*/
     caller?: UIElement,
+    /** xStart bounds of associated with this event */
     xStart?: number,
+    /** xEnd bounds of associated with this event */
     xEnd?: number,
+    /** yStart bounds of associated with this event */
     yStart?: number,
+    /** yEnd bounds of associated with this event */
     yEnd?: number
 }
 
 export interface IOptions {
-    fitToWindow?: boolean
+    /** attempt to fit a graph into the view specified by the
+     * [[IOptions]]
+     */
+    fitToWindow?: boolean,
+    /** blink assocaited data when a selection is done */
     selectionBlink?: boolean,
     disableBackground?: boolean,
+    /** tell a widget to ignore the hover events */
     disableHover?: boolean,
     disableAutoResizeWidth?: boolean,
     disableAutoResizeHeight?: boolean,
@@ -59,6 +76,8 @@ export interface IOptions {
     tooltipDelay?: number;
 
     /** async display behavior */
+    enableWebWorkers?: boolean;
+    /** DEPRECATED */
     disableWebWorkers?: boolean;
     disableProgressSpinner?: boolean;
 
@@ -76,7 +95,7 @@ export interface IOptions {
 }
 
 export interface IBuffer<DataType> {
-    push(d: DataType);
+    push(d: DataType): void;
     get(index: number): DataType;
     length(): number;
     getData(): DataType[];
@@ -136,6 +155,12 @@ export interface IContextMenuItem {
     submenu?: IContextMenuItem[];
     submenuDiv?: HTMLDivElement;
 }
+
+export enum LegendType {
+    Discrete,
+    Gradient
+}
+
 export enum LegendOrientation {
     Vertical,
     Horizontal
@@ -159,6 +184,7 @@ export interface ILegendItem {
 
 export interface ILegendDefinition {
     items: ILegendItem[];
+    type?: LegendType;
 }
 
 export interface ILegend {
@@ -329,6 +355,15 @@ export interface UIElement {
          */
         pan?: (event?: IEvent) => void;
 
+        /**
+         * Render the element.
+         *
+         * @param renderer an IRenderer object that can render this element
+         * @param options any options to pass to the renderer
+         */
+        render?: (renderer?: UIRenderer, options?: IOptions) => Promise<any>;
+
+        getOptions?: () => IOptions;
         saveImage?: () => void;
         createImage?: () => void;
     }
@@ -339,14 +374,6 @@ export interface UIElement {
      * @param event any event to pass to the renderer
      */
     getTooltip?: (event?: IEvent) => ITooltipData[];
-
-    /**
-     * Render the element.
-     *
-     * @param renderer an IRenderer object that can render this element
-     * @param options any options to pass to the renderer
-     */
-    render?: (renderer?: UIRenderer, options?: IOptions) => Promise<any>;
 
     /**
      * callback when a tooltip occurs in this element
@@ -733,5 +760,5 @@ export interface UIElementManager {
     removeFromRenderGroup(elem: UIElement): UIElementManager;
 
     /** clear all the elements in this list */
-    clear();
+    clear(): void;
 }
