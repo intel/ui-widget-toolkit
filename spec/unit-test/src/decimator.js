@@ -39,11 +39,6 @@ let xyYScale = d3.scaleLinear()
     .clamp(true)
     .range([0, yPixels]);
 
-let xyPercentScale = d3.scaleLinear()
-    .domain([0, 100])
-    .clamp(true)
-    .range([0, yPixels]);
-
 let lastTraceValue = flameChartData.get(flameChartData.length() - 1);
 let traceDomain =
     [flameChartData.get(0).traceValue.x,
@@ -56,9 +51,8 @@ let traceXScale = d3.scaleLinear()
     .clamp(true)
     .range([0, xPixels]);
 
-
 describe("decimator-sanity", function () {
-    it("avgPoint", function () {
+    it("avg-point", function () {
         let avgPointDecimator = new AvgPointDecimator()
         avgPointDecimator.initialize(xyXScale, xyXScale.invert, xyYScale);
         let startTime = Date.now();
@@ -78,7 +72,7 @@ describe("decimator-sanity", function () {
         })
     });
 
-    it("minPoint", function () {
+    it("min-point", function () {
         let minPointDecimator = new MinPointDecimator()
         minPointDecimator.initialize(xyXScale, xyXScale.invert, xyYScale);
         let startTime = Date.now();
@@ -98,7 +92,7 @@ describe("decimator-sanity", function () {
         })
     });
 
-    it("maxPoint", function () {
+    it("max-point", function () {
         let maxPointDecimator = new MaxPointDecimator()
         maxPointDecimator.initialize(xyXScale, xyXScale.invert, xyYScale);
         let startTime = Date.now();
@@ -118,7 +112,7 @@ describe("decimator-sanity", function () {
         })
     });
 
-    it("NEWSPoint", function () {
+    it("news-point", function () {
         let newsPointDecimator = new NEWSPointDecimator()
         newsPointDecimator.initialize(xyXScale, xyXScale.invert, xyYScale);
         let startTime = Date.now();
@@ -140,7 +134,7 @@ describe("decimator-sanity", function () {
         })
     });
 
-    it("NEWSPointCrossCheck", function () {
+    it("newss-point-cross-check", function () {
         let newsPointDecimator = new NEWSPointDecimator()
         newsPointDecimator.initialize(xyXScale, xyXScale.invert, xyYScale);
         let newsValues = newsPointDecimator.decimateValues(xyDomain[0], xyDomain[1], xyData[0]);
@@ -163,7 +157,7 @@ describe("decimator-sanity", function () {
         }
     });
 
-    it("xyPoint", function () {
+    it("xy-point", function () {
         let xyPointDecimator = new XYPointDecimator()
         xyPointDecimator.initialize(xyXScale, xyXScale.invert, xyYScale);
         let startTime = Date.now();
@@ -183,7 +177,7 @@ describe("decimator-sanity", function () {
         })
     });
 
-    it("summedValue", function () {
+    it("summed-value", function () {
         let summedValue = new SummedValueXYSeriesDecimator()
         summedValue.initialize(xyXScale, xyXScale.invert, xyYScale);
         let startTime = Date.now();
@@ -228,7 +222,7 @@ describe("decimator-sanity", function () {
         });
     });
 
-    it("summedValueMultiXY", function () {
+    it("summed-value-multi-xy", function () {
         let summedValueMultiXY = new SummedValueMultiXYSeriesDecimator()
         summedValueMultiXY.initialize(xyXScale, xyXScale.invert, xyYScale);
 
@@ -253,7 +247,7 @@ describe("decimator-sanity", function () {
         });
     });
 
-    it("mergedRect", function () {
+    it("merged-rect", function () {
         let mergedRect = new FlameChartMergeRectDecimator();
         mergedRect.initialize(traceXScale, traceXScale.invert);
         let startTime = Date.now();
@@ -266,7 +260,7 @@ describe("decimator-sanity", function () {
         expect(mergedValues.length).toBeLessThanOrEqual(xPixels + 1);
     });
 
-    it("reducedRect", function () {
+    it("reduced-rect", function () {
         let limitRect = new FlameChartRectLimitDecimator();
         limitRect.initialize(traceXScale, traceXScale.invert);
         limitRect.setRectLimit(500);
@@ -279,7 +273,7 @@ describe("decimator-sanity", function () {
         expect(limitvalues.length).toBe(500);
     });
 
-    it("tracedResidency", function () {
+    it("traced-residency", function () {
         let states = {};
         for (let i = 0; i < traceData.length(); ++i) {
             states[traceData.get(i).name] = true;
@@ -309,7 +303,7 @@ describe("decimator-sanity", function () {
         })
     });
 
-    it("tracedState", function () {
+    it("traced-state", function () {
         let states = {};
         for (let i = 0; i < traceData.length(); ++i) {
             states[traceData.get(i).name] = true;
@@ -331,5 +325,36 @@ describe("decimator-sanity", function () {
             expect(value.x + traceErrorMargin).toBeGreaterThanOrEqual(tracePixelWidth * i + traceDomain[0]);
             expect(value.x - traceErrorMargin).toBeLessThanOrEqual(tracePixelWidth * (i + 1) + traceDomain[0]);
         })
+    });
+
+    it("xy-state", function () {
+        let stateXY = new SimpleBuffer(JSON.parse(fs.readFileSync(__dirname + '/../../data/data.xyState')));
+        let stateXDomain = d3.scaleLinear()
+            .domain([0, 46.4])
+            .clamp(true)
+            .range([0, xPixels]);
+
+        let xyYScale = d3.scaleOrdinal()
+            .domain(['CC0', 'CC1', 'CC3', 'CC6', 'CC7'])
+            .range([0, yPixels]);
+
+        let xyState = new NEWSStateDecimator();
+        xyState.initialize(stateXDomain, stateXDomain.invert, xyYScale);
+        let startTime = Date.now();
+        let xyStateValues = xyState.decimateValues(undefined, undefined, stateXY);
+        let endTime = Date.now();
+
+        // expect decimation time to be < 100ms
+        expect(endTime - startTime).toBeLessThanOrEqual(100);
+        expect(xyStateValues.length).toBeLessThan(1200);
+
+        // simple bounds checking
+        xyStateValues.forEach((value) => {
+            expect(value.x).not.toBeNaN();
+            expect(typeof value.entry).toBe('string');
+            expect(typeof value.exit).toBe('string');
+            expect(typeof value.min).toBe('string');
+            expect(typeof value.max).toBe('string');
+        });
     });
 });

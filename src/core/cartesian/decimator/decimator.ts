@@ -963,6 +963,7 @@ export class NEWSStateDecimator extends NEWSBaseDecimator {
         let defaultValue: any;
         if (!this._isYObject) {
             defaultValue = value.y;
+            decimatedValue.x = 0;
             decimatedValue.y = defaultValue;
             decimatedValue.entry = defaultValue;
             decimatedValue.exit = defaultValue;
