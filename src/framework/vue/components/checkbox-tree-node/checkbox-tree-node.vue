@@ -33,7 +33,7 @@
   </div>
 </template>
 
-<script lang=ts>
+<script>
 import Vue from "vue";
 import { MdCheckbox } from "vue-material/dist/components";
 import { ICheckboxTreeNode } from "../../../../interface/ui-base";
@@ -60,7 +60,7 @@ export default {
     },
     children: {
       type: Array,
-      default: (): any[] => {
+      default: () => {
         return [];
       }
     },
@@ -78,7 +78,7 @@ export default {
     this._initializeChildren(this, this.def);
   },
   methods: {
-    _initializeChildren(vm: any, node: ICheckboxTreeNode) {
+    _initializeChildren(vm, node) {
       if (vm) {
         vm.checked = node.checked;
       }
@@ -121,7 +121,7 @@ export default {
       this._updateParentCheckBox(this.$parent, this.def.parent);
       this._emitCheckCompleted();
     },
-    _updateChildCheckBox(vm: any, nodeData: any, checked: boolean) {
+    _updateChildCheckBox(vm, nodeData, checked) {
       if (nodeData.checked !== checked) {
         nodeData.checked = checked;
         if (vm) {
@@ -143,7 +143,7 @@ export default {
         }
       }
     },
-    _updateParentCheckBox(parentComponent: any, parentData: any) {
+    _updateParentCheckBox(parentComponent, parentData) {
       if (parentData && parentData.children) {
         let allChildChecked = true;
         let noChildChecked = true;
@@ -195,7 +195,7 @@ export default {
           : "")
       );
     },
-    _computePadding(): any {
+    _computePadding() {
       var children = this.getChildren();
       return children && children.length ? {} : { "padding-left": "18px" };
     },

@@ -5,10 +5,8 @@
   </div>
 </template>
 
-<script lang=ts>
-import { ColorManager } from "../../../../core/color-manager";
-import { D3Renderer } from "../../../../core/renderer";
-import { IGraph } from "../../../../interface/graph";
+<script>
+import * as UWT from "ui-widget-toolkit";
 
 export default {
   name: "uwtFlowDiagram",
@@ -30,7 +28,7 @@ export default {
     colorManager: {
       type: Object,
       default: () => {
-        return new ColorManager();
+        return new UWT.ColorManager();
       }
     },
     onRender: {
@@ -40,7 +38,7 @@ export default {
   },
   mounted: function() {
     if (!this.renderer) {
-      this.renderer = new D3Renderer("", this.colorManager);
+      this.renderer = new UWT.D3Renderer("", this.colorManager);
     }
     this.renderer.setOnRenderCallback(this.onRender);
 
@@ -50,7 +48,7 @@ export default {
     }
   },
   watch: {
-    diagramDef: function(newValue: IGraph, oldValue: IGraph) {
+    diagramDef: function(newValue, oldValue) {
       while (this.$refs["diagram"].firstChild) {
         this.$refs["diagram"].removeChild(this.$refs["diagram"].firstChild);
       }

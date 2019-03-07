@@ -1,6 +1,8 @@
+const path = require('path')
+
 module.exports = {
     entry: {
-        reactTest: './examples-frameworks/react/reactTest.jsx',
+        reactTest: path.resolve(__dirname, 'reactTest.jsx')
     },
     output: {
         filename: 'reactTest.js',
@@ -8,7 +10,10 @@ module.exports = {
     },
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
-        extensions: ['.js', '.jsx']
+        extensions: ['.js', '.jsx'],
+        alias: {
+            'ui-widget-toolkit': path.resolve(__dirname, '../../dist')
+        }
     },
     module: {
         rules: [

@@ -5,10 +5,8 @@
   </div>
 </template>
 
-<script lang=ts>
-import { ColorManager } from "../../../../core/color-manager";
-import { D3Renderer } from "../../../../core/renderer";
-import { IPolarChart } from "../../../../interface/chart/chart";
+<script>
+import * as UWT from "ui-widget-toolkit";
 
 export default {
   name: "uwtPieChart",
@@ -30,7 +28,7 @@ export default {
     colorManager: {
       type: Object,
       default: () => {
-        return new ColorManager();
+        return new UWT.ColorManager();
       }
     },
     onRender: {
@@ -40,7 +38,7 @@ export default {
   },
   mounted: function() {
     if (!this.renderer) {
-      this.renderer = new D3Renderer("", this.colorManager);
+      this.renderer = new UWT.D3Renderer("", this.colorManager);
       this.renderer.setDiv(this.$refs["chart"]);
       this.renderer.setOnRenderCallback(this.onRender);
     }
@@ -49,7 +47,7 @@ export default {
     }
   },
   watch: {
-    chartDef: function(newValue: IPolarChart, oldValue: IPolarChart) {
+    chartDef: function(newValue, oldValue) {
       if (this.renderer && this.chartDef) {
         if (oldValue) {
           this.renderer.destroy(oldValue);

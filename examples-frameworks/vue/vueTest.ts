@@ -3,7 +3,6 @@
 
 import Vue from 'vue';
 import * as UWT from '../../dist';
-
 import * as UWTVue from '../../dist/framework/vue';
 
 Vue.use(UWTVue);

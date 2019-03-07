@@ -1,6 +1,8 @@
+const path = require('path')
+
 module.exports = {
     entry: {
-        angular2test: './examples-frameworks/angular2/main.ts',
+        angular2test: path.resolve(__dirname, 'main.ts')
     },
     output: {
         filename: 'angular2test.js',
@@ -8,7 +10,10 @@ module.exports = {
     },
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
-        extensions: ['.ts', '.tsx', '.js']
+        extensions: ['.ts', '.tsx', '.js'],
+        alias: {
+            'ui-widget-toolkit': path.resolve(__dirname, '../../dist')
+        }
     },
     module: {
         rules: [

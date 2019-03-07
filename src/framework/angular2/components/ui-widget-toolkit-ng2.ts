@@ -4,14 +4,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { ILegend, IOptions, UIRenderer } from '../../../interface/ui-base';
-import { ICartesianChart, IChart, IPieChart } from '../../../interface/chart/chart';
-import { IGrid } from '../../../interface/grid';
-import { IConnectedGraph } from '../../../interface/graph';
-import { Chart, ChartGroup } from '../../../core/cartesian/chart';
-import { ColorManager } from '../../../core/color-manager';
-import { D3Renderer } from '../../../core/renderer';
-import { AgGridRenderer } from '../../../core/ag-grid/ag-grid-renderer';
+import * as UWT from 'ui-widget-toolkit';
 
 @Component({
     selector: 'uwt-chart',
@@ -75,22 +68,22 @@ import { AgGridRenderer } from '../../../core/ag-grid/ag-grid-renderer';
 
 export class UWTChart implements OnChanges {
     @Input() chartTitle: string;
-    @Input() chartDef: ICartesianChart;
-    @Input() renderOptions: IOptions;
-    @Input() colorManager: ColorManager;
-    @Input() renderer: UIRenderer;
+    @Input() chartDef: UWT.ICartesianChart;
+    @Input() renderOptions: UWT.IOptions;
+    @Input() colorManager: UWT.ColorManager;
+    @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
     @ViewChild('chart') chartElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.colorManager);
         }
 
         if (this.chartDef) {
             this.renderer.setDiv(this.chartElem.nativeElement);
-            Chart.finalize(this.chartDef);
+            UWT.Chart.finalize(this.chartDef);
             this.renderer.invalidate(this.chartDef, this.renderOptions);
         }
     }
@@ -110,15 +103,15 @@ export class UWTChart implements OnChanges {
 
 export class UWTSwimlaneChart implements OnChanges {
     @Input() chartTitle: string;
-    @Input() chartDefs: ICartesianChart[];
-    @Input() renderOptions: IOptions;
-    @Input() colorManager: ColorManager;
-    @Input() renderer: UIRenderer;
+    @Input() chartDefs: UWT.ICartesianChart[];
+    @Input() renderOptions: UWT.IOptions;
+    @Input() colorManager: UWT.ColorManager;
+    @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
     @ViewChild('chart') chartElem: any;
 
-    private chartOptions: IOptions[] = [];
+    private chartOptions: UWT.IOptions[] = [];
     getChartOptions = function (index: number) {
         if (index < this.chartOptions.length) {
             return this.chartOptions[index];
@@ -131,18 +124,18 @@ export class UWTSwimlaneChart implements OnChanges {
             changes.chartDefs.currentValue != changes.chartDefs.previousValue) {
             let newList = changes.chartDefs.currentValue;
             let oldList = changes.chartDefs.previousValue;
-            let chartMap: Map<IChart, boolean> = new Map<IChart, boolean>();
+            let chartMap: Map<UWT.IChart, boolean> = new Map<UWT.IChart, boolean>();
             if (newList) {
                 for (let i = 0; i < newList.length; ++i) {
                     chartMap.set(newList[i], true);
                 }
             }
-            let legends: ILegend[] = [];
+            let legends: UWT.ILegend[] = [];
             if (oldList) {
                 for (let i = 0; i < oldList.length; ++i) {
                     var oldChart = oldList[i];
                     if (!chartMap.has(oldChart)) {
-                        ChartGroup.handleRemoveChart(oldChart);
+                        UWT.ChartGroup.handleRemoveChart(oldChart);
                     }
                     if (oldChart.legends) {
                         legends = legends.concat(oldChart.legends);
@@ -159,13 +152,13 @@ export class UWTSwimlaneChart implements OnChanges {
             }
 
             if (this.chartDefs) {
-                ChartGroup.handleChartUpdate(this.chartDefs,
+                UWT.ChartGroup.handleChartUpdate(this.chartDefs,
                     this.chartOptions, this, legends);
             }
         }
         if (changes.renderOptions &&
             changes.renderOptions.currentValue != changes.renderOptions.previousValue) {
-            ChartGroup.handleRenderOptionsUpdate(this, this.renderOptions,
+            UWT.ChartGroup.handleRenderOptionsUpdate(this, this.renderOptions,
                 this.chartOptions);
         }
     }
@@ -197,17 +190,17 @@ export class UWTSwimlaneChart implements OnChanges {
 
 export class UWTPieChart implements OnChanges {
     @Input() chartTitle: string;
-    @Input() chartDef: IPieChart;
-    @Input() renderOptions: IOptions;
-    @Input() colorManager: ColorManager;
-    @Input() renderer: UIRenderer;
+    @Input() chartDef: UWT.IPieChart;
+    @Input() renderOptions: UWT.IOptions;
+    @Input() colorManager: UWT.ColorManager;
+    @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
     @ViewChild('chart') chartElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.colorManager);
         }
 
         if (this.chartDef) {
@@ -233,18 +226,18 @@ export class UWTPieChart implements OnChanges {
 
 export class UWTGrid implements OnChanges {
     @Input() gridTitle: string;
-    @Input() gridDef: IGrid;
+    @Input() gridDef: UWT.IGrid;
     @Input() gridStyle: any;
     @Input() gridClass: string[];
-    @Input() colorManager: ColorManager;
-    @Input() renderer: UIRenderer;
+    @Input() colorManager: UWT.ColorManager;
+    @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
     @ViewChild('grid') gridElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
-            this.renderer = new AgGridRenderer(undefined, undefined, this.colorManager);
+            this.renderer = new UWT.AgGridRenderer(undefined, undefined, this.colorManager);
         }
         this.renderer.setOnRenderCallback(this.onRender);
 
@@ -288,17 +281,17 @@ export class UWTGrid implements OnChanges {
 
 export class UWTFlowDiagram implements OnChanges {
     @Input() diagramTitle: string;
-    @Input() diagramDef: IConnectedGraph;
-    @Input() renderOptions: IOptions;
-    @Input() colorManager: ColorManager;
-    @Input() renderer: UIRenderer;
+    @Input() diagramDef: UWT.IConnectedGraph;
+    @Input() renderOptions: UWT.IOptions;
+    @Input() colorManager: UWT.ColorManager;
+    @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
     @ViewChild('diagram') diagramElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.colorManager);
         }
         this.renderer.setOnRenderCallback(this.onRender);
 
@@ -335,17 +328,17 @@ export class UWTFlowDiagram implements OnChanges {
 
 export class UWTGraph implements OnChanges {
     @Input() graphTitle: string;
-    @Input() graphDef: IConnectedGraph;
-    @Input() renderOptions: IOptions;
-    @Input() colorManager: ColorManager;
-    @Input() renderer: UIRenderer;
+    @Input() graphDef: UWT.IConnectedGraph;
+    @Input() renderOptions: UWT.IOptions;
+    @Input() colorManager: UWT.ColorManager;
+    @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
     @ViewChild('graph') graphElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.colorManager);
         }
         this.renderer.setOnRenderCallback(this.onRender);
 
@@ -383,17 +376,17 @@ export class UWTGraph implements OnChanges {
 
 export class UWTHierarchyGraph implements OnChanges {
     @Input() graphTitle: string;
-    @Input() graphDef: IConnectedGraph;
-    @Input() renderOptions: IOptions;
-    @Input() colorManager: ColorManager;
-    @Input() renderer: UIRenderer;
+    @Input() graphDef: UWT.IConnectedGraph;
+    @Input() renderOptions: UWT.IOptions;
+    @Input() colorManager: UWT.ColorManager;
+    @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
     @ViewChild('graph') graphElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.colorManager);
         }
         this.renderer.setOnRenderCallback(this.onRender);
 
@@ -435,17 +428,17 @@ export class UWTHierarchyGraph implements OnChanges {
 
 export class UWTSunburstChart implements OnChanges {
     @Input() chartTitle: string;
-    @Input() chartDef: ICartesianChart;
-    @Input() renderOptions: IOptions;
-    @Input() colorManager: ColorManager;
-    @Input() renderer: UIRenderer;
+    @Input() chartDef: UWT.ICartesianChart;
+    @Input() renderOptions: UWT.IOptions;
+    @Input() colorManager: UWT.ColorManager;
+    @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
     @ViewChild('chart') chartElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.colorManager);
         }
         this.renderer.setOnRenderCallback(this.onRender);
 

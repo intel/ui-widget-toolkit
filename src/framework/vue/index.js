@@ -1,11 +1,3 @@
-export * from '../../build/export.chart';
-export * from '../../build/export.graph';
-export * from '../../build/export.grid';
-
-export * from '../../core/context-menu';
-export * from '../../core/utilities';
-
-import { ICheckboxTreeNode } from '../../interface/ui-base';
 import UWTChart from './components/chart'
 import UWTCheckboxTreeNode from './components/checkbox-tree-node'
 import UWTCheckboxTree from './components/checkbox-tree'
@@ -19,7 +11,6 @@ import UWTSwimlaneChart from './components/swimlane-chart'
 import UWTTreeMap from './components/tree-map'
 
 export {
-  ICheckboxTreeNode,
   UWTChart,
   UWTCheckboxTreeNode,
   UWTCheckboxTree,
@@ -51,4 +42,4 @@ const UWTVue = {
 
 UWTVue.version = '__VERSION__'
 
-export default UWTVue;
+export default UWTVue

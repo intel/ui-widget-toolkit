@@ -1527,23 +1527,23 @@ export class TraceResidencyDecimator implements ITraceResidencyDecimator {
             let endBucket = Math.floor(this._xValueToCoord(traceEndX));
 
             if (startBucket === endBucket) {
-                tempValues[value.name][startBucket] += value.dx * bucketScalar;
+                // tempValues[value.name][startBucket] += value.dx * bucketScalar;
                 // TODO consider we should/can fix this corner case
 
                 // Code below is technically more correct as it handles some edge cases
                 // but it's about 3x slower?
-                // if (xStart === undefined || (value.x > xStart && traceEndX < xEnd)) {
-                //     // here it's all in the existing bucket
-                //     tempValues[value.name][startBucket] += value.dx * bucketScalar;
-                // } else if (traceEndX > xStart) {
-                //     if (traceEndX < xEnd) {
-                //         // here the back half is in the bucket
-                //         tempValues[value.name][startBucket] += (traceEndX - xStart) * bucketScalar;
-                //     } else {
-                //         // here the front half is in the bucket
-                //         tempValues[value.name][startBucket] += (xEnd - value.x) * bucketScalar;
-                //     }
-                // }
+                if (xStart === undefined || (value.x > xStart && traceEndX < xEnd)) {
+                    // here it's all in the existing bucket
+                    tempValues[value.name][startBucket] += value.dx * bucketScalar;
+                } else if (traceEndX > xStart) {
+                    if (traceEndX < xEnd) {
+                        // here the back half is in the bucket
+                        tempValues[value.name][startBucket] += (traceEndX - xStart) * bucketScalar;
+                    } else {
+                        // here the front half is in the bucket
+                        tempValues[value.name][startBucket] += (xEnd - value.x) * bucketScalar;
+                    }
+                }
             } else {
                 // add in start bucket amount
                 let startX = xStart ? Math.max(xStart, value.x) : value.x;

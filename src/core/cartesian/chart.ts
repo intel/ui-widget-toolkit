@@ -467,6 +467,7 @@ export class D3Axis implements IRenderedAxis {
      */
     public setDomain(domain: any[], level: number = 0): D3Axis {
         this._domain[level] = domain;
+        this.getScale().domain(domain);
         return this;
     }
 
@@ -611,9 +612,9 @@ export class D3Axis implements IRenderedAxis {
         // Note that we're *not* clamping the x Axis to the data!
         // Clamping results in bizzare stretching of the data when
         // the user attempts to pan past the limits of the data.
-        let domain = self.getDomain();
-        let min = domain ? domain[0] : 0;
-        let max = domain ? domain[1] : 0;
+        let domain = self._d3axes[0].scale().domain();
+        let min = (domain ? domain[0] : 0) as number;
+        let max = (domain ? domain[1] : 0) as number;
 
         if (min === max) {
             max > 0 ? min = 0 : max = 0;
@@ -653,9 +654,10 @@ export class D3Axis implements IRenderedAxis {
 
         this._axisPixels = pixels;
 
-        // set the min to 1 for the range at least
-        let min = self.getDomain()[0];
-        let max = self.getDomain()[1];
+        let domain = self._d3axes[0].scale().domain();
+        let min = (domain ? domain[0] : 0) as number;
+        let max = (domain ? domain[1] : 0) as number;
+
         self.setDomain([Math.max(1e-9, min), max]);
         min = self.getDomain()[0];
         max = self.getDomain()[1];
@@ -891,7 +893,7 @@ export class D3Axis implements IRenderedAxis {
 
     public saveState() {
         this.cache.pixels = this.getRangePixels();
-        this.cache.domain = this.getDomain();
+        this.cache.domain = this.getScale().domain();
     }
 
     public render() {
@@ -907,7 +909,7 @@ export class D3Axis implements IRenderedAxis {
         // check if we can just reposition and not rerender an axis
         let alignment = self._axis.alignment;
         let pixels = this.getRangePixels();
-        let domain = this.getDomain();
+        let domain = this._d3axes[0].scale().domain();
         let requiresRender = this.cache.pixels !== pixels ||
             JSON.stringify(this.cache.domain) !== JSON.stringify(domain);
 
@@ -2433,6 +2435,38 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         }
     }
 
+    private updateAxes(options: IOptions) {
+        let self = this;
+        // need to make sure the scale is right for any zoomed state
+        let xScale = self._scaleAxis.getScale();
+        if (self._scaleAxis.getAxis().axisDesc.scaleType === AxisType.Logarithmic &&
+            self._options.xStart < 1) {
+            self._options.xStart = 1;
+            xScale.domain([self._options.xStart, self._options.xEnd]);
+        }
+        if (!this._options.disableZoomViewUpdate &&
+            self._options.hasOwnProperty('xStart') && self._options.xStart !== undefined &&
+            self._options.hasOwnProperty('xEnd') && self._options.xEnd !== undefined) {
+            xScale.domain([self._options.xStart, self._options.xEnd]);
+        } else {
+            xScale.domain(self._scaleAxis.getDomain());
+        }
+
+        if (this._options.enableXYZoom) {
+            let yAxis = self._axes[1];
+            let yScale = yAxis.getScale();
+            if (yAxis.getAxis().axisDesc.scaleType === AxisType.Logarithmic &&
+                self._options.yStart < 1) {
+                self._options.yStart = 1;
+                yScale.domain([self._options.yEnd, self._options.yStart]);
+            }
+            if (!this._options.disableZoomViewUpdate &&
+                self._options.hasOwnProperty('yStart') && self._options.yStart !== undefined &&
+                self._options.hasOwnProperty('yEnd') && self._options.yEnd !== undefined) {
+                yScale.domain([options.yEnd, options.yStart]);
+            }
+        }
+    }
     /**
       * this sets the graph height to the options.height and grows
       * the svg height as other elements are added.
@@ -2494,6 +2528,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             let d3Axis = self._axes[key];
             let rect: Rect;
 
+            // commit to the new scale
             switch (d3Axis.getAxis().alignment) {
                 case Alignment.Left:
                     rect = new Rect(self._graphRect.x - leftAxisWidth, self._graphRect.y);
@@ -2509,35 +2544,6 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                         self._graphRect.y + self._graphRect.height);
                     d3Axis.commitRange(self._graphRect.width);
                     break;
-            }
-
-            // weird thing here when we do an update layout to fix legend spacing we
-            // need to make sure the scale is right for any zoomed state
-            let xScale = self._scaleAxis.getScale();
-            if (self._scaleAxis.getAxis().axisDesc.scaleType === AxisType.Logarithmic &&
-                self._options.xStart < 1) {
-                self._options.xStart = 1;
-                xScale.domain([self._options.xStart, self._options.xEnd]);
-            }
-            if (!this._options.disableZoomViewUpdate &&
-                self._options.hasOwnProperty('xStart') && self._options.xStart !== undefined &&
-                self._options.hasOwnProperty('xEnd') && self._options.xEnd !== undefined) {
-                xScale.domain([self._options.xStart, self._options.xEnd]);
-            }
-
-            if (this._options.enableXYZoom) {
-                let yAxis = self._axes[1];
-                let yScale = yAxis.getScale();
-                if (yAxis.getAxis().axisDesc.scaleType === AxisType.Logarithmic &&
-                    self._options.yStart < 1) {
-                    self._options.yStart = 1;
-                    yScale.domain([self._options.yEnd, self._options.yStart]);
-                }
-                if (!this._options.disableZoomViewUpdate &&
-                    self._options.hasOwnProperty('yStart') && self._options.yStart !== undefined &&
-                    self._options.hasOwnProperty('yEnd') && self._options.yEnd !== undefined) {
-                    yScale.domain([options.yEnd, options.yStart]);
-                }
             }
 
             if (!d3Axis.getAxis().hidden) {
@@ -3032,6 +3038,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         // load the graph layout parameters
         self.loadOptions(options);
 
+        self.updateAxes(options);
+
         // update the layout of things that just need to be moved/resized
         if (this._options.fitToWindow) {
             self.updateLayoutToFit(options);
@@ -3050,18 +3058,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
 
             let xScale = self._scaleAxis.getScale();
             let yScale = self._axes[1].getScale();
-            if (self._scaleAxis.getAxis().axisDesc.scaleType === AxisType.Logarithmic &&
-                self._options.xStart < 1) {
-                self._options.xStart = 1;
-                xScale.domain([self._options.xStart, self._options.xEnd]);
-            }
-            if (!this._options.disableZoomViewUpdate &&
-                self._options.hasOwnProperty('xStart') && self._options.xStart !== undefined &&
-                self._options.hasOwnProperty('xEnd') && self._options.xEnd !== undefined) {
-                xScale.domain([self._options.xStart, self._options.xEnd]);
-            } else {
-                xScale.domain(self._scaleAxis.getDomain());
-            }
+
             this.updateD3ZoomState(xScale.domain()[0], xScale.domain()[1], yScale.domain()[0], yScale.domain()[1]);
 
             self._scaleAxis.render();

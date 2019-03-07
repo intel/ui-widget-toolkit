@@ -5,7 +5,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { MatCheckboxModule } from '@angular/material';
 
-import { ICheckboxTreeNode } from '../../../interface/ui-base';
+import * as UWT from 'ui-widget-toolkit';
 
 @Component({
     selector: 'uwt-checkbox-tree-node',
@@ -64,7 +64,7 @@ import { ICheckboxTreeNode } from '../../../interface/ui-base';
 })
 
 export class UWTCheckboxTreeNodeImpl implements OnChanges, DoCheck {
-    @Input() def: ICheckboxTreeNode;
+    @Input() def: UWT.ICheckboxTreeNode;
     @Output() onCheckChanged: EventEmitter<any> = new EventEmitter();
     @Output() onCheckCompleted: EventEmitter<any> = new EventEmitter();
 
@@ -157,7 +157,7 @@ export class UWTCheckboxTreeNodeImpl implements OnChanges, DoCheck {
         }
     }
 
-    _initializeChildren(node: ICheckboxTreeNode) {
+    _initializeChildren(node: UWT.ICheckboxTreeNode) {
         if (node && node.open) {
             for (let i = 0; i < node.children.length; ++i) {
                 node.children[i].parent = node;
@@ -214,7 +214,7 @@ export class UWTCheckboxTreeNodeImpl implements OnChanges, DoCheck {
 })
 
 export class UWTCheckboxTree {
-    @Input() data: ICheckboxTreeNode;
+    @Input() data: UWT.ICheckboxTreeNode;
     @Output() onCheckChanged: EventEmitter<any> = new EventEmitter();
     @Output() onCheckCompleted: EventEmitter<any> = new EventEmitter();
 

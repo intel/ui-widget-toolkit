@@ -5,11 +5,8 @@
   </div>
 </template>
 
-<script lang=ts>
-import { Chart } from "../../../../core/cartesian/chart";
-import { ColorManager } from "../../../../core/color-manager";
-import { D3Renderer } from "../../../../core/renderer";
-import { ICartesianChart } from "../../../../../dist";
+<script>
+import * as UWT from "ui-widget-toolkit";
 
 export default {
   name: "uwtChart",
@@ -31,7 +28,7 @@ export default {
     colorManager: {
       type: Object,
       default: () => {
-        return new ColorManager();
+        return new UWT.ColorManager();
       }
     },
     onRender: {
@@ -41,17 +38,17 @@ export default {
   },
   mounted: function() {
     if (!this.renderer) {
-      this.renderer = new D3Renderer("", this.colorManager);
+      this.renderer = new UWT.D3Renderer("", this.colorManager);
       this.renderer.setDiv(this.$refs["chart"]);
       this.renderer.setOnRenderCallback(this.onRender);
     }
     if (this.renderer && this.chartDef) {
-      Chart.finalize(this.chartDef);
+      UWT.Chart.finalize(this.chartDef);
       this.renderer.invalidate(this.chartDef, this.renderOptions);
     }
   },
   watch: {
-    chartDef: function(newValue: ICartesianChart, oldValue: ICartesianChart) {
+    chartDef: function(newValue, oldValue) {
       while (this.$refs["chart"].firstChild) {
         this.$refs["chart"].removeChild(this.$refs["chart"].firstChild);
       }
@@ -59,7 +56,7 @@ export default {
         if (oldValue) {
           this.renderer.destroy(oldValue);
         }
-        Chart.finalize(this.chartDef);
+        UWT.Chart.finalize(this.chartDef);
         this.renderer.invalidate(this.chartDef, this.renderOptions);
       }
     },
@@ -68,7 +65,7 @@ export default {
         while (this.$refs["chart"].firstChild) {
           this.$refs["chart"].removeChild(this.$refs["chart"].firstChild);
         }
-        Chart.finalize(this.chartDef);
+        UWT.Chart.finalize(this.chartDef);
         this.renderer.invalidate(this.chartDef, this.renderOptions);
       }
     },

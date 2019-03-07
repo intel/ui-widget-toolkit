@@ -13,11 +13,8 @@
   </div>
 </template>
 
-<script lang=ts>
-import { ILegend, IOptions } from "../../../../interface/ui-base";
-import { ColorManager } from "../../../../core/color-manager";
-import { D3Renderer } from "../../../../core/renderer";
-import { ChartGroup } from "../../../../core/cartesian/chart";
+<script>
+import * as UWT from "ui-widget-toolkit";
 import UWTChart from "../chart";
 
 export default {
@@ -37,7 +34,7 @@ export default {
     },
     chartDefs: {
       type: Array,
-      default: (): any[] => {
+      default: () => {
         return [];
       }
     },
@@ -55,7 +52,7 @@ export default {
     colorManager: {
       type: Object,
       default: () => {
-        return new ColorManager();
+        return new UWT.ColorManager();
       }
     },
     onRender: {
@@ -68,7 +65,7 @@ export default {
     }
   },
   mounted: function() {
-    ChartGroup.handleRenderOptionsUpdate(
+    UWT.ChartGroup.handleRenderOptionsUpdate(
       this,
       this.renderOptions,
       this.chartOptions
@@ -80,7 +77,7 @@ export default {
       for (let i = 0; i < this.chartDefWrappers.length; ++i) {
         let chart = this.chartDefWrappers[i];
 
-        let options: IOptions = { width: undefined };
+        let options = { width: undefined };
         if (chart.zoomEvent) {
           options.xStart = chart.zoomEvent.xStart;
           options.xEnd = chart.zoomEvent.xEnd;
@@ -107,13 +104,13 @@ export default {
           chartMap.set(this.chartDefs[i], true);
         }
       }
-      let legends: ILegend[] = [];
+      let legends = [];
       let oldList = this.chartDefWrappers;
       if (oldList) {
         for (let i = 0; i < oldList.length; ++i) {
           let oldChart = oldList[i];
           if (!chartMap.has(oldChart.chartDef)) {
-            ChartGroup.handleRemoveChart(oldChart.chartDef);
+            UWT.ChartGroup.handleRemoveChart(oldChart.chartDef);
           }
           if (oldChart.chartDef.legends) {
             legends = legends.concat(oldChart.chartDef.legends);
@@ -129,7 +126,7 @@ export default {
 
       this.chartOptions = [];
       this.sharedOptions = this.renderOptions; // requires for API to work
-      ChartGroup.handleChartUpdate(
+      UWT.ChartGroup.handleChartUpdate(
         this.chartDefs,
         this.chartOptions,
         this,
@@ -149,7 +146,7 @@ export default {
       if (this.chartDefs) {
         this.chartOptions = new Array(this.chartDefs.length);
       }
-      ChartGroup.handleRenderOptionsUpdate(
+      UWT.ChartGroup.handleRenderOptionsUpdate(
         this,
         this.renderOptions,
         this.chartOptions

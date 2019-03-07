@@ -1,8 +1,5 @@
 import * as React from 'react';
-import { Alignment } from '../../../interface/ui-base';
-import { Chart, ChartGroup } from '../../../core/cartesian/chart';
-import { D3Renderer } from '../../../core/renderer';
-import { AgGridRenderer } from '../../../core/ag-grid/ag-grid-renderer';
+import * as UWT from 'ui-widget-toolkit';
 
 export class UWTChart extends React.Component {
     constructor(props) {
@@ -12,12 +9,12 @@ export class UWTChart extends React.Component {
 
     update() {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.props.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.props.colorManager);
         }
 
         if (this.props.chartDef) {
             this.renderer.setDiv(this.chart.current);
-            Chart.finalize(this.props.chartDef);
+            UWT.Chart.finalize(this.props.chartDef);
             this.renderer.invalidate(this.props.chartDef, this.props.renderOptions);
         }
     }
@@ -78,7 +75,7 @@ export class UWTSwimlaneChart extends React.Component {
                 for (let i = 0; i < oldList.length; ++i) {
                     var oldChart = oldList[i];
                     if (!chartMap.has(oldChart)) {
-                        ChartGroup.handleRemoveChart(oldChart);
+                        UWT.ChartGroup.handleRemoveChart(oldChart);
                     }
                     if (oldChart.legends) {
                         legends = legends.concat(oldChart.legends);
@@ -95,7 +92,7 @@ export class UWTSwimlaneChart extends React.Component {
             }
 
             if (this.props.chartDefs) {
-                ChartGroup.handleChartUpdate(this.props.chartDefs,
+                UWT.ChartGroup.handleChartUpdate(this.props.chartDefs,
                     this.chartOptions, this, legends);
             }
             this.setState({
@@ -105,7 +102,7 @@ export class UWTSwimlaneChart extends React.Component {
         }
         if (this.props.renderOptions &&
             this.props.renderOptions != this.state.renderOptions) {
-            ChartGroup.handleRenderOptionsUpdate(this, this.props.renderOptions,
+            UWT.ChartGroup.handleRenderOptionsUpdate(this, this.props.renderOptions,
                 this.chartOptions);
             this.setState({
                 chartDefs: this.props.chartDefs,
@@ -119,7 +116,7 @@ export class UWTSwimlaneChart extends React.Component {
                 let chart = this.props.chartDefs[i];
                 if (!chart.hide) {
                     for (let j = 0; j < chart.axes.length; ++j) {
-                        if (chart.axes[j].alignment === Alignment.Bottom) {
+                        if (chart.axes[j].alignment === UWT.Alignment.Bottom) {
                             if (chart.axes[j].hidden != hasXAxis) {
                                 chart.axes[j].hidden = hasXAxis;
                                 if (chart.renderer) {
@@ -180,7 +177,7 @@ export class UWTPieChart extends React.Component {
 
     update() {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.props.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.props.colorManager);
         }
 
         if (this.props.chartDef) {
@@ -226,7 +223,7 @@ export class UWTGrid extends React.Component {
 
     update() {
         if (!this.renderer) {
-            this.renderer = new AgGridRenderer(undefined, undefined, this.props.colorManager);
+            this.renderer = new UWT.AgGridRenderer(undefined, undefined, this.props.colorManager);
         }
         this.renderer.setOnRenderCallback(this.props.onRender);
 
@@ -268,7 +265,7 @@ export class UWTFlowDiagram extends React.Component {
 
     update() {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.props.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.props.colorManager);
         }
         this.renderer.setOnRenderCallback(this.props.onRender);
 
@@ -308,7 +305,7 @@ export class UWTGraph extends React.Component {
 
     update() {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.props.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.props.colorManager);
         }
         this.renderer.setOnRenderCallback(this.props.onRender);
 
@@ -348,7 +345,7 @@ export class UWTHierarchyGraph extends React.Component {
 
     update() {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.props.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.props.colorManager);
         }
         this.renderer.setOnRenderCallback(this.props.onRender);
 
@@ -394,7 +391,7 @@ export class UWTSunburstChart extends React.Component {
 
     update() {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.props.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.props.colorManager);
         }
         this.renderer.setOnRenderCallback(this.props.onRender);
 
@@ -434,7 +431,7 @@ export class UWTTreeMap extends React.Component {
 
     update() {
         if (!this.renderer) {
-            this.renderer = new D3Renderer('', this.props.colorManager);
+            this.renderer = new UWT.D3Renderer('', this.props.colorManager);
         }
         this.renderer.setOnRenderCallback(this.props.onRender);
 

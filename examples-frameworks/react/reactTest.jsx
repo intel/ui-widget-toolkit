@@ -5,9 +5,8 @@ import ReactDOM from 'react-dom';
 
 import {
     UWTChart, UWTPieChart, UWTGrid, UWTFlowDiagram, UWTGraph,
-    UWTHierarchyGraph, UWTSunburstChart, UWTSwimlaneChart
-} from '../../dist/framework/react';
-import { UWTCheckboxTree } from '../../dist/framework/react';
+    UWTHierarchyGraph, UWTSunburstChart, UWTSwimlaneChart, UWTCheckboxTree
+} from 'ui-widget-toolkit/framework/react';
 
 let colorManager = new UWT.ColorManager();
 
@@ -35,13 +34,13 @@ let barChart = {
     }],
     legends: [{ alignment: UWT.Alignment.Right }],
     axes: [{
-            axisDesc: {
-                scaleType: UWT.AxisType.Ordinal,
-                keys: ['data-0', 'data-1', 'data-2']
-            },
-            alignment: UWT.Alignment.Bottom,
-            options: {rotateText: true}
-        }],
+        axisDesc: {
+            scaleType: UWT.AxisType.Ordinal,
+            keys: ['data-0', 'data-1', 'data-2']
+        },
+        alignment: UWT.Alignment.Bottom,
+        options: { rotateText: true }
+    }],
     isXContinuous: false
 }
 

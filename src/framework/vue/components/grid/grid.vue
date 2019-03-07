@@ -5,10 +5,8 @@
   </div>
 </template>
 
-<script lang=ts>
-import { ColorManager } from "../../../../core/color-manager";
-import { AgGridRenderer } from "../../../../core/ag-grid/ag-grid-renderer";
-import { IGrid } from "../../../../interface/grid";
+<script>
+import * as UWT from "ui-widget-toolkit";
 
 export default {
   name: "uwtGrid",
@@ -30,7 +28,7 @@ export default {
     colorManager: {
       type: Object,
       default: () => {
-        return new ColorManager();
+        return new UWT.ColorManager();
       }
     },
     onRender: {
@@ -40,7 +38,7 @@ export default {
   },
   mounted: function() {
     if (!this.renderer) {
-      this.renderer = new AgGridRenderer(
+      this.renderer = new UWT.AgGridRenderer(
         undefined,
         undefined,
         this.colorManager
@@ -59,7 +57,7 @@ export default {
     }
   },
   watch: {
-    gridDef: function(newVal: IGrid, oldVal: IGrid) {
+    gridDef: function(newVal, oldVal) {
       if (oldVal && oldVal.gridOptions && oldVal.gridOptions.gridClass) {
         this.$refs["grid"].classList.remove(oldVal.gridOptions.gridClass);
       }
@@ -77,12 +75,12 @@ export default {
         this.renderer.invalidate(this.gridDef);
       }
     },
-    gridStyle: function(newVal: any, oldVal: any) {
+    gridStyle: function(newVal, oldVal) {
       for (let key in newVal) {
         this.$refs["grid"].style[key] = newVal[key];
       }
     },
-    colorManager: function(newVal: ColorManager, oldVal: ColorManager) {
+    colorManager: function(newVal, oldValue) {
       if (this.renderer) {
         this.renderer.setColorManager(this.colorManager);
       }
