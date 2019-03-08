@@ -1527,38 +1527,39 @@ export class TraceResidencyDecimator implements ITraceResidencyDecimator {
             let endBucket = Math.floor(this._xValueToCoord(traceEndX));
 
             if (startBucket === endBucket) {
-                // tempValues[value.name][startBucket] += value.dx * bucketScalar;
+                tempValues[value.name][startBucket] += value.dx * bucketScalar;
                 // TODO consider we should/can fix this corner case
 
                 // Code below is technically more correct as it handles some edge cases
                 // but it's about 3x slower?
-                if (xStart === undefined || (value.x > xStart && traceEndX < xEnd)) {
-                    // here it's all in the existing bucket
-                    tempValues[value.name][startBucket] += value.dx * bucketScalar;
-                } else if (traceEndX > xStart) {
-                    if (traceEndX < xEnd) {
-                        // here the back half is in the bucket
-                        tempValues[value.name][startBucket] += (traceEndX - xStart) * bucketScalar;
-                    } else {
-                        // here the front half is in the bucket
-                        tempValues[value.name][startBucket] += (xEnd - value.x) * bucketScalar;
-                    }
-                }
+                // if (xStart === undefined || (value.x > xStart && traceEndX < xEnd)) {
+                //     // here it's all in the existing bucket
+                //     tempValues[value.name][startBucket] += value.dx * bucketScalar;
+                // } else if (traceEndX > xStart) {
+                //     if (traceEndX < xEnd) {
+                //         // here the back half is in the bucket
+                //         tempValues[value.name][startBucket] += (traceEndX - xStart) * bucketScalar;
+                //     } else {
+                //         // here the front half is in the bucket
+                //         tempValues[value.name][startBucket] += (xEnd - value.x) * bucketScalar;
+                //     }
+                // }
             } else {
                 // add in start bucket amount
                 let startX = xStart ? Math.max(xStart, value.x) : value.x;
                 let endStartBucket = xBucketValues[startBucket + 1];
-                tempValues[value.name][startBucket] = (endStartBucket - startX) * bucketScalar;
+                tempValues[value.name][startBucket] += (endStartBucket - startX) * bucketScalar;
 
                 // add in all the bucket values in between
-                for (let currBucket = startBucket + 1; currBucket < endBucket - 1; ++currBucket) {
+                for (let currBucket = startBucket + 1; currBucket < endBucket; ++currBucket) {
                     tempValues[value.name][currBucket] += 1;
                 }
 
                 // add in end bucket amount
                 let endX = xEnd ? Math.min(xEnd, traceEndX) : traceEndX;
                 let startEndBucket = xBucketValues[endBucket];
-                tempValues[value.name][endBucket - 1] = (endX - startEndBucket) * bucketScalar;
+                tempValues[value.name][endBucket] += (endX - startEndBucket) * bucketScalar;
+
             }
         }
 
@@ -1576,9 +1577,11 @@ export class TraceResidencyDecimator implements ITraceResidencyDecimator {
             let buckets = tempValues[this._states[stateIdx]];
             if (buckets) {
                 for (let bucket = 0; bucket < buckets.length; ++bucket) {
+                    let y = tempValues[this._states[stateIdx]][bucket] ?
+                        tempValues[this._states[stateIdx]][bucket] : 0;
                     this._decimatedValues[stateIdx][bucket] = {
                         x: xBucketValues[bucket],
-                        y: tempValues[this._states[stateIdx]][bucket] * 100
+                        y: y * 100
                     };
                 }
             } else {
@@ -1834,7 +1837,7 @@ export class SimpleMarkerDecimator implements IDecimator {
 
 
 export class XYHeatMapDecimator implements IXYStackedDecimator {
-    public static KEY = 'SummedValueMultiXYSeriesDecimator';
+    public static KEY = 'XYHeatMapDecimator';
 
     /** this function is used to map the input xyValues to x scaled values*/
     protected _xValueToCoord: (value: any) => number;
@@ -1989,7 +1992,7 @@ export class XYHeatMapDecimator implements IXYStackedDecimator {
             for (let bucket = 0; bucket < buckets.length; ++bucket) {
                 this._decimatedValues[stateIdx][bucket] = {
                     x: xBucketValues[bucket],
-                    y: tempValues[stateIdx][bucket]
+                    y: tempValues[stateIdx][bucket] ? tempValues[stateIdx][bucket] : 0
                 };
             }
         }
