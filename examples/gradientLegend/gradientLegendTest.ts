@@ -96,6 +96,7 @@ module GradientLegendTest {
                 isXContinuous: false
             }
 
+            UWT.Chart.finalize(chart);
             TestBase.addElement(chart, undefined, 'group1', undefined, { leftMargin: 90 });
         }
     }

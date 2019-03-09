@@ -58,6 +58,16 @@ export class VerticalBarSeries extends BaseSeries implements ICartesianSeriesPlu
         return undefined;
     }
 
+    public getMaxName(): string {
+        let name = '';
+        this._levelKeyList.forEach((level) => {
+            level.forEach((str) => {
+                name = str.length > name.length ? str : name;
+            })
+        })
+        return name;
+    }
+
     public getLevelKeys(): string[][] {
         return this._levelKeyList;
     }

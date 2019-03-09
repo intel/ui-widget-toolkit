@@ -40,6 +40,10 @@ export class D3Polar extends SVGRenderer {
         self.DEFAULT_GRAPH_HEIGHT = 250;
         self.MIN_MARGIN = { TOP: 10, BOTTOM: 10, LEFT: 10, RIGHT: 10 };
         self._options.height = self.DEFAULT_GRAPH_HEIGHT;
+        self._options.topMargin = self.MIN_MARGIN.TOP;
+        self._options.leftMargin = self.MIN_MARGIN.LEFT;
+        self._options.rightMargin = self.MIN_MARGIN.RIGHT;
+        self._options.bottomMargin = self.MIN_MARGIN.BOTTOM;
 
         self.initialize(element, renderer, parent);
 
@@ -288,9 +292,8 @@ export class D3Polar extends SVGRenderer {
             self._legend.render();
 
             let legendRect = self._legend.getRenderedRect();
-            self._svg
-                .attr('width', Math.max(self._options.width, xLegend + legendRect.width))
-                .attr('height', Math.max(self._options.height, yLegend + legendRect.height));
+            self._options.width = Math.max(self._options.width, xLegend + legendRect.width);
+            self._options.height = Math.max(self._options.height, yLegend + legendRect.height);
         }
     }
     /**
@@ -319,11 +322,6 @@ export class D3Polar extends SVGRenderer {
         self._graphRect.width = diameter;
         self._graphRect.height = diameter;
 
-        // RENDER THE CHART
-        self._svg
-            .attr('width', self._svgRect.width)
-            .attr('height', self._options.height);
-
         self._center = {
             x: self._radius + self._options.leftMargin,
             y: self._radius + self._options.topMargin
@@ -333,11 +331,16 @@ export class D3Polar extends SVGRenderer {
             .attr('transform', 'translate(' + self._center.x + ',' +
                 self._center.y + ')');
 
+        // RENDER THE CHART
         self.renderData();
-        self.renderLegend(pieLeft, pieTop, diameter);
 
-        self._options.rightMargin = self._svgRect.width -
-            (self._graphRect.x + self._graphRect.width);
-        self.updateHandles();
+        self._options.width = pieLeft + diameter;
+        self._options.height = pieTop + diameter;
+        self.renderLegend(pieLeft, pieTop, diameter);
+        // self.updateHandles();
+
+        self._svg
+            .attr('width', self._options.width)
+            .attr('height', self._options.height);
     }
 }

@@ -791,17 +791,26 @@ export class D3Legend {
             orientation = 'horizontal';
         }
 
+        this._legendSvg.selectAll('*').remove();
+
         if (this._legend.definition && this._legend.definition.type &&
             this._legend.definition.type === LegendType.Gradient) {
             this.renderGradientLegend();
+            // this is here duplicated because it's not seeing
+            // the rect when it measures so we add 40
+            let node: any = this._legendSvg.node();
+            let svgRect: any = node.getBoundingClientRect();
+            this._renderedRect = new Rect(svgRect.left, svgRect.top,
+                svgRect.right - svgRect.left + 40,
+                svgRect.bottom - svgRect.top);
         } else {
             this.renderDiscreteLegend(orientation);
+            let node: any = this._legendSvg.node();
+            let svgRect: any = node.getBoundingClientRect();
+            this._renderedRect = new Rect(svgRect.left, svgRect.top,
+                svgRect.right - svgRect.left,
+                svgRect.bottom - svgRect.top);
         }
-        let node: any = this._legendSvg.node();
-        let svgRect: any = node.getBoundingClientRect();
-        this._renderedRect = new Rect(svgRect.left, svgRect.top,
-            svgRect.right - svgRect.left,
-            svgRect.bottom - svgRect.top);
     }
 }
 
@@ -817,9 +826,12 @@ export class SVGRenderer extends UIElementRenderer {
     public createLayout() { }
 
     protected DEFAULT_GRAPH_HEIGHT: number;
-    protected MIN_MARGIN = { TOP: 0, BOTTOM: 0, LEFT: 0, RIGHT: 0 };
+    protected MIN_MARGIN = { TOP: 0, BOTTOM: 10, LEFT: 0, RIGHT: 10 };
     protected LEGEND_PADDING = { X: 10, Y: { TOP: 10, BOTTOM: 10 } };
-    protected AXIS_PADDING = { X: 10, Y: { TOP: 10, BOTTOM: 10 } }
+    protected AXIS_PADDING = { X: 10, Y: { TOP: 10, BOTTOM: 10 } };
+    protected _minSvgWidth: number;
+    protected _maxGraphWidth: number;
+    protected _maxSvgWidth: number;
 
     /** the parent renderer of this renderer */
     protected _renderer: UIRenderer;
@@ -860,6 +872,9 @@ export class SVGRenderer extends UIElementRenderer {
 
         let self = this;
         this._options = {};
+        this._minSvgWidth = 0;
+        this._maxGraphWidth = Number.MAX_VALUE;
+        this._maxSvgWidth = Number.MAX_VALUE;
         this._selectionHelper = new SelectionHelper(
             function (selection: any) {
                 self.addHover(selection);
@@ -894,10 +909,6 @@ export class SVGRenderer extends UIElementRenderer {
         }
 
         this._handleWidth = 10;
-        this._options.topMargin = this.MIN_MARGIN.TOP;
-        this._options.bottomMargin = this.MIN_MARGIN.BOTTOM;
-        this._options.leftMargin = this.MIN_MARGIN.LEFT;     // Space for the tick labels, lane-label
-        this._options.rightMargin = this.MIN_MARGIN.RIGHT;
         this._graphRect = new Rect(0, 0, 0, this.DEFAULT_GRAPH_HEIGHT);
 
         this._requiresRelayout = true;
@@ -1039,7 +1050,7 @@ export class SVGRenderer extends UIElementRenderer {
         let self = this;
 
         if (!self._options.disableResizeLeft) {
-            let leftHandle = self._svg.append('rect')
+            self._svg.append('rect')
                 .attr('opacity', 0)
                 .attr('width', self._handleWidth)
                 .attr('cursor', 'ew-resize')
@@ -1078,7 +1089,7 @@ export class SVGRenderer extends UIElementRenderer {
         }
 
         if (!self._options.disableResizeRight) {
-            let rightHandle = self._svg.append('rect')
+            self._svg.append('rect')
                 .attr('opacity', 0)
                 .attr('width', self._handleWidth)
                 .attr('cursor', 'ew-resize')
@@ -1091,13 +1102,13 @@ export class SVGRenderer extends UIElementRenderer {
                         if (d3.event.dx === 0) {
                             return;
                         }
-                        let rightMargin = Math.min(self._svgRect.width - self._options.leftMargin,
-                            Math.max(self.MIN_MARGIN.RIGHT, self._options.rightMargin - d3.event.dx));
 
                         let node: any = self._svg.node(); // this is just to make typescript happy
+                        let width = self._options.width + d3.event.dx;
+                        width = Math.max(self._minSvgWidth, width);
+                        width = Math.min(self._maxSvgWidth, width);
                         let options = {
-                            width: node.getBoundingClientRect().width,
-                            rightMargin: rightMargin,
+                            width: width,
                             xStart: self._options.xStart,
                             xEnd: self._options.xEnd,
                             animateDuration: 0

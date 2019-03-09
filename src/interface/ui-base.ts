@@ -173,7 +173,7 @@ export enum LegendItemShape {
 }
 
 export interface ILegendItem {
-    key: string,
+    key: any,
     name?: string,
     color?: string,
     opacity?: string,

@@ -122,6 +122,7 @@ module.exports = [
             new CopyWebpackPlugin([
                 { from: './examples/**/*.js', to: '../docs/.' },
                 { from: './examples/**/*.html', to: '../docs/.' },
+                { from: './examples/**/down-triangle-small.png', to: '../docs/.' },
                 { from: './dist/**/*', to: '../docs/.' },
             ])
         ]

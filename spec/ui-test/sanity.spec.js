@@ -1015,4 +1015,70 @@ describe('sanity', function () {
             done();
         });
     }, 10000);
+
+    it('vue', function (done) {
+        driver.get('file://' + path.join(__dirname + '../../../examples-frameworks/vue/vue.html'));
+        driver.findElements(By.tagName('canvas')).then(function (canvas) {
+            expect(canvas.length).toBe(1);
+        });
+        driver.findElements(By.tagName('svg')).then(function (svg) {
+            expect(svg.length).toBe(10);
+        });
+        driver.findElements(By.className('ag-root')).then(function (grid) {
+            expect(grid.length).toBe(1);
+        });
+        driver.findElements(By.className('node-row')).then(function (nodes) {
+            expect(nodes.length).toBe(3);
+            done();
+        });
+    }, 10000);
+
+    it('angular1', function (done) {
+        driver.get('file://' + path.join(__dirname + '../../../examples-frameworks/angular1/angular1Test.html'));
+        driver.findElements(By.tagName('canvas')).then(function (canvas) {
+            expect(canvas.length).toBe(1);
+        });
+        driver.findElements(By.tagName('svg')).then(function (svg) {
+            expect(svg.length).toBe(16);
+        });
+        driver.findElements(By.className('ag-root')).then(function (grid) {
+            expect(grid.length).toBe(1);
+            done();
+        });
+    }, 10000);
+
+    it('angular2', function (done) {
+        driver.get('file://' + path.join(__dirname + '../../../examples-frameworks/angular2/angular2Test.html'));
+        driver.findElements(By.tagName('canvas')).then(function (canvas) {
+            expect(canvas.length).toBe(1);
+        });
+        driver.findElements(By.tagName('svg')).then(function (svg) {
+            expect(svg.length).toBe(20);
+        });
+        driver.findElements(By.className('ag-root')).then(function (grid) {
+            expect(grid.length).toBe(1);
+        });
+        driver.findElements(By.className('node-row')).then(function (nodes) {
+            expect(nodes.length).toBe(7);
+            done();
+        });
+    }, 10000);
+
+
+    it('react', function (done) {
+        driver.get('file://' + path.join(__dirname + '../../../examples-frameworks/react/react.html'));
+        driver.findElements(By.tagName('canvas')).then(function (canvas) {
+            expect(canvas.length).toBe(1);
+        });
+        driver.findElements(By.tagName('svg')).then(function (svg) {
+            expect(svg.length).toBe(24);
+        });
+        driver.findElements(By.className('ag-root')).then(function (grid) {
+            expect(grid.length).toBe(1);
+        });
+        driver.findElements(By.className('node-row')).then(function (nodes) {
+            expect(nodes.length).toBe(6);
+            done();
+        });
+    }, 10000);
 });

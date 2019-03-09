@@ -128,19 +128,16 @@ let hRoot: UWT.IHierarchyNode = {
                     {
                         key: '172',
                         label: 'enp51s0',
-                        image: 'http://bshankar-desk1.sc.intel.com:6543/apps/ppe/img/ethernet.png',
                         type: ['device']
                     },
                     {
                         key: '170',
                         label: 'sda',
-                        image: 'http://bshankar-desk1.sc.intel.com:6543/apps/ppe/img/disk.png',
                         type: ['device']
                     },
                     {
                         key: '168',
                         label: 'sr0',
-                        image: 'http://bshankar-desk1.sc.intel.com:6543/apps/ppe/img/disk.png',
                         type: ['device']
                     }
                 ]
@@ -699,19 +696,16 @@ let hRoot2: UWT.IHierarchyNode = {
                     {
                         key: '172',
                         label: 'enp51s0',
-                        image: 'http://bshankar-desk1.sc.intel.com:6543/apps/ppe/img/ethernet.png',
                         type: ['device']
                     },
                     {
                         key: '170',
                         label: 'sda',
-                        image: 'http://bshankar-desk1.sc.intel.com:6543/apps/ppe/img/disk.png',
                         type: ['device']
                     },
                     {
                         key: '168',
                         label: 'sr0',
-                        image: 'http://bshankar-desk1.sc.intel.com:6543/apps/ppe/img/disk.png',
                         type: ['device']
                     }
                 ]
@@ -873,19 +867,16 @@ let hRoot3: UWT.IHierarchyNode = {
                         {
                             key: '172',
                             label: 'enp51s0',
-                            image: 'http://bshankar-desk1.sc.intel.com:6543/apps/ppe/img/ethernet.png',
                             type: ['device']
                         },
                         {
                             key: '170',
                             label: 'sda',
-                            image: 'http://bshankar-desk1.sc.intel.com:6543/apps/ppe/img/disk.png',
                             type: ['device']
                         },
                         {
                             key: '168',
                             label: 'sr0',
-                            image: 'http://bshankar-desk1.sc.intel.com:6543/apps/ppe/img/disk.png',
                             type: ['device']
                         }
                     ]

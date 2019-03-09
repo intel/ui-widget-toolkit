@@ -74,12 +74,13 @@ export class XYGroupSeries implements ICartesianSeriesPlugin {
         return '';
     }
 
-    public getMaxNameLength(): number {
-        let len: number = 0;
+    public getMaxName(): string {
+        let name = '';
         for (let i = 0; i < this._d3SeriesList.length; ++i) {
-            len = Math.max(len, this._d3SeriesList[i].getName().length);
+            let str = this._d3SeriesList[i].getName();
+            name = str.length > name.length ? str : name;
         }
-        return len;
+        return name;
     }
 
     /** check if the x is continuous series */

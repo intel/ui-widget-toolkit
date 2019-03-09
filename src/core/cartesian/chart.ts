@@ -1190,9 +1190,6 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
     /** the minimum height of the graph */
     private _minGraphHeight: number;
 
-    /** the maximum width of the graph */
-    private _maxGraphWidth: number;
-
     /** handle below graph to resize it vertically */
     private _bottomHandle: d3.Selection<d3.BaseType, {}, d3.BaseType, any>;
 
@@ -1234,8 +1231,10 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         this._handleWidth = 10;
 
         this.DEFAULT_GRAPH_HEIGHT = 120;
-        this.MIN_MARGIN = { TOP: 10, BOTTOM: 10, LEFT: 30, RIGHT: 30 };
         this._options.height = this.DEFAULT_GRAPH_HEIGHT;
+        this._options.topMargin = 0;
+        this._options.bottomMargin = 0;
+
         this._minGraphHeight = 0;
 
         this._svgMap = new WeakMap<Object, d3.Selection<d3.BaseType, {}, d3.BaseType, any>>();
@@ -2086,9 +2085,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
     }
 
     private updateGraphRect() {
-        let self = this;
-
-        if (!self._options.width) {
+        if (!this._options.width) {
             let node: any = this._parent.node();
             if (node) {
                 this._svgRect.width = node.getBoundingClientRect().width;
@@ -2097,19 +2094,21 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             this._svgRect.width = this._options.width;
         }
 
-        self._graphRect.x = self._options.leftMargin;
-        self._graphRect.y = self._options.topMargin;
-        self._graphRect.height = self._options.height;
-        self._graphRect.width = self._svgRect.width - (self._options.leftMargin + self._options.rightMargin);
+        let leftMargin = this._options.leftMargin ? this._options.leftMargin : 0;
+        this._graphRect.x = leftMargin;
+        this._graphRect.y = this._options.topMargin;
+        this._graphRect.height = this._options.height;
 
-        if (self._svgRect.width < (self._options.leftMargin + self._options.rightMargin)) {
+        let margins = leftMargin +
+            (this._options.rightMargin ? this._options.rightMargin : 0);
+
+        this._graphRect.width = this._svgRect.width - margins;
+
+        if (this._svgRect.width < (this._options.leftMargin + this._options.rightMargin)) {
             console.log('Error margins too wide for graph');
         }
-        if (self._minGraphHeight) {
-            self._graphRect.height = Math.max(self._minGraphHeight, self._graphRect.height);
-        }
-        if (self._maxGraphWidth) {
-            self._graphRect.width = Math.min(self._maxGraphWidth, self._graphRect.width);
+        if (this._minGraphHeight) {
+            this._graphRect.height = Math.max(this._minGraphHeight, this._graphRect.height);
         }
     }
 
@@ -2121,8 +2120,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
 
         // relayout so remove everything
         if (this._svg) {
-            this._svg.selectAll('*')
-                .remove();
+            this._svg.selectAll('*').remove();
         }
 
         // this sets graph rect max width so banded charts can shrink it if necessary
@@ -2183,7 +2181,6 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         // put graph last so it's on top for selections
         self._graphSvg = this._svg.append('g').attr('class', 'graphGroup').append('svg');
 
-        let ySum = 0;
         for (let seriesIdx = 0; seriesIdx < layers.length; ++seriesIdx) {
             // create the new series and map it to the correct render axes
             let layer = layers[seriesIdx];
@@ -2320,16 +2317,13 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 d3YAxis.setDomain([presetRange.min, presetRange.max]);
             }
 
-            if (!this._options.disableAutoResizeHeight && d3YAxis.isBanded()) {
-                // self._minGraphHeight = Math.max(d3YAxis.getDomain().length * 15, self._minGraphHeight);
-            }
+            // if (!this._options.disableAutoResizeHeight && d3YAxis.isBanded()) {
+            //     self._minGraphHeight = Math.max(d3YAxis.getDomain().length * 15, self._minGraphHeight);
+            // }
         }
 
         // auto resize left/right margins if needed
         if (!this._options.disableAutoResizeWidth) {
-            let rightMarginWidth = 0;
-            let leftMarginWidth = 0;
-
             // add in left/right spacing due to axes
             let leftAxisWidth = 0;
             let rightAxisWidth = 0;
@@ -2353,35 +2347,43 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 }
             }
 
-            rightMarginWidth = Math.max(rightAxisWidth, rightMarginWidth);
-            leftMarginWidth = Math.max(leftAxisWidth, leftMarginWidth);
+            let rightMarginWidth = rightAxisWidth;
+            let leftMarginWidth = leftAxisWidth;
+
+            rightMarginWidth += this._handleWidth + this.MIN_MARGIN.RIGHT;
+            leftMarginWidth += this._handleWidth;
 
             // add in left/right spacing due to legends
             // guess the size of the legend.  We could render and then
             // get actual legend but self is much faster with lots of data
-            let legendChars = 0;
+            let maxChars = '';
             for (let seriesIdx = 0; seriesIdx < layers.length; ++seriesIdx) {
                 let layer: ILayer = layers[seriesIdx];
-                let decimationChars = 0;
+                let decimationChars = '';
 
                 if ((layer as any).decimator) {
-                    decimationChars = (layer as any).decimator.getName().length;
+                    decimationChars = (layer as any).decimator.getName();
                 }
 
                 let d3Series = self._seriesMap.get(layer);
                 for (let i = 0; i < layer.data.length; ++i) {
-                    let nameChars = d3Series.getName().length;
-                    if (d3Series.hasOwnProperty('getMaxNameLength')) {
-                        nameChars = (d3Series as any).getMaxNameLength();
+                    let str = d3Series.getName() + decimationChars;
+                    maxChars = str.length > maxChars.length ? str : maxChars;
+                    if (d3Series['getMaxName'] !== undefined) {
+                        str = (d3Series as any).getMaxName() + decimationChars;
+                        maxChars = str.length > maxChars.length ? str : maxChars;
                     }
-                    legendChars = Math.max(nameChars + decimationChars, legendChars);
                 }
             }
 
-            let legendWidth: number = 0;
             for (let legendIdx = 0; legendIdx < self._legends.length; ++legendIdx) {
                 let d3Legend = self._legends[legendIdx];
-                legendWidth = legendChars * 8 + 10;
+                d3Legend.setItems([{ key: maxChars }]);
+                d3Legend.setPosition(new Rect(0, 0, 0, 0));
+                d3Legend.render();
+                d3Legend.setItems([]);
+
+                let legendWidth = d3Legend.getRenderedRect().width;
 
                 if (d3Legend.getAlignment() === Alignment.Left) {
                     leftMarginWidth += Math.max(legendWidth, leftTitleWidth);
@@ -2397,10 +2399,20 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 leftMarginWidth += leftTitleWidth;
             }
 
-            if (leftMarginWidth > self._options.leftMargin ||
+            if (self._options.leftMargin === undefined || self._options.rightMargin === undefined ||
+                leftMarginWidth > self._options.leftMargin ||
                 rightMarginWidth > self._options.rightMargin) {
-                self._options.leftMargin = Math.max(leftMarginWidth, self._options.leftMargin);
-                self._options.rightMargin = Math.max(rightMarginWidth, self._options.rightMargin);
+                let leftMargin = self._options.leftMargin !== undefined ? self._options.leftMargin : 0;
+                let rightMargin = self._options.rightMargin !== undefined ? self._options.rightMargin : 0;
+
+                self._options.leftMargin = Math.max(leftMarginWidth, leftMargin);
+                self._options.rightMargin = Math.max(rightMarginWidth, rightMargin);
+
+                self._minSvgWidth = self._options.leftMargin + self._options.rightMargin;
+                self._maxSvgWidth = self._maxGraphWidth + self._options.leftMargin +
+                    self._options.rightMargin;
+
+                self._options.width = Math.min(self._options.width, self._maxSvgWidth);
                 self._requiresRelayout = true;
             }
 
@@ -3037,7 +3049,6 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
 
         // load the graph layout parameters
         self.loadOptions(options);
-
         self.updateAxes(options);
 
         // update the layout of things that just need to be moved/resized
@@ -3060,9 +3071,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             let yScale = self._axes[1].getScale();
 
             this.updateD3ZoomState(xScale.domain()[0], xScale.domain()[1], yScale.domain()[0], yScale.domain()[1]);
-
-            self._scaleAxis.render();
         }
+        self._scaleAxis.render();
 
         if (chart.contextMenuItems) {
             for (let i = 0; i < chart.contextMenuItems.length; ++i) {
