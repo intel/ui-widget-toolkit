@@ -296,7 +296,11 @@ export class XYGroupSeries implements ICartesianSeriesPlugin {
     public render(yOffsets?: number[]): void {
 
         if (this._d3SeriesList.length > 0) {
-            let dataLength: number = this._d3SeriesList[0].getOutputData().length();
+            let dataLength: number = 0;
+            this._d3SeriesList.forEach((data) => {
+                dataLength = Math.max(dataLength, data.getOutputData().length());
+            })
+
             yOffsets = Array.apply(null, Array(dataLength)).
                 map(Number.prototype.valueOf, 0);
 

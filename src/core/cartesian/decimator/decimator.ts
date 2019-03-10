@@ -743,8 +743,8 @@ export class NEWSDecimationValue extends CandlestickValue implements INEWSDecima
      *
      * @param value - an XYValue to initialize the decimation value
      */
-    constructor() {
-        super(undefined, undefined, undefined, undefined, undefined);
+    constructor(x?: any) {
+        super(x, undefined, undefined, undefined, undefined);
         this._bucketPts = 0;
     } // constructor
 } // class DecimationValue
@@ -1675,13 +1675,10 @@ export class TraceStateDecimator implements ITraceStateDecimator {
 
         // NOTE: I do this up here so I can cheat and use the x values here
         // so later I don't keep calling this._xCoordToValue
-        let xBucketValues = [];
+        this._decimatedValues = [];
         for (let bucket = 0; bucket <= globalEndBucket; ++bucket) {
-            xBucketValues.push(this._xCoordToValue(bucket));
+            this._decimatedValues[bucket] = new NEWSDecimationValue(this._xCoordToValue(bucket));
         }
-
-        this._decimatedValues = Array.apply(null, Array(globalEndBucket)).
-            map(() => { return new NEWSDecimationValue(); })
 
         let states: { [index: string]: number } = {};
         this._states.forEach((state, i) => {
@@ -1698,7 +1695,6 @@ export class TraceStateDecimator implements ITraceStateDecimator {
             let endBucket = Math.floor(this._xValueToCoord(traceEndX));
 
             if (!this._decimatedValues[startBucket].entry) {
-                this._decimatedValues[startBucket].x = xBucketValues[startBucket];
                 this._decimatedValues[startBucket].entry = states[value.name];
                 this._decimatedValues[startBucket].exit = states[value.name];
                 this._decimatedValues[startBucket].min = states[value.name];
@@ -1721,7 +1717,6 @@ export class TraceStateDecimator implements ITraceStateDecimator {
                 // add in all the bucket values in between
                 if (endBucket !== globalEndBucket) {
                     for (let currBucket = startBucket + 1; currBucket <= endBucket; ++currBucket) {
-                        this._decimatedValues[currBucket].x = xBucketValues[currBucket];
                         this._decimatedValues[currBucket].entry = states[value.name];
                         this._decimatedValues[currBucket].exit = states[value.name];
                         this._decimatedValues[currBucket].min = states[value.name];
@@ -1733,8 +1728,10 @@ export class TraceStateDecimator implements ITraceStateDecimator {
 
         // convert state index to actual state names for rendering
         this._decimatedValues.forEach(newsValue => {
+            let exit = newsValue.exit;
             newsValue.entry = this._states[newsValue.entry];
-            newsValue.exit = this._states[newsValue.exit];
+            newsValue.exit = this._states[exit];
+            newsValue.y = this._states[exit];
             newsValue.min = this._states[newsValue.min];
             newsValue.max = this._states[newsValue.max];
         })

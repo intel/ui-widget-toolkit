@@ -485,6 +485,32 @@ describe('sanity', function () {
             });
         });
         driver.findElement(By.id('graphArea5')).then(function (graph) {
+            graph.findElement(By.className('chart-line')).then(function (line) {
+                expect(line.length).toBe(1);
+            });
+            graph.findElement(By.className('lane-title')).then(function (title) {
+                title.getText().then(function (text) {
+                    expect(text).toBe('Trace State');
+                });
+            });
+            graph.findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+            });
+        });
+        driver.findElement(By.id('graphArea6')).then(function (graph) {
+            graph.findElement(By.className('chart-line')).then(function (line) {
+                expect(line.length).toBe(1);
+            });
+            graph.findElement(By.className('lane-title')).then(function (title) {
+                title.getText().then(function (text) {
+                    expect(text).toBe('Trace State');
+                });
+            });
+            graph.findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+            });
+        });
+        driver.findElement(By.id('graphArea7')).then(function (graph) {
             graph.findElements(By.tagName('canvas')).then(function (canvas) {
                 expect(canvas.length).toBe(1);
                 done();
@@ -501,7 +527,7 @@ describe('sanity', function () {
 
         driver.findElement(By.id('graphArea0')).then(function (graph) {
             graph.findElements(By.className('node')).then(function (nodes) {
-                expect(nodes.length).toBe(332);
+                expect(nodes.length).toBe(329);
             });
             graph.findElements(By.className('link')).then(function (links) {
                 expect(links.length).toBe(32);
@@ -525,7 +551,7 @@ describe('sanity', function () {
         });
         driver.findElement(By.id('graphArea3')).then(function (graph) {
             graph.findElements(By.className('node')).then(function (nodes) {
-                expect(nodes.length).toBe(46);
+                expect(nodes.length).toBe(43);
             });
             graph.findElements(By.className('link')).then(function (links) {
                 expect(links.length).toBe(8);
@@ -533,7 +559,7 @@ describe('sanity', function () {
         });
         driver.findElement(By.id('graphArea4')).then(function (graph) {
             graph.findElements(By.className('node')).then(function (nodes) {
-                expect(nodes.length).toBe(194);
+                expect(nodes.length).toBe(191);
             });
             graph.findElements(By.className('link')).then(function (links) {
                 expect(links.length).toBe(20);
