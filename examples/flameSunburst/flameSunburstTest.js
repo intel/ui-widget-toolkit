@@ -105,6 +105,20 @@ var FlameSunburstTest;
         }
         {
             var chart = {
+                title: 'Trace Sparse',
+                type: UWT.UIType.Cartesian,
+                dataSets: [{
+                        disableWebWorkers: true,
+                        renderType: UWT.RenderType.FlameChart,
+                        data: trace2
+                    }],
+                isXContinuous: true
+            };
+            UWT.Chart.finalize(chart);
+            TestBase.addElement(chart, '', 'trace2');
+        }
+        {
+            var chart = {
                 title: 'Trace Sparse Line',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
