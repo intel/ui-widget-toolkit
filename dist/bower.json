@@ -1,0 +1,23 @@
+{
+  "name": "ui-widget-toolkit",
+  "description": "UI API and implemention for rendering various charts",
+  "main": "",
+  "authors": [
+    "Tony Mongkolsmai"
+  ],
+  "license": "BSD-3",
+  "homepage": "github.com/intel/ui-widget-toolkit",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0",
+    "paper-checkbox": "PolymerElements/paper-checkbox#^2.0",
+    "iron-collapse": "PolymerElements/iron-collapse#^2.0"
+  }
+}

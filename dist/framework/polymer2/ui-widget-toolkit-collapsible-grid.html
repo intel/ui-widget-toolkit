@@ -1,0 +1,93 @@
+<link rel='import' href='../../../bower_components/iron-collapse/iron-collapse.html'>
+
+<script src='../../js/ui-widget-toolkit.js'></script>
+
+<dom-module id='uwt-collapsible-grid'>
+    <link rel="import" type="css" href="../../css/ag-grid/ag-grid.css">
+    <link rel="import" type="css" href="../../css/ag-grid/ag-theme-fresh.css">
+    <template>
+        <style>
+            #grid-title {
+                cursor: pointer;
+                border: var(--uwt-grid-header-border, 1px solid black);
+                background: var(--uwt-grid-header-background, white);
+            }
+
+            #grid {
+                height: var(--uwt-grid-height, 200px);
+            }
+        </style>
+
+        <div id='grid-title' on-click='toggle'>{{gridTitle}}</div>
+        <iron-collapse opened id='collapse'>
+            <div id='grid'></div>
+        </iron-collapse>
+    </template>
+    <script>
+        class CollapsibleGrid extends Polymer.Element {
+            static get is() { return 'uwt-collapsible-grid'; }
+            static get properties() {
+                return {
+                    gridTitle: {
+                        type: String
+                    },
+                    gridDef: {
+                        type: Object,
+                        observer: '_onDataChanged'
+                    },
+                    colorManager: {
+                        type: Object,
+                        value: function () { return new UWT.ColorManager() },
+                        observer: '_onColorManagerChanged'
+                    },
+                }
+                onRender: {
+                    type: Function
+                }
+                renderer: {
+                    type: Object
+                }
+            }
+            toggle() {
+                this.$.collapse.toggle();
+            }
+            connectedCallback() {
+                super.connectedCallback();
+
+                if (!this.renderer) {
+                    this.renderer = new UWT.AgGridRenderer(undefined, undefined, this.colorManager);
+                }
+                this.renderer.setOnRenderCallback(this.onRender);
+
+                if (this.grid) {
+                    this.renderer.setDiv(this.grid, this.$.grid);
+                    this.renderer.invalidate(this.grid);
+                }
+            }
+            _onDataChanged(newVal, oldVal) {
+                if (oldVal && oldVal.gridOptions.gridClass) {
+                    this.$.grid.classList.remove(oldVal.gridOptions.gridClass);
+                }
+                if (newVal) {
+                    if (newVal.gridOptions.gridClass) {
+                        this.$.grid.classList.add(newVal.gridOptions.gridClass);
+                    } else {
+                        this.$.grid.classList.add('ag-theme-fresh');
+                    }
+                }
+
+                this.grid = newVal;
+                if (this.renderer && this.grid) {
+                    this.renderer.setDiv(this.grid, this.$.grid);
+                    this.renderer.invalidate(this.grid);
+                }
+            }
+            _onColorManagerChanged() {
+                if (this.renderer) {
+                    this.renderer.setColorManager(this.colorManager);
+                }
+            }
+        }
+        customElements.define(CollapsibleGrid.is, CollapsibleGrid);
+    </script>
+</dom-module>

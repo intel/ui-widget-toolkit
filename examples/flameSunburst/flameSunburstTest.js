@@ -103,6 +103,34 @@ var FlameSunburstTest;
             UWT.Chart.finalize(chart);
             TestBase.addElement(chart, '', 'group');
         }
+        {
+            var chart = {
+                title: 'Trace Sparse Line',
+                type: UWT.UIType.Cartesian,
+                dataSets: [{
+                        disableWebWorkers: true,
+                        renderType: UWT.RenderType.Line,
+                        data: trace2
+                    }],
+                isXContinuous: true
+            };
+            UWT.Chart.finalize(chart);
+            TestBase.addElement(chart, '', 'trace2');
+        }
+        {
+            var chart = {
+                title: 'Trace Sparse Area',
+                type: UWT.UIType.Cartesian,
+                dataSets: [{
+                        disableWebWorkers: true,
+                        renderType: UWT.RenderType.Area,
+                        data: trace2
+                    }],
+                isXContinuous: true
+            };
+            UWT.Chart.finalize(chart);
+            TestBase.addElement(chart, '', 'trace2');
+        }
     }
     FlameSunburstTest.createView = createView;
     function createWebGLView() {
