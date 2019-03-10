@@ -1501,10 +1501,6 @@ export class TraceResidencyDecimator implements ITraceResidencyDecimator {
         if (start > 0) {
             --start;
         }
-        // the last element would be caught by the algorithm already
-        if (end === values.length()) {
-            --end;
-        }
 
         // NOTE: I do this up here so I can cheat and use the x values here
         // so later I don't keep calling this._xCoordToValue
@@ -1667,10 +1663,6 @@ export class TraceStateDecimator implements ITraceStateDecimator {
 
         if (start > 0) {
             --start;
-        }
-        // the last element would be caught by the algorithm already
-        if (end === values.length()) {
-            --end;
         }
 
         // NOTE: I do this up here so I can cheat and use the x values here
