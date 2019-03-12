@@ -1,5 +1,5 @@
 import {
-    ICss, IEvent, UIElement, IBuffer, ITooltipData, ILegendItem
+    ICss, IEvent, UIElement, IBuffer, ITooltipData, ILegendItem, Alignment
 } from '../../../interface/ui-base';
 import {
     IXYRect
@@ -30,7 +30,7 @@ export class RectSeries extends BaseSeries implements ICartesianSeriesPlugin {
     protected _values: IBuffer<IXYRect>;
     protected _classes: string;
     protected _layer: IXYLayer;
-    protected _showTitleText: string;
+    protected _description: any;
 
     constructor(chart: ID3Chart, layer: ILayer,
         svg: d3.Selection<d3.BaseType, {}, d3.BaseType, any>, xAxis: D3Axis, yAxis: D3Axis,
@@ -44,7 +44,7 @@ export class RectSeries extends BaseSeries implements ICartesianSeriesPlugin {
 
     public setData(layer: ILayer) {
         this._data = layer.data[0] as IRectSeries;
-        this._showTitleText = (layer.data[0] as IRectSeries).showTitleText;
+        this._description = (layer.data[0] as IRectSeries).description;
         this._values = new SimpleBuffer(this._data.rects);
         this._classes = this.getClassNames(seriesTypeName);
     }
@@ -218,27 +218,32 @@ export class RectSeries extends BaseSeries implements ICartesianSeriesPlugin {
             .attr('y', function (d: any) { return self.yMap(d.y1); })
             .attr('height', function (d: any) { return self.yMap(d.y) - self.yMap(d.y1); })
 
-        if (this._showTitleText) {
+        if (this._description) {
             let text = self._d3svg.selectAll(self.getSelectionClasses(seriesTypeName) + '.' + self._layer.data[0].name).filter('text').data(this._data.rects);
             text.exit().remove();
-            text.enter()
+            let enter = text.enter()
                 .append('text')
                 .classed(self._classes, true)
                 .classed(self._layer.data[0].name, true)
-                .text(function (d: any) { return self._layer.data[0].name })
-                .attr('dy', '-1em')
-                .attr('fill', color)
-                .attr('transform', function (d: any) {
-                    return 'translate(' + self.xMap(d.x1) + ', ' +
-                        self.yMap(d.y1) + ') rotate(' + 90 + ')'
-                })
+                .text(function (d: any) { return self._description.text })
+                .attr('dy', '-.5em')
+                .attr('fill', color);
 
-            text
-                .attr('transform', function (d: any) {
-                    return 'translate(' + self.xMap(d.x1) + ', ' +
-                        self.yMap(d.y1) + ') rotate(' + 90 + ')'
-                })
-
+            let translate = (d: any) => {
+                switch (self._description.alignment) {
+                    case Alignment.Top:
+                        return `translate(${self.xMap(d.x)}, ${self.yMap(d.y1)})`
+                    case Alignment.Bottom:
+                        return `translate(${self.xMap(d.x)}, ${self.yMap(d.y)})`
+                    case Alignment.Left:
+                        return `translate(${self.xMap(d.x)}, ${self.yMap(d.y)}) rotate(-90)`
+                    case Alignment.Right:
+                    default:
+                        return `translate(${self.xMap(d.x1)}, ${self.yMap(d.y1)}) rotate(90)`
+                }
+            }
+            enter.attr('transform', translate);
+            text.attr('transform', translate);
         }
         self.applyStyles();
     }

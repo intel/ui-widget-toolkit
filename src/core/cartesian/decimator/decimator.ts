@@ -123,8 +123,8 @@ export class CustomPointXYDecimator implements IXYDecimator {
         if (right < inputValues.length()) {
             ++right;
         }
-
         let xStartCoord: number;
+        let xEndCoord: number;
         if (xStart) {
             xStartCoord = Math.floor(this._xValueToCoord(xStart));
         } else {
@@ -132,13 +132,15 @@ export class CustomPointXYDecimator implements IXYDecimator {
         }
 
         let startIdx = left;
+        let endIdx: number;
         for (let index = left; index < right; ++index) {
             let inputValue = inputValues.get(index);
             let xEndCoord = Math.floor(this._xValueToCoord(inputValue.x));
 
-            let endIdx = index;
-            if (endIdx === right - 1 || xEndCoord !== xStartCoord &&
+            endIdx = index;
+            if (xEndCoord !== xStartCoord &&
                 (xEnd === undefined || (inputValue.x < xEnd && inputValue.x > xStart))) {
+
                 this._decimatedValues = this._decimatedValues.concat(
                     this._customFunc(inputValues, startIdx, endIdx,
                         this._yValueToCoord, this._xValueToCoord,
@@ -147,6 +149,12 @@ export class CustomPointXYDecimator implements IXYDecimator {
                 xStartCoord = xEndCoord;
                 startIdx = endIdx;
             }
+        }
+        if (startIdx !== inputValues.length()) {
+            this._decimatedValues = this._decimatedValues.concat(
+                this._customFunc(inputValues, startIdx, endIdx + 1,
+                    this._yValueToCoord, this._xValueToCoord,
+                    this._xCoordToValue(xStartCoord), this._xCoordToValue(xEndCoord)));
         }
 
         return this._decimatedValues;
@@ -927,6 +935,7 @@ export class NEWSPointDecimator extends NEWSBaseDecimator {
                 this.addToBucket(currentPoint, inputValue);
             }
         }
+
         if (currentPoint) {
             this.finalizeBucket(currentPoint);
             this._buckets.push(currentPoint);
@@ -1707,13 +1716,11 @@ export class TraceStateDecimator implements ITraceStateDecimator {
                     Math.max(this._decimatedValues[startBucket].max, states[value.name]);
 
                 // add in all the bucket values in between
-                if (endBucket !== globalEndBucket) {
-                    for (let currBucket = startBucket + 1; currBucket <= endBucket; ++currBucket) {
-                        this._decimatedValues[currBucket].entry = states[value.name];
-                        this._decimatedValues[currBucket].exit = states[value.name];
-                        this._decimatedValues[currBucket].min = states[value.name];
-                        this._decimatedValues[currBucket].max = states[value.name];
-                    }
+                for (let currBucket = startBucket + 1; currBucket <= endBucket; ++currBucket) {
+                    this._decimatedValues[currBucket].entry = states[value.name];
+                    this._decimatedValues[currBucket].exit = states[value.name];
+                    this._decimatedValues[currBucket].min = states[value.name];
+                    this._decimatedValues[currBucket].max = states[value.name];
                 }
             }
         }

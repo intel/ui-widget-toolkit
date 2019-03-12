@@ -40,6 +40,7 @@ export class PIXIHelper {
     protected _selectionItems: { [index: string]: any } = {};
 
     constructor(useWebGLRenderer = true) {
+        PIXI.utils.skipHello();
         if (useWebGLRenderer) {
             this._renderer = new PIXI.WebGLRenderer(
                 { transparent: true, antialias: true });

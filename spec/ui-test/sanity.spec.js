@@ -847,6 +847,24 @@ describe('sanity', function () {
             });
             graphs[2].findElements(By.className('axis')).then(function (axes) {
                 expect(axes.length).toBe(2);
+            });
+            graphs[4].findElements(By.className('chart-rect')).then(function (rects) {
+                expect(rects.length).toBe(4);
+            });
+            graphs[4].findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+            });
+            graphs[5].findElements(By.tagName('text')).then(function (text) {
+                expect(text.length).toBe(2);
+            });
+            graphs[6].findElements(By.className('chart-rect')).then(function (rects) {
+                expect(rects.length).toBe(4);
+            });
+            graphs[6].findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+            });
+            graphs[7].findElements(By.tagName('text')).then(function (text) {
+                expect(text.length).toBe(2);
                 done();
             });
         });
@@ -905,6 +923,18 @@ describe('sanity', function () {
                         done();
                     });
                 });
+            });
+            graphs[9].findElements(By.tagName('circle')).then(function (circles) {
+                expect(circles.length).toBe(3);
+            });
+            graphs[9].findElements(By.tagName('text')).then(function (text) {
+                expect(text.length).toBe(3);
+            });
+            graphs[11].findElements(By.tagName('circle')).then(function (circles) {
+                expect(circles.length).toBe(6);
+            });
+            graphs[11].findElements(By.tagName('text')).then(function (text) {
+                expect(text.length).toBe(6);
             });
         });
     }, 10000);

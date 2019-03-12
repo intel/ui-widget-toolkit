@@ -134,7 +134,7 @@ describe("decimator-sanity", function () {
         })
     });
 
-    it("newss-point-cross-check", function () {
+    it("news-point-cross-check", function () {
         let newsPointDecimator = new NEWSPointDecimator()
         newsPointDecimator.initialize(xyXScale, xyXScale.invert, xyYScale);
         let newsValues = newsPointDecimator.decimateValues(xyDomain[0], xyDomain[1], xyData[0]);
@@ -355,7 +355,7 @@ describe("decimator-sanity", function () {
 
         // expect decimation time to be < 50ms
         expect(endTime - startTime).toBeLessThanOrEqual(120);
-        expect(tracedStateValues.length).toBe(1200);
+        expect(tracedStateValues.length).toBe(1201);
 
         // simple bounds checking
         tracedStateValues.forEach((value, i) => {

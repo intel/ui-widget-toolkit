@@ -434,6 +434,7 @@ export class Brush {
                 .on('end', this.onBrushEnd);
         } else {
             this._brush = d3.brushX()
+                .extent([[0, 0], [this._rect.width, this._rect.height]])
                 .on('start', this.onBrushStart)
                 .on('brush', this.onBrushMove)
                 .on('end', this.onBrushEnd);

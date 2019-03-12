@@ -1,5 +1,5 @@
 import { ITreeNode, ITraceValue, ISummaryValue } from '../interface/chart/series-data';
-import { IBuffer, ICheckboxTreeNode } from '../interface/ui-base';
+import { IBuffer, ICheckboxTreeNode, IRect } from '../interface/ui-base';
 
 export function getSelectionName(className: string) {
     if (typeof (className) === 'number') {
@@ -411,4 +411,9 @@ export function runFunctionOnLeaf(node: ICheckboxTreeNode,
     } else {
         func(node);
     }
+}
+
+export function isOverlapping(rect1: IRect, rect2: IRect) {
+    return rect1.x <= rect2.right && rect1.right >= rect2.x &&
+        rect1.y <= rect2.bottom && rect1.bottom >= rect2.y;
 }

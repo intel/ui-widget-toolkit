@@ -1,6 +1,6 @@
 {
     "name": "ui-widget-toolkit",
-    "version": "1.5.6",
+    "version": "1.5.7",
     "description": "UI widgets built on top of D3, Pixi.js and ag-grid-community",
     "author": {
         "email": "tony.mongkolsmai@intel.com"
@@ -104,5 +104,6 @@
         "test": "./node_modules/.bin/jasmine spec/ui-test/sanity.spec.js; ./node_modules/.bin/jasmine spec/unit-test/data.spec.js; ./node_modules/.bin/jasmine spec/unit-test/decimator.spec.js"
     },
     "browser": "js/ui-widget-toolkit.js",
-    "module": "js/ui-widget-toolkit.js"
+    "module": "js/ui-widget-toolkit.js",
+    "main": "js/ui-widget-toolkit.js"
 }

@@ -157,7 +157,9 @@ module LineTest {
                 dataSets: [{
                     renderType: UWT.RenderType.Line,
                     data: [{
-                        description: 'Test Description Along a Line',
+                        description: {
+                            text: 'Test Description Along a Line'
+                        },
                         name: 'Data1',
                         values: TestData.xyDiscreteData
                     }]
@@ -186,8 +188,8 @@ module LineTest {
                     renderType: UWT.RenderType.Line,
                     data: [
                         {
-                            description: 'Test Description Along a Line',
-                            descriptionPosition: {
+                            description: {
+                                text: 'Test Description Along a Line',
                                 percentage: 10,
                                 alignment: UWT.Alignment.Bottom
                             },

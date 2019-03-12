@@ -136,17 +136,19 @@ let lastMenu: IContextMenuItem[] = [];
 export function showContextMenu(event: MouseEvent, data: any, contextMenuItems: IContextMenuItem[],
     propogateEvent: boolean = false) {
 
-    keyupListener();
-    removeMenu();
+    if (event) {
+        keyupListener();
+        removeMenu();
 
-    lastMenu = contextMenuItems;
-    createMenu(event, data, contextMenuItems, {
-        left: event.pageX,
-        top: event.pageY,
-        right: event.pageX,
-        bottom: event.pageY,
-        height: 0,
-        width: 0
-    }, propogateEvent);
-    event.preventDefault();
+        lastMenu = contextMenuItems;
+        createMenu(event, data, contextMenuItems, {
+            left: event.pageX,
+            top: event.pageY,
+            right: event.pageX,
+            bottom: event.pageY,
+            height: 0,
+            width: 0
+        }, propogateEvent);
+        event.preventDefault();
+    }
 }

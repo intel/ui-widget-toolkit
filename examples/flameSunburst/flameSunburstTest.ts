@@ -21,6 +21,10 @@ module FlameSunburstTest {
                         console.log('flame chart click');
                         console.log(event);
                     },
+                    onDoubleClick: (event: UWT.IEvent) => {
+                        console.log('flame chart double click');
+                        console.log(event);
+                    },
                     contextMenuItems: [{
                         title: 'FlameMenuItem',
                         action(elem: any, data: any, index: any) {
@@ -37,7 +41,6 @@ module FlameSunburstTest {
             TestBase.addElement(chart, '', '', '', { forceSvgRenderer: true });
             TestBase.elemManager.addToHighlightGroup(chart, 'trace');
         }
-
 
         {
             let chart = {
@@ -120,7 +123,13 @@ module FlameSunburstTest {
                 dataSets: [{
                     disableWebWorkers: true,
                     renderType: UWT.RenderType.FlameChart,
-                    data: trace2
+                    data: trace2,
+                    onClick: (event: UWT.IEvent) => {
+                        console.log(event);
+                    },
+                    onDoubleClick: (event: UWT.IEvent) => {
+                        console.log(event);
+                    }
                 }],
                 isXContinuous: true
             }
@@ -169,6 +178,10 @@ module FlameSunburstTest {
                     data: calltrace,
                     onClick: function (event: UWT.IEvent) {
                         console.log('flame chart click');
+                        console.log(event);
+                    },
+                    onDoubleClick: (event: UWT.IEvent) => {
+                        console.log('flame chart double click');
                         console.log(event);
                     },
                     contextMenuItems: [{

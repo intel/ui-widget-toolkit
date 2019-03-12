@@ -1867,7 +1867,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 .setStartCallback(brushStart)
                 .setMoveCallback(brushMove)
                 .setEndCallback(brushEnd)
-                .setRect(self._graphRect)
+                .setRect(new Rect(0, 0, self._graphRect.width, self._svgRect.height))
                 .ready();
             self._brush.moveToBack();
         }

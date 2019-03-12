@@ -592,20 +592,23 @@ class D3PIXIFlameChart extends FlameChartSeries {
             this._pixi = this._pixiHelper.getRenderer();
         }
 
-        let foreignObject = this._pixiHelper.addPixiSvg(segmentGroup,
+        this._pixiHelper.addPixiSvg(segmentGroup,
             classes, this._d3XAxis.getRangePixels(),
             this.getRequiredHeight());
 
         this._pixiHelper.clearSelections();
 
         let xScale = this._d3XAxis.getScale();
-
-        if (!this._d3Chart.getOptions().disableBrush) {
-            this.configureItemInteraction(foreignObject);
-        } else {
-            foreignObject.attr('cursor', 'pointer');
-        }
         let stage = new PIXI.Container();
+
+        // create a dummy background rect for brush catching purposes
+        let xStart = 0;
+        let xEnd = xScale(Number.MAX_VALUE);
+        let background = this._pixiHelper.createRectangleContainer(xStart, 0,
+            xEnd, this._stackHeight, 0);
+        background.alpha = 0;
+        this.configureItemInteractionPIXI(background, undefined);
+        stage.addChild(background);
 
         let outputData = this.getOutputData();
         let len = outputData.length();
@@ -631,8 +634,9 @@ class D3PIXIFlameChart extends FlameChartSeries {
             this._pixiHelper.addSelection(getSelectionName(name), selection);
             this._pixiHelper.addSelection(getSelectionName(key), selection);
 
-            this._pixiHelper.addInteractionHelper(selection, this._layer.onClick,
-                this._layer.onDoubleClick, this._layer.contextMenuItems,
+            // note click is handled by the configureItemInteractionPIXI call after this
+            this._pixiHelper.addInteractionHelper(selection, undefined,
+                undefined, undefined,
                 this._layer.disableHover ? undefined : () => {
                     this._selection = value;
                     if (value) {
@@ -652,6 +656,8 @@ class D3PIXIFlameChart extends FlameChartSeries {
                     this._selection = undefined;
                 }, undefined, chart, decimatedValue.decimatedValues);
 
+            // this is flame chart specific handling for brush
+            this.configureItemInteractionPIXI(selection, value);
             stage.addChild(rect);
 
             let text: PIXI.Text = this._textMap[name];

@@ -2,7 +2,7 @@
 /// <reference path='../testBase.ts' />
 /// <reference path='../testData.ts' />
 
-module LineTest {
+module MarkerTest {
     window.onload = () => {
         TestBase.configureButtons();
 
@@ -32,12 +32,7 @@ module LineTest {
             isXContinuous: true
         }
         UWT.Chart.finalize(chart1);
-
-        {
-            let renderer = new UWT.D3ChartRenderer('div#graphArea0');
-            renderer.invalidate(chart1);
-        }
-
+        TestBase.addElement(chart1);
         TestBase.render();
     };
 }

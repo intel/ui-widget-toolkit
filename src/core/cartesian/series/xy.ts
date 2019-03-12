@@ -1,6 +1,6 @@
 import {
     ICss, IEvent, EventType, UIElement, IBuffer, ITooltipData, Alignment,
-    ILegendItem
+    ILegendItem, IRect
 } from '../../../interface/ui-base';
 import {
     IXYValue
@@ -13,7 +13,9 @@ import {
     InternalDecimatorMap, NEWSDecimationValue, NEWSPointDecimator,
     NEWSStateDecimator, XYPointDecimator, AvgContinuousDecimator
 } from '../decimator/decimator';
-import { getSelectionName, SimpleBuffer, bisectBuffer } from '../../utilities';
+import {
+    getSelectionName, SimpleBuffer, bisectBuffer, isOverlapping
+} from '../../utilities';
 
 import { getKeys, Arrow, animatePath } from '../../svg-helper';
 import { PIXIHelper } from '../../pixi-helper';
@@ -26,7 +28,6 @@ import { BaseSeries } from './baseSeries';
 
 import * as d3 from 'd3';
 import * as PIXI from 'pixi.js';
-import { number } from 'prop-types';
 
 export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
     public static canRender(layer: ILayer): boolean {
@@ -488,9 +489,9 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
             if (this._data.description) {
                 let offset = '0%'
                 let alignment = '-.5em'
-                if (self._data.descriptionPosition) {
-                    offset = self._data.descriptionPosition.percentage ? `${self._data.descriptionPosition.percentage}%` : '0%';
-                    alignment = self._data.descriptionPosition.alignment === Alignment.Bottom ? '1em' : '-.5em'
+                if (self._data.description.text) {
+                    offset = self._data.description.percentage ? `${self._data.description.percentage}%` : '0%';
+                    alignment = self._data.description.alignment === Alignment.Bottom ? '1em' : '-.5em'
                 }
 
                 this._d3svg.append('text')
@@ -501,7 +502,7 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
                     .append('textPath')
                     .attr('startOffset', offset)
                     .attr('xlink:href', '#' + self._classes)
-                    .text(this._data.description);
+                    .text(this._data.description.text);
             }
         }
 
@@ -614,9 +615,9 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
             if (this._data.description) {
                 let offset = '0%'
                 let alignment = '-.5em'
-                if (self._data.descriptionPosition) {
-                    offset = self._data.descriptionPosition.percentage ? `${self._data.descriptionPosition.percentage}%` : '0%';
-                    alignment = self._data.descriptionPosition.alignment === Alignment.Bottom ? '1em' : '-.5em'
+                if (self._data.description) {
+                    offset = self._data.description.percentage ? `${self._data.description.percentage}%` : '0%';
+                    alignment = self._data.description.alignment === Alignment.Bottom ? '1em' : '-.5em'
                 }
 
                 this._d3svg.append('text')
@@ -627,7 +628,7 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
                     .append('textPath')
                     .attr('startOffset', offset)
                     .attr('xlink:href', '#' + self._classes)
-                    .text(this._data.description);
+                    .text(this._data.description.text);
             }
         }
 
@@ -909,6 +910,39 @@ class D3SVGXYSeries extends XYSeries {
             .each(configureItem);
 
         if (this._data.showTitleText) {
+            let textBoxes: any[] = [];
+            let positionTextHelper = function (obj: any, dy: number,
+                isLeft: boolean, prevRight: IRect) {
+                let d3Text = d3.select(obj);
+                if (isLeft) {
+                    d3Text.attr('dx', `-${(obj.innerHTML.length + .5) / 2}em`);
+                } else {
+                    d3Text.attr('dx', `${.5}em`);
+                }
+                d3Text.attr('dy', `${dy}em`);
+
+                let rect: any = obj.getBoundingClientRect();
+                for (let i = 0; i < textBoxes.length; ++i) {
+                    let existing = textBoxes[i];
+                    if (isOverlapping(existing, rect)) {
+                        if (isLeft) {
+                            if (prevRight.y > rect.y) {
+                                dy = dy - 1.2;
+                            } else {
+                                dy = dy + 1.2;
+                            }
+                        } else {
+                            prevRight = existing;
+                        }
+                        return positionTextHelper(obj, dy, !isLeft, prevRight);
+                    }
+                }
+                textBoxes.push(rect);
+            }
+            let positionText = function () {
+                positionTextHelper(this, .5, false, undefined);
+            }
+
             let text = self._d3svg.selectAll(self.getSelectionClasses('chart-scatter')).filter('text').data(indices);
             text.exit().remove();
             text.enter()
@@ -917,20 +951,17 @@ class D3SVGXYSeries extends XYSeries {
                 .text(function (d: any) { return self._outputData.get(d).info.title })
                 .attr('x', self.xIndexMap)
                 .attr('y', self.yIndexMap)
-                .attr('dx', radius + 2)
-                .attr('dy', '.5em')
                 .attr('fill', getColor)
-                .each(configureItem);
+                .each(configureItem)
+                .each(positionText);
 
             text
                 .classed(self._classes, true)
                 .text(function (d: any) { return self._outputData.get(d).info.title })
                 .attr('x', self.xIndexMap)
                 .attr('y', self.yIndexMap)
-                .attr('dx', radius + 2)
-                .attr('dy', '.5em')
-                .attr('fill', getColor)
-                .each(configureItem);
+                .each(configureItem)
+                .each(positionText);
         }
 
         let elem = self._d3svg.selectAll(this.getSelectionClasses('chart-scatter'));
@@ -1037,24 +1068,24 @@ class D3PIXIXYSeries extends XYSeries {
         });
 
         if (this._data.showTitleText) {
-            let labelGroup = self._d3svg.select('.labels');
-            labelGroup.selectAll('*').remove();
+            // let labelGroup = self._d3svg.selectAll('.labels');
+            // labelGroup.selectAll('*').remove();
 
-            indices.forEach(function (idx: number) {
-                let fontSize = labelGroup.style('font-size');
-                fontSize =
-                    Number(fontSize.substring(0, fontSize.length - 2)) * 2 + 'px';
-                let text = new PIXI.Text(name,
-                    {
-                        fill: 0x000000,
-                        fontFamily: labelGroup.style('font-family'),
-                        fontSize: fontSize,
-                        fontWeight: labelGroup.style('font-weight')
-                    });
-                // scale text down
-                text.scale = new PIXI.Point(.5, .5);
-                this._textMap.set(self._outputData.get(idx).info.title, text);
-            })
+            // indices.forEach(function (idx: number) {
+            //     let fontSize = labelGroup.style('font-size');
+            //     fontSize =
+            //         Number(fontSize.substring(0, fontSize.length - 2)) * 2 + 'px';
+            //     let text = new PIXI.Text(name,
+            //         {
+            //             fill: 0x000000,
+            //             fontFamily: labelGroup.style('font-family'),
+            //             fontSize: fontSize,
+            //             fontWeight: labelGroup.style('font-weight')
+            //         });
+            //     // scale text down
+            //     text.scale = new PIXI.Point(.5, .5);
+            //     this._textMap.set(self._outputData.get(idx).info.title, text);
+            // })
         }
 
         this._pixiHelper.render(stage);

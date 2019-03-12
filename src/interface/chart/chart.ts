@@ -176,11 +176,12 @@ export interface IXYSeries {
     /** EXPERIMENTAL: this flag enables text rendering for each XY scatter point*/
     showTitleText?: boolean;
 
-    /** the description is drawn along the line/area graph */
-    description?: string;
+    /** EXPERIMENTAL: description is drawn along the line/area graph */
+    description?: {
+        /** the description text */
+        text: string;
 
-    /** this describes where along the line/area the description is drawn*/
-    descriptionPosition?: {
+        /** this describes where along the line/area the description is drawn*/
         percentage?: number;
         alignment?: Alignment;
     }
@@ -194,8 +195,16 @@ export interface IRectSeries {
     name?: string;
     /** CSS for this rectangle */
     css?: ICss;
-    /** EXPERIMENTAL: draws some text along the rectangle */
-    showTitleText?: string;
+
+    /** EXPERIMENTAL: description is drawn along the rectangle graph */
+    description?: {
+        /** the description text */
+        text: string;
+
+        /** this describes where along the line/area the description is drawn*/
+        percentage?: number;
+        alignment?: Alignment;
+    }
 }
 
 /** the layer of data is a set of data and how to render it */

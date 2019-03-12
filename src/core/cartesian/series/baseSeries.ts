@@ -237,6 +237,8 @@ export class BaseSeries {
         value?: any) {
         let self = this;
 
+        let wait: any;
+
         if (self._d3Chart.getOptions().disableBrush) {
             elem.attr('cursor', 'pointer');
             addClickHelper(elem, self._layer.onClick ? onClick : undefined,
@@ -249,8 +251,34 @@ export class BaseSeries {
                 showContextMenu(d3.event, undefined, self._contextMenuItems);
             })
                 .on('mousedown touchstart', function (d: any) {
-                    onClick({ caller: self._d3Chart.getElement(), event: EventType.Click, data: d });
-
+                    let caller = self._d3Chart.getElement();
+                    if (value) {
+                        if (self._layer.onDoubleClick) {
+                            if (wait) {
+                                window.clearTimeout(wait);
+                                wait = null;
+                                onDoubleClick({
+                                    caller: caller,
+                                    event: EventType.DoubleClick,
+                                    data: value
+                                });
+                            } else {
+                                wait = setTimeout(function () {
+                                    if (wait) {
+                                        onClick({
+                                            caller: caller, event: EventType.Click,
+                                            data: value
+                                        });
+                                        wait = null;
+                                    }
+                                }, 300);
+                            }
+                        } else {
+                            onClick({
+                                caller: caller, event: EventType.Click, data: value
+                            });
+                        }
+                    }
                     let brush = self._d3Chart.getGraphGroup().select('.brush');
                     let brushStart: any = brush.on('touchstart.brush');
                     let event: any = new MouseEvent('mousedown touchstart', d3.event);
@@ -310,21 +338,50 @@ export class BaseSeries {
      * handle mouse/touch events properly to bring the brush to the front and
      * do the brush selection correctly.
      */
-    protected configureItemInteractionPIXI(elem: any,
-        value: any) {
+    protected configureItemInteractionPIXI(elem: any, value: any) {
+
         let self = this;
         elem.interactive = true;
+        let wait: any;
         if (self._d3Chart.getOptions().disableBrush) {
             addClickHelper(elem, self._layer.onClick ? onClick : undefined,
                 self._layer.onDoubleClick ? onDoubleClick : undefined,
                 self._contextMenuItems,
                 self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
         } else {
+            self._d3Chart.getGraphGroup().attr('cursor', 'crosshair');
             elem.on('rightclick', function (event: any) {
                 showContextMenu(d3.event, undefined, self._contextMenuItems);
             })
                 .on('mousedown', function (e: any) {
-                    onClick({ caller: self._d3Chart.getElement(), event: EventType.Click, data: value });
+                    let caller = self._d3Chart.getElement();
+                    if (value) {
+                        if (self._layer.onDoubleClick) {
+                            if (wait) {
+                                window.clearTimeout(wait);
+                                wait = null;
+                                onDoubleClick({
+                                    caller: caller,
+                                    event: EventType.DoubleClick,
+                                    data: value
+                                });
+                            } else {
+                                wait = setTimeout(function () {
+                                    if (wait) {
+                                        onClick({
+                                            caller: caller, event: EventType.Click,
+                                            data: value
+                                        });
+                                        wait = null;
+                                    }
+                                }, 300);
+                            }
+                        } else {
+                            onClick({
+                                caller: caller, event: EventType.Click, data: value
+                            });
+                        }
+                    }
 
                     let brush = self._d3Chart.getGraphGroup().select('.brush');
                     let event = new MouseEvent('mousedown', e.data.originalEvent);
@@ -343,7 +400,7 @@ export class BaseSeries {
 
         function onClick(event: IEvent) {
             if (self._layer.onClick) {
-                let passthruEvent: IEvent = { event: EventType.DoubleClick };
+                let passthruEvent: IEvent = { event: EventType.Click };
                 if (value) {
                     passthruEvent.data = value;
                 } else if (event.data !== undefined) {
