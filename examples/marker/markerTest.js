@@ -1,8 +1,8 @@
 /// <reference path='../../dist/index.d.ts' />
 /// <reference path='../testBase.ts' />
 /// <reference path='../testData.ts' />
-var LineTest;
-(function (LineTest) {
+var MarkerTest;
+(function (MarkerTest) {
     window.onload = function () {
         TestBase.configureButtons();
         var chart1 = {
@@ -31,11 +31,8 @@ var LineTest;
             isXContinuous: true
         };
         UWT.Chart.finalize(chart1);
-        {
-            var renderer = new UWT.D3ChartRenderer('div#graphArea0');
-            renderer.invalidate(chart1);
-        }
+        TestBase.addElement(chart1);
         TestBase.render();
     };
-})(LineTest || (LineTest = {}));
+})(MarkerTest || (MarkerTest = {}));
 //# sourceMappingURL=markerTest.js.map

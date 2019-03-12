@@ -986,9 +986,6 @@ img { max-width: 100%; }
 					<a href="_interface_chart_chart_.ixyseries.html#description" class="tsd-kind-icon">description</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="_interface_chart_chart_.ixyseries.html#descriptionposition" class="tsd-kind-icon">description<wbr>Position</a>
-				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="_interface_chart_chart_.ixyseries.html#functionmap" class="tsd-kind-icon">function<wbr>Map</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
@@ -1033,7 +1030,6 @@ img { max-width: 100%; }
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_chart_chart_.ixyseries.html#css" class="tsd-kind-icon">css</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_chart_chart_.ixyseries.html#description" class="tsd-kind-icon">description</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_chart_chart_.ixyseries.html#descriptionposition" class="tsd-kind-icon">description<wbr>Position</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_chart_chart_.ixyseries.html#functionmap" class="tsd-kind-icon">function<wbr>Map</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_chart_chart_.ixyseries.html#name" class="tsd-kind-icon">name</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_chart_chart_.ixyseries.html#showtitletext" class="tsd-kind-icon">show<wbr>Title<wbr>Text</a></li>
@@ -1051,7 +1047,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">css<span class="tsd-signature-symbol">:</span> <a href="_interface_ui_base_.icss.html" class="tsd-signature-type">ICss</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/77444b7/src/interface/chart/chart.ts#L174">interface/chart/chart.ts:174</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/db1ce36/src/interface/chart/chart.ts#L174">interface/chart/chart.ts:174</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1063,30 +1059,15 @@ img { max-width: 100%; }
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="description" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> description</h3>
-				<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/77444b7/src/interface/chart/chart.ts#L180">interface/chart/chart.ts:180</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/db1ce36/src/interface/chart/chart.ts#L180">interface/chart/chart.ts:180</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>the description is drawn along the line/area graph</p>
-					</div>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="descriptionposition" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> description<wbr>Position</h3>
-				<div class="tsd-signature tsd-kind-icon">description<wbr>Position<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/77444b7/src/interface/chart/chart.ts#L183">interface/chart/chart.ts:183</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>this describes where along the line/area the description is drawn</p>
+						<p>EXPERIMENTAL: description is drawn along the line/area graph</p>
 					</div>
 				</div>
 				<div class="tsd-type-declaration">
@@ -1097,6 +1078,19 @@ img { max-width: 100%; }
 						</li>
 						<li class="tsd-parameter">
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> percentage<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>this describes where along the line/area the description is drawn</p>
+								</div>
+							</div>
+						</li>
+						<li class="tsd-parameter">
+							<h5>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>the description text</p>
+								</div>
+							</div>
 						</li>
 					</ul>
 				</div>
@@ -1107,7 +1101,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">function<wbr>Map<span class="tsd-signature-symbol">:</span> <a href="_interface_chart_series_data_.ifunctionmap.html" class="tsd-signature-type">IFunctionMap</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/77444b7/src/interface/chart/chart.ts#L168">interface/chart/chart.ts:168</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/db1ce36/src/interface/chart/chart.ts#L168">interface/chart/chart.ts:168</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1122,7 +1116,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/77444b7/src/interface/chart/chart.ts#L172">interface/chart/chart.ts:172</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/db1ce36/src/interface/chart/chart.ts#L172">interface/chart/chart.ts:172</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1138,7 +1132,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">show<wbr>Title<wbr>Text<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/77444b7/src/interface/chart/chart.ts#L177">interface/chart/chart.ts:177</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/db1ce36/src/interface/chart/chart.ts#L177">interface/chart/chart.ts:177</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1153,7 +1147,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">values<span class="tsd-signature-symbol">:</span> <a href="_interface_chart_series_data_.ixyvalue.html" class="tsd-signature-type">IXYValue</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><a href="_interface_ui_base_.ibuffer.html" class="tsd-signature-type">IBuffer</a><span class="tsd-signature-symbol">&lt;</span><a href="_interface_chart_series_data_.ixyvalue.html" class="tsd-signature-type">IXYValue</a><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/77444b7/src/interface/chart/chart.ts#L165">interface/chart/chart.ts:165</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/db1ce36/src/interface/chart/chart.ts#L165">interface/chart/chart.ts:165</a></li>
 					</ul>
 				</aside>
 			</section>

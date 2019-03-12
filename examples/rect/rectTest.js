@@ -1,9 +1,13 @@
 /// <reference path='../../dist/index.d.ts' />
 /// <reference path='../testBase.ts' />
-var AreaTest;
-(function (AreaTest) {
+var RectTest;
+(function (RectTest) {
     window.onload = function () {
         TestBase.configureButtons();
+        createView();
+        TestBase.render();
+    };
+    function createView() {
         var chart = {
             type: UWT.UIType.Cartesian,
             dataSets: [{
@@ -19,8 +23,6 @@ var AreaTest;
         };
         UWT.Chart.finalize(chart);
         TestBase.addElement(chart);
-        var renderer = new UWT.D3ChartRenderer('div#graphArea0');
-        renderer.invalidate(chart);
         var chart2 = {
             type: UWT.UIType.Cartesian,
             dataSets: [{
@@ -36,9 +38,86 @@ var AreaTest;
         };
         UWT.Chart.finalize(chart2);
         TestBase.addElement(chart2);
-        var renderer2 = new UWT.D3ChartRenderer('div#graphArea1');
-        renderer.invalidate(chart2);
-    };
-})(AreaTest || (AreaTest = {}));
+        var chart3 = {
+            type: UWT.UIType.Cartesian,
+            dataSets: [{
+                    renderType: UWT.RenderType.Line,
+                    data: [{
+                            name: 'testName',
+                            rects: [{ x: 0, x1: 1, y: 0, y1: 1 }],
+                            css: new UWT.Css().setColor('red').setOpacity(.5),
+                            description: {
+                                text: 'Right',
+                                alignment: UWT.Alignment.Right
+                            }
+                        }]
+                },
+                {
+                    renderType: UWT.RenderType.Line,
+                    data: [{
+                            name: 'testName2',
+                            rects: [{ x: 3, x1: 4, y: 0, y1: 1 }],
+                            css: new UWT.Css().setColor('red').setOpacity(.5),
+                            description: {
+                                text: 'Top',
+                                alignment: UWT.Alignment.Top
+                            }
+                        }],
+                }],
+            axes: [
+                {
+                    axisDesc: {
+                        scaleType: UWT.AxisType.Linear,
+                        range: { min: 0, max: 2 }
+                    },
+                    alignment: UWT.Alignment.Left
+                }
+            ],
+            isXContinuous: true
+        };
+        UWT.Chart.finalize(chart3);
+        TestBase.addElement(chart3);
+        var chart4 = {
+            type: UWT.UIType.Cartesian,
+            dataSets: [{
+                    renderType: UWT.RenderType.Line,
+                    data: [{
+                            name: 'testName',
+                            rects: [{ x: 0, x1: 1, y: 0, y1: 1 }],
+                            css: new UWT.Css().setColor('red').setOpacity(.5),
+                            description: {
+                                text: 'Bottom',
+                                alignment: UWT.Alignment.Bottom
+                            }
+                        }]
+                },
+                {
+                    renderType: UWT.RenderType.Line,
+                    data: [{
+                            name: 'testName2',
+                            rects: [{ x: 3, x1: 4, y: 0, y1: 1 }],
+                            css: new UWT.Css().setColor('red').setOpacity(.5),
+                            description: {
+                                text: 'Left',
+                                alignment: UWT.Alignment.Left
+                            }
+                        }]
+                }],
+            axes: [
+                {
+                    axisDesc: {
+                        scaleType: UWT.AxisType.Linear,
+                        range: { min: 0, max: 2 }
+                    },
+                    alignment: UWT.Alignment.Left
+                }
+            ],
+            isXContinuous: true
+        };
+        UWT.Chart.finalize(chart4);
+        TestBase.addElement(chart4);
+    }
+    RectTest.createView = createView;
+})(RectTest || (RectTest = {}));
 ;
 //# sourceMappingURL=rectTest.js.map

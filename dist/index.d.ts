@@ -47,6 +47,7 @@ export class RingBuffer<DataType> implements IBuffer<DataType> {
 export function bisectBuffer(compare?: any): any;
 export function transposeKeys(data: ISummaryValue[]): ISummaryValue[];
 export function runFunctionOnLeaf(node: ICheckboxTreeNode, func: (leafNode: ICheckboxTreeNode) => void): void;
+export function isOverlapping(rect1: IRect, rect2: IRect): boolean;
 
 /**
     * defines what type of axis scaling to use
@@ -200,10 +201,11 @@ export interface IXYSeries {
         css?: ICss;
         /** EXPERIMENTAL: this flag enables text rendering for each XY scatter point*/
         showTitleText?: boolean;
-        /** the description is drawn along the line/area graph */
-        description?: string;
-        /** this describes where along the line/area the description is drawn*/
-        descriptionPosition?: {
+        /** EXPERIMENTAL: description is drawn along the line/area graph */
+        description?: {
+                /** the description text */
+                text: string;
+                /** this describes where along the line/area the description is drawn*/
                 percentage?: number;
                 alignment?: Alignment;
         };
@@ -216,8 +218,14 @@ export interface IRectSeries {
         name?: string;
         /** CSS for this rectangle */
         css?: ICss;
-        /** EXPERIMENTAL: draws some text along the rectangle */
-        showTitleText?: string;
+        /** EXPERIMENTAL: description is drawn along the rectangle graph */
+        description?: {
+                /** the description text */
+                text: string;
+                /** this describes where along the line/area the description is drawn*/
+                percentage?: number;
+                alignment?: Alignment;
+        };
 }
 /** the layer of data is a set of data and how to render it */
 export interface IBaseLayer {
@@ -2979,7 +2987,7 @@ export class RectSeries extends BaseSeries implements ICartesianSeriesPlugin {
         protected _values: IBuffer<IXYRect>;
         protected _classes: string;
         protected _layer: IXYLayer;
-        protected _showTitleText: string;
+        protected _description: any;
         constructor(chart: ID3Chart, layer: ILayer, svg: d3.Selection<d3.BaseType, {}, d3.BaseType, any>, xAxis: D3Axis, yAxis: D3Axis, isXContinuous: boolean);
         setData(layer: ILayer): void;
         protected applyStyles(): void;

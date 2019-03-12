@@ -956,13 +956,13 @@ img { max-width: 100%; }
 					<a href="_interface_chart_chart_.irectseries.html#css" class="tsd-kind-icon">css</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="_interface_chart_chart_.irectseries.html#description" class="tsd-kind-icon">description</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="_interface_chart_chart_.irectseries.html#name" class="tsd-kind-icon">name</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="_interface_chart_chart_.irectseries.html#rects" class="tsd-kind-icon">rects</a>
-				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="_interface_chart_chart_.irectseries.html#showtitletext" class="tsd-kind-icon">show<wbr>Title<wbr>Text</a>
 				</li>
 			</ul>
 		</li>
@@ -1023,9 +1023,9 @@ img { max-width: 100%; }
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_chart_chart_.irectseries.html#css" class="tsd-kind-icon">css</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_chart_chart_.irectseries.html#description" class="tsd-kind-icon">description</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_chart_chart_.irectseries.html#name" class="tsd-kind-icon">name</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_chart_chart_.irectseries.html#rects" class="tsd-kind-icon">rects</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_chart_chart_.irectseries.html#showtitletext" class="tsd-kind-icon">show<wbr>Title<wbr>Text</a></li>
 						</ul>
 					</section>
 				</div>
@@ -1039,7 +1039,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">css<span class="tsd-signature-symbol">:</span> <a href="_interface_ui_base_.icss.html" class="tsd-signature-type">ICss</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/77444b7/src/interface/chart/chart.ts#L196">interface/chart/chart.ts:196</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/db1ce36/src/interface/chart/chart.ts#L197">interface/chart/chart.ts:197</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1049,12 +1049,51 @@ img { max-width: 100%; }
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="description" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> description</h3>
+				<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/db1ce36/src/interface/chart/chart.ts#L200">interface/chart/chart.ts:200</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>EXPERIMENTAL: description is drawn along the rectangle graph</p>
+					</div>
+				</div>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> alignment<span class="tsd-signature-symbol">?: </span><a href="../enums/_interface_ui_base_.alignment.html" class="tsd-signature-type">Alignment</a></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> percentage<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>this describes where along the line/area the description is drawn</p>
+								</div>
+							</div>
+						</li>
+						<li class="tsd-parameter">
+							<h5>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>the description text</p>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="name" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> name</h3>
 				<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/77444b7/src/interface/chart/chart.ts#L194">interface/chart/chart.ts:194</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/db1ce36/src/interface/chart/chart.ts#L195">interface/chart/chart.ts:195</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -1069,27 +1108,12 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">rects<span class="tsd-signature-symbol">:</span> <a href="_interface_chart_series_data_.ixyrect.html" class="tsd-signature-type">IXYRect</a><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/77444b7/src/interface/chart/chart.ts#L192">interface/chart/chart.ts:192</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/db1ce36/src/interface/chart/chart.ts#L193">interface/chart/chart.ts:193</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
 						<p>a list of rectangles to render in the chart</p>
-					</div>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="showtitletext" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> show<wbr>Title<wbr>Text</h3>
-				<div class="tsd-signature tsd-kind-icon">show<wbr>Title<wbr>Text<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/77444b7/src/interface/chart/chart.ts#L198">interface/chart/chart.ts:198</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>EXPERIMENTAL: draws some text along the rectangle</p>
 					</div>
 				</div>
 			</section>

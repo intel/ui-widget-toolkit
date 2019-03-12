@@ -142,6 +142,83 @@ var ScatterTest;
             UWT.Chart.finalize(lane);
             TestBase.addElement(lane);
         }
+        {
+            var plot = {
+                title: 'Overlapping Text',
+                type: UWT.UIType.Cartesian,
+                dataSets: [
+                    {
+                        renderType: UWT.RenderType.Scatter,
+                        data: [{
+                                name: 'testData',
+                                values: [
+                                    { x: 3, y: 3, info: { title: 'foo' } },
+                                    { x: 3.1, y: 3, info: { title: 'bar' } },
+                                    { x: 3, y: 4, info: { title: 'abc' } }
+                                ],
+                                showTitleText: true
+                            }],
+                    }
+                ],
+                axes: [{
+                        axisDesc: {
+                            scaleType: UWT.AxisType.Linear,
+                            range: { min: 0, max: 10 }
+                        },
+                        alignment: UWT.Alignment.Left
+                    },
+                    {
+                        axisDesc: {
+                            scaleType: UWT.AxisType.Linear,
+                            range: { min: 0, max: 10 }
+                        },
+                        alignment: UWT.Alignment.Bottom
+                    }],
+                isXContinuous: true
+            };
+            UWT.Chart.finalize(plot);
+            TestBase.addElement(plot, '', '', '', { forceSvgRenderer: true });
+        }
+        {
+            var plot = {
+                title: 'Overlapping Text2',
+                type: UWT.UIType.Cartesian,
+                dataSets: [
+                    {
+                        renderType: UWT.RenderType.Scatter,
+                        data: [{
+                                name: 'testData',
+                                values: [
+                                    { x: 3, y: 3, info: { title: 'foo' } },
+                                    { x: 3.1, y: 3, info: { title: 'bar' } },
+                                    { x: 3.2, y: 3, info: { title: 'abc' } },
+                                    { x: 3, y: 3.1, info: { title: 'xyz' } },
+                                    { x: 3, y: 3.2, info: { title: '123' } },
+                                    { x: 3, y: 3.3, info: { title: '456' } }
+                                ],
+                                showTitleText: true
+                            }],
+                    }
+                ],
+                axes: [{
+                        axisDesc: {
+                            scaleType: UWT.AxisType.Linear,
+                            range: { min: 0, max: 10 }
+                        },
+                        alignment: UWT.Alignment.Left
+                    },
+                    {
+                        axisDesc: {
+                            scaleType: UWT.AxisType.Linear,
+                            range: { min: 0, max: 10 }
+                        },
+                        alignment: UWT.Alignment.Bottom
+                    }],
+                isXContinuous: true
+            };
+            UWT.Chart.finalize(plot);
+            TestBase.addElement(plot, '', '', '', { forceSvgRenderer: true });
+        }
     }
     ScatterTest.createView = createView;
 })(ScatterTest || (ScatterTest = {}));

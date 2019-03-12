@@ -21,6 +21,10 @@ var FlameSunburstTest;
                             console.log('flame chart click');
                             console.log(event);
                         },
+                        onDoubleClick: function (event) {
+                            console.log('flame chart double click');
+                            console.log(event);
+                        },
                         contextMenuItems: [{
                                 title: 'FlameMenuItem',
                                 action: function (elem, data, index) {
@@ -110,7 +114,13 @@ var FlameSunburstTest;
                 dataSets: [{
                         disableWebWorkers: true,
                         renderType: UWT.RenderType.FlameChart,
-                        data: trace2
+                        data: trace2,
+                        onClick: function (event) {
+                            console.log(event);
+                        },
+                        onDoubleClick: function (event) {
+                            console.log(event);
+                        }
                     }],
                 isXContinuous: true
             };
@@ -157,6 +167,10 @@ var FlameSunburstTest;
                         data: calltrace,
                         onClick: function (event) {
                             console.log('flame chart click');
+                            console.log(event);
+                        },
+                        onDoubleClick: function (event) {
+                            console.log('flame chart double click');
                             console.log(event);
                         },
                         contextMenuItems: [{
