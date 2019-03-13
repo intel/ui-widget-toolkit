@@ -11,7 +11,7 @@ var LineTest;
     function createView() {
         {
             // lines
-            var bottomAxis = {
+            var xAxis = {
                 scaleType: UWT.AxisType.Linear,
                 label: 'Time',
                 scalingInfo: TestData.secScalingInfo
@@ -34,8 +34,8 @@ var LineTest;
                 legends: [{ alignment: UWT.Alignment.Right }],
                 axes: [
                     {
-                        axisDesc: bottomAxis,
-                        alignment: UWT.Alignment.Bottom
+                        axisDesc: xAxis,
+                        alignment: UWT.Alignment.Top
                     },
                     {
                         axisDesc: left,
