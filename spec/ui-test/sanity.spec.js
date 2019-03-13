@@ -581,6 +581,9 @@ describe('sanity', function () {
             });
             graph.findElements(By.className('axis')).then(function (axes) {
                 expect(axes.length).toBe(2);
+                axes[0].getAttribute('transform').then(function (transform) {
+                    expect(transform).toBe('translate(171.5, 55)');
+                });
             });
         });
         driver.findElement(By.id('graphArea1')).then(function (graph) {

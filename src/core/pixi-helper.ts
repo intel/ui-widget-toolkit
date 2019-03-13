@@ -38,9 +38,11 @@ export class PIXIHelper {
     protected _renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
     protected _rectTexture: PIXI.Texture;
     protected _selectionItems: { [index: string]: any } = {};
+    protected _useWebGLRenderer: boolean;
 
     constructor(useWebGLRenderer = true) {
         PIXI.utils.skipHello();
+        this._useWebGLRenderer = useWebGLRenderer;
         if (useWebGLRenderer) {
             this._renderer = new PIXI.WebGLRenderer(
                 { transparent: true, antialias: true });
@@ -121,6 +123,10 @@ export class PIXIHelper {
 
     public renderText(name: string, parent: any, color: number = 0,
         resolution: number = 2, scaling: number = .5) {
+        if (!this._useWebGLRenderer) {
+            resolution = 1;
+            scaling = 1;
+        }
         // double font resolution for sharpness
         let fontSize = parent.style('font-size');
         fontSize =

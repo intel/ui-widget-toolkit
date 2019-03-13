@@ -9,7 +9,7 @@ import {
 } from '../../../interface/chart/chart'
 import { IFlameChartDecimator } from '../../../interface/chart/decimator'
 import { FlameChartMergeRectDecimator } from '../decimator/decimator';
-import { getSelectionName, SimpleBuffer } from '../../utilities';
+import { bisectBuffer, getSelectionName, SimpleBuffer } from '../../utilities';
 
 import { PIXIHelper } from '../../pixi-helper';
 
@@ -42,7 +42,8 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
     protected _pixi: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
     protected _pixiHelper: PIXIHelper;
 
-    protected _allRects: IFlameChartValue[] = [];
+    // store data by stack level for faster searching
+    protected _allRects: IFlameChartValue[][] = [];
 
     protected getDataKey: (d: any) => number | string;
     protected getDataName: (d: any) => string;
@@ -79,7 +80,10 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
             }
 
             stack.push(value);
-            rects.push(rect);
+            if (rect.depth >= rects.length) {
+                rects[rect.depth] = [];
+            }
+            rects[rect.depth].push(rect);
 
             console.assert(assertStart <= value.x,
                 'Error flame chart start times are not sorted: ' + assertStart + ' and ' +
@@ -90,21 +94,42 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
     }
 
     private getVisibleRects(xStart: number, xEnd: number,
-        allRects: IFlameChartValue[]): IFlameChartValue[] {
-
-        if (!xStart || !xEnd) {
-            return allRects;
-        }
+        allRects: IFlameChartValue[][]): IFlameChartValue[] {
 
         let visibleRects: IFlameChartValue[] = [];
-        allRects.forEach(function (rect) {
-            let rectEnd = rect.traceValue.x + rect.traceValue.dx;
-            if ((rect.traceValue.x < xEnd && rect.traceValue.x >= xStart) ||
-                (rectEnd < xEnd && rectEnd >= xStart) ||
-                (rect.traceValue.x < xStart && rectEnd > xEnd)) {
-                visibleRects.push(rect);
-            }
-        })
+        if (!xStart || !xEnd) {
+            this._allRects.forEach((stackData) => {
+                visibleRects = visibleRects.concat(stackData);
+            });
+        } else {
+            // assume rects are sorted in each stack level
+            let findFirstInsertionIdx: (buffer: IBuffer<IFlameChartValue>, x: number) => number =
+                bisectBuffer(function (val: IFlameChartValue) { return val.traceValue.x }).left;
+            let findLastInsertionIdx: (buffer: IBuffer<IFlameChartValue>, x: number) => number =
+                bisectBuffer(function (val: IFlameChartValue) { return val.traceValue.x }).right;
+
+            allRects.forEach((stackData) => {
+                let simpleBuffer = new SimpleBuffer(stackData);
+                let startIdx = findFirstInsertionIdx(simpleBuffer, xStart);
+                let endIdx = findLastInsertionIdx(simpleBuffer, xEnd);
+
+                if (startIdx > 0) {
+                    --startIdx;
+                }
+                let startValue = stackData[startIdx].traceValue;
+                if (startValue.x + startValue.dx < xStart) {
+                    ++startIdx;
+                }
+
+                if (startIdx < endIdx) {
+                    visibleRects = visibleRects.concat(stackData.slice(startIdx, endIdx));
+                }
+            })
+        }
+
+        visibleRects.sort((a: IFlameChartValue, b: IFlameChartValue) => {
+            return a.traceValue.x - b.traceValue.x;
+        });
         return visibleRects;
     }
 
@@ -302,7 +327,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
 
         // get just the visible rects first
         let visibleRects = self.getVisibleRects(xStart, xEnd, self._allRects);
-        if (!self._layer.disableBackground) {
+        if (self._layer.enableBackground) {
             self._backgroundData = self.generateBackground(xScale, visibleRects);
         }
 
@@ -465,7 +490,6 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
 class D3SVGFlameChart extends FlameChartSeries {
     public render(): void {
         let self = this;
-
         this.renderBackground();
 
         let xScale = self._d3XAxis.getScale();
@@ -588,7 +612,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
         }
 
         if (!this._pixiHelper) {
-            this._pixiHelper = new PIXIHelper(this._d3Chart.getOptions().forceCanvasRenderer);
+            this._pixiHelper = new PIXIHelper(this._d3Chart.getOptions().forceWebGLRenderer);
             this._pixi = this._pixiHelper.getRenderer();
         }
 
@@ -658,7 +682,6 @@ class D3PIXIFlameChart extends FlameChartSeries {
 
             // this is flame chart specific handling for brush
             this.configureItemInteractionPIXI(selection, value);
-            stage.addChild(rect);
 
             let text: PIXI.Text = this._textMap[name];
             if (!text) {
@@ -668,10 +691,12 @@ class D3PIXIFlameChart extends FlameChartSeries {
 
             let textWidth = text.width;
             if (textWidth < rect.width) {
-                text.x = xWidth * .5 - text.width * .5;
-                text.y = this._stackHeight * .5 - text.height * .5;
-                rect.addChild(text);
+                let tSprite = new PIXI.Sprite(this._pixi.generateTexture(text));
+                tSprite.x = (rect.width - text.width) * .5;
+                tSprite.y = this._stackHeight * .5 - text.height * .5;
+                rect.addChild(tSprite);
             }
+            stage.addChild(rect);
         }
         this._pixi.resize(this._d3XAxis.getRangePixels(),
             this.getRequiredHeight());

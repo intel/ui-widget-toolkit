@@ -291,8 +291,8 @@ export interface ITraceValueLayer extends IBaseLayer {
     data: ITraceValue[];
     /** any transformation to do before rendering the data */
     decimator?: IFlameChartDecimator | ITraceResidencyDecimator;
-    /** turn off any background rendering */
-    disableBackground: boolean;
+    /** turn on rendering of the background, useful when using the rect limit decimator */
+    enableBackground: boolean;
     /** disable automatic hover of all identically named items */
     disableHover: boolean;
     /** tells the area graph how to render information between two points */

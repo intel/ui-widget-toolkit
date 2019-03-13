@@ -12,7 +12,7 @@ module LineTest {
     export function createView() {
         {
             // lines
-            let bottomAxis: UWT.IAxisDescription = {
+            let xAxis: UWT.IAxisDescription = {
                 scaleType: UWT.AxisType.Linear,
                 label: 'Time',
                 scalingInfo: TestData.secScalingInfo
@@ -35,8 +35,8 @@ module LineTest {
                 legends: [{ alignment: UWT.Alignment.Right }],
                 axes: [
                     {
-                        axisDesc: bottomAxis,
-                        alignment: UWT.Alignment.Bottom
+                        axisDesc: xAxis,
+                        alignment: UWT.Alignment.Top
                     },
                     {
                         axisDesc: left,

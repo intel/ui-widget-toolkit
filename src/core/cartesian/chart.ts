@@ -1022,10 +1022,13 @@ export class D3Axis implements IRenderedAxis {
                     self.removeXOverlappingTicks(self._d3axes[0]);
                 }
 
+                node = self._axisSVG.node();
+                axisRect = node.getBoundingClientRect();
+
                 if (self._axisLabel) {
                     self._axisLabel
                         .attr('x', self._position.x)
-                        .attr('y', self._position.y - (self._domain.length - 1) * 30 + 30)
+                        .attr('y', self._position.y - axisRect.height - 20)
                         .attr('dx', self._axisPixels / 2);
                 }
                 break;
@@ -2523,6 +2526,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                     d3Axis.setPosition(new Rect(self._graphRect.x, self._graphRect.y));
                     d3Axis.render();
                     self._graphRect.y += d3Axis.getRenderedRect().height;
+                    d3Axis.setPosition(new Rect(self._graphRect.x, self._graphRect.y));
+                    d3Axis.render();
                 }
             }
         }
@@ -2535,6 +2540,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         let left = self._graphRect.x;
         let leftAxisWidth = 0;
         let rightAxisWidth = 0;
+        let allocateBottomHandleSpace = true;
         // adjust where the axes are drawn
         for (let key in self._axes) {
             let d3Axis = self._axes[key];
@@ -2558,7 +2564,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                     break;
             }
 
-            if (!d3Axis.getAxis().hidden) {
+            if (!d3Axis.getAxis().hidden && d3Axis.getAxis().alignment !== Alignment.Top) {
                 d3Axis.setPosition(rect);
                 d3Axis.render();
 
@@ -2572,6 +2578,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                         rightAxisWidth += width + self.AXIS_PADDING.X
                         break;
                     case Alignment.Bottom:
+                        allocateBottomHandleSpace = false;
                         self._svgRect.height += d3Axis.getRenderedRect().height;
                         break;
                 }
@@ -2605,6 +2612,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                                 self._graphRect.y, 0, self._graphRect.height));
                         break;
                     case Alignment.Bottom:
+                        allocateBottomHandleSpace = false;
                         d3Legend.setPosition(new Rect(self._graphRect.x,
                             self._svgRect.height + self.LEGEND_PADDING.Y.BOTTOM,
                             self._graphRect.width, 0));
@@ -2646,6 +2654,9 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             .style('display', 'none');
 
         // update the svg height/width
+        if (allocateBottomHandleSpace) {
+            self._svgRect.height += this._handleWidth;
+        }
         self._svgRect.height += self._options.bottomMargin;
         self._svg
             .attr('width', self._svgRect.width)
@@ -2720,6 +2731,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                     d3Axis.setPosition(new Rect(self._graphRect.x, self._graphRect.y));
                     d3Axis.render();
                     self._graphRect.y += d3Axis.getRenderedRect().height;
+                    d3Axis.setPosition(new Rect(self._graphRect.x, self._graphRect.y));
+                    d3Axis.render();
                     self._graphRect.height -= d3Axis.getRenderedRect().height;
                 }
             }
@@ -2840,7 +2853,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                         new Rect(self._graphRect.x + self._graphRect.width +
                             rightAxisWidth + self.LEGEND_PADDING.X,
                             self._graphRect.y, 0, 0));
-                    break;
+                    break
             }
 
             // render called in the acutal render function for legends since
@@ -3108,7 +3121,6 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
 
         let legendItems: ILegendItem[] = [];
 
-        // create a spinner so user knows data is loading
         if (self._loadingView) {
             self._loadingView.remove();
         }
@@ -3121,7 +3133,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 (self._graphRect.y + radius) + ')')
             .attr('pointer-events', 'none');
 
-        if (!self._options.disableProgressSpinner) {
+        // create a spinner so user knows data is loading
+        if (self._options.enableWebWorkers) {
             new Spinner(self._loadingView,
                 new Rect(self._graphRect.x, self._graphRect.y, diameter, diameter));
         }
