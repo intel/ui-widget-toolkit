@@ -4,7 +4,7 @@
 
 <dom-module id='uwt-collapsible-grid'>
     <link rel="import" type="css" href="../../css/ag-grid/ag-grid.css">
-    <link rel="import" type="css" href="../../css/ag-grid/ag-theme-fresh.css">
+    <link rel="import" type="css" href="../../css/ag-grid/ag-theme-balham.css">
     <template>
         <style>
             #grid-title {
@@ -72,7 +72,7 @@
                     if (newVal.gridOptions.gridClass) {
                         this.$.grid.classList.add(newVal.gridOptions.gridClass);
                     } else {
-                        this.$.grid.classList.add('ag-theme-fresh');
+                        this.$.grid.classList.add('ag-theme-balham');
                     }
                 }
 

@@ -3,15 +3,17 @@ import {
 } from '../../../interface/ui-base';
 import { IXYValue } from '../../../interface/chart/series-data';
 import { IXYStackedDecimator } from '../../../interface/chart/decimator';
+import { IScalingInfo } from '../../../interface/chart/axis';
 import {
-    IXYSeries, IScalingInfo, RenderType, ILayer
+    IXYSeries, RenderType, ILayer
 } from '../../../interface/chart/chart'
 
 import { InternalDecimatorMap } from '../decimator/decimator';
 import { SimpleBuffer } from '../../utilities';
 
+import { D3Axis } from '../axis';
 import {
-    ID3Chart, D3Chart, D3Axis, createDecimatorWorker
+    ID3Chart, D3Chart, createDecimatorWorker
 } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 

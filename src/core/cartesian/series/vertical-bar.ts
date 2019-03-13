@@ -8,9 +8,8 @@ import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 import { getSelectionName } from '../../utilities';
 
 import { addClickHelper } from '../../svg-helper';
-import {
-    ID3Chart, D3Chart, D3Axis, MAX_DISCRETE_WIDTH
-} from '../chart';
+import { D3Axis, MAX_DISCRETE_WIDTH } from '../axis';
+import { ID3Chart, D3Chart } from '../chart';
 import { BaseSeries } from './baseSeries';
 
 import * as d3 from 'd3';

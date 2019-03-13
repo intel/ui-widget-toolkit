@@ -1081,7 +1081,7 @@ describe('sanity', function () {
             expect(canvas.length).toBe(1);
         });
         driver.findElements(By.tagName('svg')).then(function (svg) {
-            expect(svg.length).toBe(10);
+            expect(svg.length).toBe(12);
         });
         driver.findElements(By.className('ag-root')).then(function (grid) {
             expect(grid.length).toBe(1);
@@ -1098,7 +1098,7 @@ describe('sanity', function () {
             expect(canvas.length).toBe(1);
         });
         driver.findElements(By.tagName('svg')).then(function (svg) {
-            expect(svg.length).toBe(16);
+            expect(svg.length).toBe(18);
         });
         driver.findElements(By.className('ag-root')).then(function (grid) {
             expect(grid.length).toBe(1);
@@ -1112,7 +1112,7 @@ describe('sanity', function () {
             expect(canvas.length).toBe(1);
         });
         driver.findElements(By.tagName('svg')).then(function (svg) {
-            expect(svg.length).toBe(20);
+            expect(svg.length).toBe(22);
         });
         driver.findElements(By.className('ag-root')).then(function (grid) {
             expect(grid.length).toBe(1);
@@ -1130,7 +1130,7 @@ describe('sanity', function () {
             expect(canvas.length).toBe(1);
         });
         driver.findElements(By.tagName('svg')).then(function (svg) {
-            expect(svg.length).toBe(24);
+            expect(svg.length).toBe(26);
         });
         driver.findElements(By.className('ag-root')).then(function (grid) {
             expect(grid.length).toBe(1);

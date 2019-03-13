@@ -1,4 +1,4 @@
-import { AxisType } from '../../../interface/chart/chart';
+import { AxisType } from '../../../interface/chart/axis';
 import { SimpleBuffer } from '../../utilities';
 import { InternalDecimatorMap } from './decimator';
 import * as d3 from 'd3';

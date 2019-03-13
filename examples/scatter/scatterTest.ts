@@ -11,12 +11,14 @@ module ScatterTest {
 
     export function createView() {
         let leftAxis2: UWT.IAxisDescription = {
+            type: UWT.UIType.Axis,
             scaleType: UWT.AxisType.Linear,
             label: 'Values2',
             scalingInfo: TestData.defaultScalingInfo
         };
 
         let rightAxis1: UWT.IAxisDescription = {
+            type: UWT.UIType.Axis,
             scaleType: UWT.AxisType.Linear,
             label: 'Values5'
         };

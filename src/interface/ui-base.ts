@@ -138,7 +138,8 @@ export enum UIType {
     HierarchyGraph,
     PortDiagram,
     SimpleGraph,
-    TreeMap
+    TreeMap,
+    Axis
 }
 
 export interface IContextMenuItem {
@@ -316,7 +317,7 @@ export interface UIRenderer {
 }
 
 export interface UIElement {
-    type: UIType;
+    type?: UIType;
     options?: IOptions;
     renderer?: UIRenderer;
     manager?: UIElementManager;

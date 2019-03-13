@@ -1,3 +1,4 @@
+import UWTAxis from './components/axis'
 import UWTChart from './components/chart'
 import UWTCheckboxTreeNode from './components/checkbox-tree-node'
 import UWTCheckboxTree from './components/checkbox-tree'
@@ -11,6 +12,7 @@ import UWTSwimlaneChart from './components/swimlane-chart'
 import UWTTreeMap from './components/tree-map'
 
 export {
+  UWTAxis,
   UWTChart,
   UWTCheckboxTreeNode,
   UWTCheckboxTree,
@@ -26,6 +28,7 @@ export {
 
 const UWTVue = {
   install: Vue => {
+    Vue.component(UWTAxis.name, UWTAxis)
     Vue.component(UWTChart.name, UWTChart)
     Vue.component(UWTCheckboxTree.name, UWTCheckboxTree)
     Vue.component(UWTCheckboxTreeNode.name, UWTCheckboxTreeNode)

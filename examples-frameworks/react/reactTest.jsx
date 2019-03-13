@@ -4,7 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import {
-    UWTChart, UWTPieChart, UWTGrid, UWTFlowDiagram, UWTGraph,
+    UWTAxis, UWTChart, UWTPieChart, UWTGrid, UWTFlowDiagram, UWTGraph,
     UWTHierarchyGraph, UWTSunburstChart, UWTSwimlaneChart, UWTCheckboxTree
 } from 'ui-widget-toolkit/framework/react';
 
@@ -978,6 +978,19 @@ let checkboxData = {
         }]
 };
 
+let timeAxis = {
+    scaleType: UWT.AxisType.Linear,
+    label: 'Time',
+    scalingInfo: TestData.secScalingInfo,
+    range: { min: 0, max: 10000 }
+};
+let axis = {
+    type: UWT.UIType.Axis,
+    axisDesc: timeAxis,
+    alignment: UWT.Alignment.Top
+}
+
+// Define the area and graphs.
 const App = () => (
     <div>
         <UWTChart chartDef={barChart} colorManager={colorManager}></UWTChart>
@@ -992,6 +1005,7 @@ const App = () => (
         <UWTHierarchyGraph graphDef={hGraph} graphTitle='Hierarchy Graph' colorManager={TestBase.colorManager} />
         <UWTChart chartDef={flameChart} chartTitle='Flame Chart' colorManager={TestBase.colorManager} />
         <UWTSunburstChart chartDef={sunburst} chartTitle='Sunburst Chart' colorManager={TestBase.colorManager} />
+        <UWTAxis axisDef={axis}></UWTAxis>
     </div>
 );
 ReactDOM.render(

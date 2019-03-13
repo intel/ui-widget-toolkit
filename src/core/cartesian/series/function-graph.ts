@@ -1,6 +1,7 @@
 import { ICss } from '../../../interface/ui-base';
 import { IXYSeries, ILayer, IXYLayer } from '../../../interface/chart/chart'
-import { ID3Chart, D3Axis, D3Chart } from '../chart';
+import { D3Axis } from '../axis';
+import { ID3Chart, D3Chart } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 
 import { XYSeries } from './xy';

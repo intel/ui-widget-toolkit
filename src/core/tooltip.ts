@@ -220,10 +220,10 @@ export class BaseTooltip {
                     self.onMouseLeave.call(this, d);
                     return;
                 }
-
-                // Delay making the tooltip visible
-                self.displayTooltip(self._delayMS);
             }
+
+            // Delay making the tooltip visible
+            self.displayTooltip(self._delayMS);
 
             // Note that we'll need to get the tooltip size on the first move
             self._tooltipHeight = 0;

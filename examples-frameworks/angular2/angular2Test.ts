@@ -34,6 +34,7 @@ window.onload = () => {
         <ui-widget-toolkit-graph id='graph1' [graphTitle]='graphTitle' [graphDef]='graphDef' [colorManager]='colorManager'></ui-widget-toolkit-graph>
         <uwt-chart id='chart3' [chartTitle]='flameTitle' [chartDef]='flameChart' [colorManager]='colorManager' [renderOptions]='flameRenderOptions'></uwt-chart>
         <uwt-sunburst-chart id='chart4' [chartTitle]='sunTitle' [chartDef]='sunChart' [colorManager]='colorManager'></uwt-sunburst-chart>
+        <uwt-axis [axisDef]='axis'></uwt-axis>
     `
 })
 
@@ -60,6 +61,7 @@ export class TestApp {
     flameRenderOptions: UWT.IOptions;
     sunTitle: string;
     sunChart: UWT.ISunburstChart;
+    axis: UWT.IAxis;
     node: any;
 
     onChecked(node: any) {
@@ -68,6 +70,19 @@ export class TestApp {
 
     constructor() {
         let self = this;
+
+
+        let timeAxis = {
+            scaleType: UWT.AxisType.Linear,
+            label: 'Time',
+            scalingInfo: TestData.secScalingInfo,
+            range: { min: 0, max: 10000 }
+        };
+        this.axis = {
+            type: UWT.UIType.Axis,
+            axisDesc: timeAxis,
+            alignment: UWT.Alignment.Top
+        }
 
         this.node =
             {
@@ -207,7 +222,7 @@ export class TestApp {
         };
         this.gridTitle = 'Grid 1';
         this.gridStyle = { height: '400px' };
-        this.gridClass = ['ag-theme-fresh'];
+        this.gridClass = ['ag-theme-balham'];
         this.gridDef = gridDef;
 
         this.flowTitle = 'Sankey Diagram';

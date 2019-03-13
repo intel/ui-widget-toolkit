@@ -41,6 +41,38 @@ export class UWTChart extends React.Component {
     }
 }
 
+export class UWTAxis extends React.Component {
+    constructor(props) {
+        super(props);
+        this.axis = React.createRef();
+    }
+
+    update() {
+        if (!this.renderer) {
+            this.renderer = new UWT.D3Renderer('');
+        }
+
+        if (this.props.axisDef) {
+            this.renderer.setDiv(this.axis.current);
+            this.renderer.invalidate(this.props.axisDef, this.props.renderOptions);
+        }
+    }
+
+    componentDidMount() {
+        this.update();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.axisDef !== this.props.axisDef) {
+            this.update();
+        }
+    }
+
+    render() {
+        return <div style={this.props.style} ref={this.axis} id='axis'></div>;
+    }
+}
+
 export class UWTSwimlaneChart extends React.Component {
     constructor(props) {
         super(props);
@@ -217,7 +249,7 @@ export class UWTGrid extends React.Component {
         if (this.props.gridClass) {
             this.gridClass = this.props.gridClass;
         } else {
-            this.gridClass = 'ag-theme-fresh';
+            this.gridClass = 'ag-theme-balham';
         }
     }
 

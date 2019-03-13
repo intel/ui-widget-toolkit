@@ -11,9 +11,8 @@ import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 import { SimpleBuffer } from '../../utilities';
 
 import { getKeys } from '../../svg-helper';
-import {
-    ID3Chart, D3Axis, D3Chart
-} from '../chart';
+import { D3Axis } from '../axis';
+import { ID3Chart, D3Chart } from '../chart';
 
 import { BaseSeries } from './baseSeries';
 

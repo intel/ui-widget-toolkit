@@ -14,10 +14,10 @@ import {
 import { getSelectionName, SimpleBuffer, } from '../../utilities';
 
 import { getKeys } from '../../svg-helper';
-import { PIXIHelper, GraphicsManager } from '../../pixi-helper';
-import {
-    ID3Chart, D3Chart, D3Axis, createDecimatorWorker
-} from '../chart';
+import { PIXIHelper } from '../../pixi-helper';
+
+import { D3Axis } from '../axis';
+import { ID3Chart, D3Chart, createDecimatorWorker } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 
 import { BaseSeries } from './baseSeries';

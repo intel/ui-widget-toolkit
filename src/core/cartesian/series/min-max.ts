@@ -4,9 +4,8 @@ import {
 import { IMinMaxValue } from '../../../interface/chart/series-data';
 import { ILayer, RenderType } from '../../../interface/chart/chart'
 import { getSelectionName } from '../../utilities';
-import {
-    ID3Chart, D3Chart, D3Axis
-} from '../chart';
+import { D3Axis } from '../axis';
+import { ID3Chart, D3Chart } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 
 import { BaseSeries } from './baseSeries';

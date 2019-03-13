@@ -1,10 +1,7 @@
 
-import {
-    IEvent, UIElement, ITooltipData, ILegendItem
-} from '../ui-base';
-import {
-    IScalingInfo, ILayer, IRenderedAxis
-} from './chart';
+import { IEvent, UIElement, ITooltipData, ILegendItem } from '../ui-base';
+import { IRenderedAxis, IScalingInfo } from './axis';
+import { ILayer } from './chart';
 
 export interface ICartesianSeriesPlugin {
     // static canRender: (layer: any): boolean;

@@ -321,4 +321,37 @@ export function initializeAngular1(angular) {
             }
         };
     });
+
+    angularModule.directive('uwtAxis', function () {
+        return {
+            template: '<div id="axis"></div>',
+            restrict: 'E',
+            scope: {
+                axisDef: '=',
+                renderOptions: '=?',
+                onRender: '=?',
+                renderer: '=?'
+            },
+            link: function (scope, element, attrs) {
+                if (!scope.renderer) {
+                    scope.renderer = new UWT.D3Renderer('');
+                }
+                scope.renderer.setOnRenderCallback(scope.onRender);
+
+                scope.$watch('axisDef', function () {
+                    if (scope.axisDef) {
+                        scope.renderer.setDiv(element[0].children[0]);
+                        scope.renderer.invalidate(scope.axisDef, scope.renderOptions);
+                    }
+                });
+
+                scope.$watch('renderOptions', function () {
+                    if (scope.axisDef) {
+                        scope.renderer.setDiv(element[0].children[0]);
+                        scope.renderer.render(scope.axisDef, scope.renderOptions);
+                    }
+                });
+            }
+        };
+    });
 }

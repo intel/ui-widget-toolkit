@@ -7,9 +7,8 @@ import { ILayer, IMarkerLayer, RenderType } from '../../../interface/chart/chart
 import { SimpleMarkerDecimator } from '../decimator/decimator';
 import { getSelectionName, SimpleBuffer } from '../../utilities';
 
-import {
-    ID3Chart, D3Chart, D3Axis, createDecimatorWorker
-} from '../chart';
+import { D3Axis } from '../axis';
+import { ID3Chart, D3Chart, createDecimatorWorker } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 import { BaseSeries } from './baseSeries';
 

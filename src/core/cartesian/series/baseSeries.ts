@@ -1,18 +1,14 @@
 import {
     IEvent, EventType, IContextMenuItem, IBuffer
 } from '../../../interface/ui-base';
-import {
-    IScalingInfo, RenderType, ILayer
-} from '../../../interface/chart/chart';
-import {
-    getSelectionName, SimpleBuffer
-} from '../../utilities';
-import {
-    addHover, removeHover, addClickHelper
-} from '../../svg-helper';
+import { IScalingInfo } from '../../../interface/chart/axis';
+import { ILayer } from '../../../interface/chart/chart';
+import { getSelectionName, SimpleBuffer } from '../../utilities';
+import { addHover, removeHover, addClickHelper } from '../../svg-helper';
 
 import { showContextMenu } from '../../context-menu';
-import { ID3Chart, D3Axis } from '../chart';
+import { D3Axis } from '../axis';
+import { ID3Chart } from '../chart';
 
 import * as d3 from 'd3';
 

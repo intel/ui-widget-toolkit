@@ -6,7 +6,7 @@
     <meta charset='utf-8' />
     <title>Vue Graph Test</title>
     <link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css' , type='text/css' />
-    <link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-theme-fresh.css' ,
+    <link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css' ,
         type='text/css' />
 
     <script src='https://d3js.org/d3.v5.js'></script>
@@ -53,6 +53,7 @@
         <uwt-sunburst-chart id='sunburst' :chart-def='sunburst'></uwt-sunburst-chart>
         <uwt-hierarchy-graph id='hierarchyGraph' :graph-def='hGraph' :color-manager='colorManager'>
         </uwt-hierarchy-graph>
+        <uwt-axis id='axis' :axis-def='axis'></uwt-axis>
     </div>
     <script src='./vueTest.js'></script>
 </body>

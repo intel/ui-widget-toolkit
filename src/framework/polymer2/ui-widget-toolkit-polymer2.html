@@ -344,6 +344,138 @@ Base element to share all the default styles
     </script>
 </dom-module>
 
+<dom-module id='uwt-axis'>
+    <template>
+        <style>
+            svg {
+                padding-top: 4px;
+                padding-bottom: 3px;
+            }
+
+            .axis path,
+            .axis line {
+                fill: none;
+                stroke: grey;
+                stroke-width: 1;
+                shape-rendering: crispEdges;
+            }
+
+            .axis text {
+                font-size: var(--uwt-axis-text-size, larger);
+                fill: var(--uwt-axis-text-color, black);
+                stroke-width: 0;
+            }
+
+            .lane-axis-label {
+                font-size: .8em;
+            }
+
+            .lane-title {
+                font-size: larger;
+                font-style: italic;
+            }
+
+            .chart-background {
+                stroke: var(--uwt-chart-background-stroke, white);
+                fill: var(--uwt-chart-background-fill, white);
+            }
+
+            .brush .extent {
+                stroke: #fff;
+                shape-rendering: crispEdges;
+                fill-opacity: 0.125;
+            }
+
+            .brush {
+                fill: var(--uwt-chart-brush-fill, none);
+            }
+
+            .zoom-region {
+                fill: black;
+                stroke: #fff;
+                shape-rendering: crispEdges;
+                fill-opacity: 0.125;
+            }
+
+            .no-pointer-events {
+                pointer-events: none;
+            }
+        </style>
+
+        <div id='axis'></div>
+    </template>
+    <script>
+        class Axis extends Polymer.Element {
+            static get is() { return 'uwt-axis'; }
+            static get properties() {
+                return {
+                    axisDef: {
+                        type: Object,
+                        observer: '_onDataChanged'
+                    },
+                    renderOptions: {
+                        type: Object,
+                        observer: '_onRenderOptionsChanged'
+                    },
+                    onRender: {
+                        type: Function
+                    },
+                    renderer: {
+                        type: Object
+                    }
+                }
+            }
+            connectedCallback() {
+                super.connectedCallback();
+
+                if (!this.renderer) {
+                    this.renderer = new UWT.D3Renderer('', this.colorManager);
+                }
+                this.renderer.setOnRenderCallback(this.onRender);
+
+                if (this.axisDef) {
+                    // clear needed to make the swim lanes work right
+                    // as polymer reuses the old divs in an array
+                    this.renderer.clearDiv(this.$.axis);
+                    this.renderer.destroy(this.axisDef);
+
+                    this.renderer.setDiv(this.$.axis);
+                    this.renderer.invalidate(this.axisDef, this.renderOptions);
+                }
+            }
+            _onDataChanged() {
+                if (this.renderer && this.axisDef) {
+                    // clear needed to make the swim lanes work right
+                    // as polymer reuses the old divs in an array
+                    this.renderer.destroy(this.axisDef);
+                    let self = this;
+                    setTimeout(function () {
+                        // timeout because otherwise the internal caching
+                        // fails since invalidate happens on an old div object
+                        self.renderer.clearDiv(self.$.axis);
+                        self.renderer.destroy(self.axisDef);
+
+                        self.renderer.setDiv(self.$.axis);
+                        self.renderer.invalidate(self.axisDef, self.renderOptions);
+                    }, 0);
+                }
+            }
+            _onRenderOptionsChanged() {
+                if (this.renderer && this.axisDef) {
+                    // clear needed to make the swim lanes work right
+                    // as polymer reuses the old divs in an array
+                    this.renderer.clearDiv(this.$.axis);
+                    this.renderer.destroy(this.axisDef);
+
+                    this.renderer.setDiv(this.$.axis);
+                    this.renderer.invalidate(this.axisDef, this.renderOptions);
+                }
+            }
+        }
+        customElements.define(Axis.is, Axis);
+    </script>
+</dom-module>
+
 <dom-module id='uwt-swimlane-chart'>
     <template>
         <div class='chart-title'>{{chartTitle}}</div>
@@ -453,7 +585,7 @@ Base element to share all the default styles
 
 <dom-module id='uwt-grid'>
     <link rel="import" type="css" href="../../css/ag-grid/ag-grid.css">
-    <link rel="import" type="css" href="../../css/ag-grid/ag-theme-fresh.css">
+    <link rel="import" type="css" href="../../css/ag-grid/ag-theme-balham.css">
     <template>
         <style>
             div#grid {
@@ -514,7 +646,7 @@ Base element to share all the default styles
                     if (newVal.gridOptions.gridClass) {
                         this.$.grid.classList.add(newVal.gridOptions.gridClass);
                     } else {
-                        this.$.grid.classList.add('ag-theme-fresh');
+                        this.$.grid.classList.add('ag-theme-balham');
                     }
                 }
 

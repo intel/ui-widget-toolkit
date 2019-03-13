@@ -16,9 +16,8 @@ import { PIXIHelper } from '../../pixi-helper';
 import { ColorManager } from '../../color-manager';
 import { SelectionHelper } from '../../selection';
 
-import {
-    ID3Chart, D3Chart, D3Axis, createDecimatorWorker
-} from '../chart';
+import { D3Axis } from '../axis';
+import { ID3Chart, D3Chart, createDecimatorWorker } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 
 import { BaseSeries } from './baseSeries';

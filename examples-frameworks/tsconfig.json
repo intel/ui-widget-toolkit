@@ -7,8 +7,5 @@
         "preserveConstEnums": true,
         "sourceMap": true,
         "allowJs": true
-    },
-    "include": [
-        "../examples"
-    ]
+    }
 }

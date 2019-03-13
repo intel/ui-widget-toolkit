@@ -50,7 +50,7 @@ export default {
       if (this.gridDef.gridOptions && this.gridDef.gridOptions.gridClass) {
         this.$refs["grid"].classList.add(this.gridDef.gridOptions.gridClass);
       } else {
-        this.$refs["grid"].classList.add("ag-theme-fresh");
+        this.$refs["grid"].classList.add("ag-theme-balham");
       }
       this.renderer.setDiv(this.gridDef, this.$refs["grid"]);
       this.renderer.invalidate(this.gridDef);
@@ -65,7 +65,7 @@ export default {
         if (newVal.gridOptions && newVal.gridOptions.gridClass) {
           this.$refs["grid"].classList.add(newVal.gridOptions.gridClass);
         } else {
-          this.$refs["grid"].classList.add("ag-theme-fresh");
+          this.$refs["grid"].classList.add("ag-theme-balham");
         }
       }
 

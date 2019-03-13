@@ -1,3 +1,4 @@
+export * from '../interface/chart/axis';
 export * from '../interface/chart/chart';
 export * from '../interface/chart/series-data';
 export * from '../interface/chart/series';
@@ -12,6 +13,7 @@ export * from '../core/treemap';
 export * from '../core/data';
 export * from '../core/svg-helper';
 export * from '../core/cartesian/decimator/decimator';
+export * from '../core/cartesian/axis';
 export * from '../core/cartesian/chart';
 export * from '../core/cartesian/series/box-plot';
 export * from '../core/cartesian/series/flame-chart';

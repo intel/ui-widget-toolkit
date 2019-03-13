@@ -4,15 +4,17 @@ import {
 import {
     ITraceValue
 } from '../../../interface/chart/series-data';
+import { IScalingInfo } from '../../../interface/chart/axis';
 import {
-    ILayer, RenderType, IScalingInfo, ITraceValueLayer, IXYLayer
+    ILayer, RenderType, ITraceValueLayer, IXYLayer
 } from '../../../interface/chart/chart'
 import { ITraceResidencyDecimator } from '../../../interface/chart/decimator';
-import { InternalDecimatorMap, TraceResidencyDecimator, TraceStateDecimator } from '../decimator/decimator';
-import { SimpleBuffer } from '../../utilities';
 import {
-    ID3Chart, D3Axis, D3Chart, createDecimatorWorker
-} from '../chart';
+    InternalDecimatorMap, TraceResidencyDecimator, TraceStateDecimator
+} from '../decimator/decimator';
+import { SimpleBuffer } from '../../utilities';
+import { D3Axis } from '../axis';
+import { ID3Chart, D3Chart, createDecimatorWorker } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 import { XYSeries } from './xy';
 

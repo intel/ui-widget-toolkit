@@ -882,6 +882,19 @@ let checkboxData = {
         }
     }
 
+    // Define the area and graphs.
+    let timeAxis: UWT.IAxisDescription = {
+        scaleType: UWT.AxisType.Linear,
+        label: 'Time',
+        scalingInfo: TestData.secScalingInfo,
+        range: { min: 0, max: 10000 }
+    };
+    let axis = {
+        type: UWT.UIType.Axis,
+        axisDesc: timeAxis,
+        alignment: UWT.Alignment.Top
+    }
+
     let app = new Vue({
         el: '#app',
         data: function () {
@@ -896,6 +909,7 @@ let checkboxData = {
                 flame: flame,
                 sunburst: sunburst,
                 hGraph: hGraph,
+                axis: axis,
                 colorManager: TestBase.colorManager
             }
         }

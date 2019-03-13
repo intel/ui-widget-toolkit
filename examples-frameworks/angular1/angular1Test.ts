@@ -179,7 +179,7 @@ module AngularTest {
             };
             $scope.gridTitle = 'Grid 1';
             $scope.gridStyle = { 'height': '400px' };
-            $scope.gridClass = ['ag-theme-fresh'];
+            $scope.gridClass = ['ag-theme-balham'];
             $scope.gridDef = gridDef;
         }
 
@@ -262,6 +262,19 @@ module AngularTest {
             UWT.addCallbacks(chart8);
             $scope.sunTitle = 'Sunburst Chart';
             $scope.sunChart = chart8;
+
+            let timeAxis = {
+                scaleType: UWT.AxisType.Linear,
+                label: 'Time',
+                scalingInfo: TestData.secScalingInfo,
+                range: { min: 0, max: 10000 }
+            };
+            let axis = {
+                type: UWT.UIType.Axis,
+                axisDesc: timeAxis,
+                alignment: UWT.Alignment.Top
+            }
+            $scope.axis = axis;
         }
     });
 

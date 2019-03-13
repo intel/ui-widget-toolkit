@@ -449,11 +449,77 @@ export class UWTSunburstChart implements OnChanges {
     }
 }
 
+
+@Component({
+    selector: 'uwt-axis',
+    styles: [`
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: grey;
+            stroke-width: 1;
+            shape-rendering: crispEdges;
+        }
+        .axis text {
+            font-size: larger;
+        }
+        .axis .lane-axis-label {
+            font-size: .8em;
+        }
+        .lane-title {
+            font-size: larger;
+            font-style: italic;
+        }
+        .chart-background {
+            stroke: white;
+            fill: white;
+        }
+        .brush .extent {
+            stroke: #fff;
+            shape-rendering: crispEdges;
+            fill-opacity: 0.125;
+        }
+        .zoom-region {
+            fill: black;
+            stroke: #fff;
+            shape-rendering: crispEdges;
+            fill-opacity: 0.125;
+        }
+        .no-pointer-events {
+            pointer-events: none;
+        }
+    `],
+    template: `
+        <div #axis id='axis'></div>
+    `,
+    changeDetection: ChangeDetectionStrategy.OnPush
+})
+
+export class UWTAxis implements OnChanges {
+    @Input() axisDef: UWT.IAxis;
+    @Input() renderOptions: UWT.IOptions;
+    @Input() renderer: UWT.UIRenderer;
+    @Input() onRender: () => void;
+
+    @ViewChild('axis') axisElem: any;
+
+    ngOnChanges(changes: any) {
+        if (!this.renderer) {
+            this.renderer = new UWT.D3Renderer('');
+        }
+
+        if (this.axisDef) {
+            this.renderer.setDiv(this.axisElem.nativeElement);
+            this.renderer.invalidate(this.axisDef, this.renderOptions);
+        }
+    }
+}
+
 @NgModule({
     imports: [BrowserModule, CommonModule],
-    declarations: [UWTChart, UWTSwimlaneChart, UWTPieChart, UWTGrid, UWTFlowDiagram,
-        UWTGraph, UWTSunburstChart, UWTHierarchyGraph],
-    exports: [UWTChart, UWTSwimlaneChart, UWTPieChart, UWTGrid, UWTFlowDiagram,
+    declarations: [UWTAxis, UWTChart, UWTSwimlaneChart, UWTPieChart, UWTGrid, UWTFlowDiagram,
+        UWTGraph, UWTSunburstChart, UWTHierarchyGraph, UWTAxis],
+    exports: [UWTAxis, UWTChart, UWTSwimlaneChart, UWTPieChart, UWTGrid, UWTFlowDiagram,
         UWTGraph, UWTSunburstChart, UWTHierarchyGraph]
 })
 export class UWTModule { }

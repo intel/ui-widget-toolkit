@@ -19,8 +19,9 @@ import {
 
 import { getKeys, Arrow, animatePath } from '../../svg-helper';
 import { PIXIHelper } from '../../pixi-helper';
+import { D3Axis } from '../axis';
 import {
-    ID3Chart, D3Chart, D3Axis, createDecimatorWorker, getBoundedPixelValue
+    ID3Chart, D3Chart, createDecimatorWorker, getBoundedPixelValue
 } from '../chart';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 
