@@ -86,80 +86,20 @@ export class UWTSwimlaneChart extends React.Component {
     }
 
     getChartOptions(index) {
-        if (index < this.chartOptions.length) {
-            return this.chartOptions[index];
+        if (index >= this.chartOptions.length) {
+            this.chartOptions[index] = UWT.copy(this.state.renderOptions);
         }
-        return this.renderOptions;
+        return this.chartOptions[index];
     }
     update() {
-        if (this.props.chartDefs &&
-            this.props.chartDefs != this.state.chartDefs) {
-            let newList = this.props.chartDefs;
-            let oldList = this.state.chartDefs;
-            let chartMap = new Map();
-            if (newList) {
-                for (let i = 0; i < newList.length; ++i) {
-                    chartMap.set(newList[i], true);
-                }
-            }
-            let legends = [];
-            if (oldList) {
-                for (let i = 0; i < oldList.length; ++i) {
-                    var oldChart = oldList[i];
-                    if (!chartMap.has(oldChart)) {
-                        UWT.ChartGroup.handleRemoveChart(oldChart);
-                    }
-                    if (oldChart.legends) {
-                        legends = legends.concat(oldChart.legends);
-                    }
-                }
-            } else {
-                if (this.props.chartDefs !== undefined) {
-                    for (let i = 0; i < this.props.chartDefs.length; ++i) {
-                        if (this.props.chartDefs[i].legends) {
-                            legends = legends.concat(this.props.chartDefs[i].legends);
-                        }
-                    }
-                }
-            }
-
-            if (this.props.chartDefs) {
-                UWT.ChartGroup.handleChartUpdate(this.props.chartDefs,
-                    this.chartOptions, this, legends);
-            }
+        if ((this.props.chartDefs &&
+            this.props.chartDefs != this.state.chartDefs) ||
+            (this.props.renderOptions &&
+                this.props.renderOptions != this.state.renderOptions)) {
             this.setState({
                 chartDefs: this.props.chartDefs,
                 renderOptions: this.props.renderOptions
             });
-        }
-        if (this.props.renderOptions &&
-            this.props.renderOptions != this.state.renderOptions) {
-            UWT.ChartGroup.handleRenderOptionsUpdate(this, this.props.renderOptions,
-                this.chartOptions);
-            this.setState({
-                chartDefs: this.props.chartDefs,
-                renderOptions: this.props.renderOptions
-            });
-        }
-
-        if (this.props.chartDefs !== undefined) {
-            let hasXAxis = false;
-            for (let i = this.props.chartDefs.length - 1; i >= 0; --i) {
-                let chart = this.props.chartDefs[i];
-                if (!chart.hide) {
-                    for (let j = 0; j < chart.axes.length; ++j) {
-                        if (chart.axes[j].alignment === UWT.Alignment.Bottom) {
-                            if (chart.axes[j].hidden != hasXAxis) {
-                                chart.axes[j].hidden = hasXAxis;
-                                if (chart.renderer) {
-                                    chart.renderer.invalidate(chart);
-                                }
-                            }
-                        }
-                    }
-                    hasXAxis = true;
-                }
-            }
         }
     }
 

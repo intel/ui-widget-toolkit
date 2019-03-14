@@ -66,48 +66,11 @@ export function initializeAngular1(angular) {
 
                 let chartOptions = [];
                 scope.getChartOptions = function (index) {
-                    if (index < chartOptions.length) {
-                        return chartOptions[index];
+                    if (index >= chartOptions.length) {
+                        chartOptions[index] = UWT.copy(this.renderOptions);
                     }
-                    return scope.renderOptions;
+                    return chartOptions[index];
                 }
-                scope.$watchCollection('chartDefs', function (newList, oldList) {
-                    let chartMap = new Map();
-                    if (newList) {
-                        for (let i = 0; i < newList.length; ++i) {
-                            chartMap.set(newList[i], true);
-                        }
-                    }
-                    let legends = [];
-                    if (oldList) {
-                        for (let i = 0; i < oldList.length; ++i) {
-                            var oldChart = oldList[i];
-                            if (!chartMap.has(oldChart)) {
-                                UWT.ChartGroup.handleRemoveChart(oldChart);
-                            }
-                            if (oldChart.legends) {
-                                legends = legends.concat(oldChart.legends);
-                            }
-                        }
-                    } else {
-                        if (scope.chartDefs !== undefined) {
-                            for (let i = 0; i < scope.chartDefs.length; ++i) {
-                                if (scope.chartDefs[i].legends) {
-                                    legends = legends.concat(scope.chartDefs[i].legends);
-                                }
-                            }
-                        }
-                    }
-
-                    if (scope.chartDefs) {
-                        UWT.ChartGroup.handleChartUpdate(scope.chartDefs,
-                            chartOptions, scope, legends);
-                    }
-                });
-                scope.$watch('renderOptions', function () {
-                    UWT.ChartGroup.handleRenderOptionsUpdate(scope, scope.renderOptions,
-                        chartOptions);
-                });
             }
         };
     });

@@ -225,7 +225,7 @@ export class BaseHeatMap extends BaseSeries implements ICartesianSeriesPlugin {
         if (requiresRender) {
             if (!this._pixiHelper) {
                 // this creates new helpers
-                this._pixiHelper = new PIXIHelper(this._d3Chart.getOptions().forceCanvasRenderer);
+                this._pixiHelper = new PIXIHelper(!this._d3Chart.getOptions().forceCanvasRenderer);
                 this._pixi = this._pixiHelper.getRenderer();
 
                 let rectGraphic = new PIXI.Graphics();

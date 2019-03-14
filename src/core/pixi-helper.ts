@@ -17,7 +17,7 @@ export class GraphicsManager {
     public add(mainKey: string, altKey: string, scaleMode: any, resolution: number,
         create: () => PIXI.DisplayObject): any {
         // create a texture and save it for faster rendering
-        let sprite;
+        let sprite: PIXI.Sprite;
         if (mainKey) {
             if (!this._graphicsMap[mainKey]) {
                 this._graphicsMap[mainKey] = this._renderer.generateTexture(create(), scaleMode, resolution);
@@ -40,7 +40,7 @@ export class PIXIHelper {
     protected _selectionItems: { [index: string]: any } = {};
     protected _useWebGLRenderer: boolean;
 
-    constructor(useWebGLRenderer = true) {
+    constructor(useWebGLRenderer = false) {
         PIXI.utils.skipHello();
         this._useWebGLRenderer = useWebGLRenderer;
         if (useWebGLRenderer) {

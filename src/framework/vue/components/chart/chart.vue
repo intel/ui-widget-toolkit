@@ -43,30 +43,41 @@ export default {
       this.renderer.setOnRenderCallback(this.onRender);
     }
     if (this.renderer && this.chartDef) {
-      UWT.Chart.finalize(this.chartDef);
-      this.renderer.invalidate(this.chartDef, this.renderOptions);
+      this._handleUpdate(this.chartDef);
+    }
+  },
+  methods: {
+    _handleUpdate(newValue, oldValue) {
+      this.chart = newValue;
+      if (this.$refs["chart"]) {
+        while (this.$refs["chart"].firstChild) {
+          this.$refs["chart"].removeChild(this.$refs["chart"].firstChild);
+        }
+      }
+      if (this.renderer && newValue) {
+        if (oldValue) {
+          this.renderer.destroy(oldValue);
+        }
+        UWT.Chart.finalize(newValue);
+        this.renderer.invalidate(newValue, this.renderOptions);
+      }
+    },
+    /** use this instead of chartDef for large data due to how Vue handles reactivity */
+    setData(chartDef) {
+      this._handleUpdate(chartDef, this.chart);
     }
   },
   watch: {
     chartDef: function(newValue, oldValue) {
-      while (this.$refs["chart"].firstChild) {
-        this.$refs["chart"].removeChild(this.$refs["chart"].firstChild);
-      }
-      if (this.renderer && this.chartDef) {
-        if (oldValue) {
-          this.renderer.destroy(oldValue);
-        }
-        UWT.Chart.finalize(this.chartDef);
-        this.renderer.invalidate(this.chartDef, this.renderOptions);
-      }
+      this._handleUpdate(newValue, this.chart);
     },
     renderOptions: function() {
-      if (this.renderer && this.chartDef) {
+      if (this.renderer && this.chart) {
         while (this.$refs["chart"].firstChild) {
           this.$refs["chart"].removeChild(this.$refs["chart"].firstChild);
         }
-        UWT.Chart.finalize(this.chartDef);
-        this.renderer.invalidate(this.chartDef, this.renderOptions);
+        UWT.Chart.finalize(this.chart);
+        this.renderer.invalidate(this.chart, this.renderOptions);
       }
     },
     colorManager: function() {

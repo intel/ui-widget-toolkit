@@ -240,6 +240,11 @@ image.dimm {
     width: 40px;
 }
 
+image.node.socket {
+  height: 60px;
+  width: 60px;
+}
+
 .core {
   margin: 2px;
   padding: 2px;

@@ -895,6 +895,53 @@ let checkboxData = {
         alignment: UWT.Alignment.Top
     }
 
+    let swimChart: UWT.ICartesianChart = {
+        type: UWT.UIType.Cartesian,
+        title: 'foo',
+        dataSets: [{
+            renderType: UWT.RenderType.Line,
+            data: [
+                { name: 'data-0', values: TestData.xyDataSets[0] },
+                { name: 'data-1', values: TestData.xyDataSets[1] },
+                { name: 'data-2', values: TestData.xyDataSets[2] },]
+        }],
+        isXContinuous: true,
+        legends: [{ alignment: UWT.Alignment.Top }]
+    }
+
+    let swimChart2: UWT.ICartesianChart = {
+        type: UWT.UIType.Cartesian,
+        title: 'bar',
+        dataSets: [{
+            renderType: UWT.RenderType.Area | UWT.RenderType.Stacked,
+            data: [
+                { name: 'data-0', values: TestData.xyDataSets[0] },
+                { name: 'data-1', values: TestData.xyDataSets[1] },
+                { name: 'data-2', values: TestData.xyDataSets[2] },]
+        }],
+        isXContinuous: true
+    }
+
+    let swimChart3: UWT.ICartesianChart = {
+        type: UWT.UIType.Cartesian,
+        title: 'abc',
+        dataSets: [{
+            renderType: UWT.RenderType.Area,
+            data: [
+                { name: 'data-0', values: TestData.xyDataSets[0], css: { style: { opacity: .5 } } },
+                { name: 'data-1', values: TestData.xyDataSets[1], css: { style: { opacity: .5 } } },
+                { name: 'data-2', values: TestData.xyDataSets[2], css: { style: { opacity: .5 } } }]
+        }],
+        isXContinuous: true
+    }
+
+    TestBase.addElement(swimChart, 'lanes', 'lanes', 'lanes');
+    TestBase.addElement(swimChart2, 'lanes', 'lanes', 'lanes');
+    TestBase.addElement(swimChart3, 'lanes', 'lanes', 'lanes');
+
+    let swimlaneDefs = [swimChart, swimChart2, swimChart3];
+    let swimlaneOptions = { leftMargin: 100, height: 34 };
+
     let app = new Vue({
         el: '#app',
         data: function () {
@@ -910,6 +957,8 @@ let checkboxData = {
                 sunburst: sunburst,
                 hGraph: hGraph,
                 axis: axis,
+                swimlaneDefs: swimlaneDefs,
+                swimlaneOptions: swimlaneOptions,
                 colorManager: TestBase.colorManager
             }
         }

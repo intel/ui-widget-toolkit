@@ -93,7 +93,7 @@ export class UWTChart implements OnChanges {
     selector: 'uwt-swimlane-chart',
     template: `
         <div *ngIf='chartTitle' class='chart-title'>{{chartTitle}}</div>
-        <ng-container *ngFor='let chartDef of chartDefs'>
+        <ng-container *ngFor='let chartDef of chartDefs; let i = index'>
             <uwt-chart *ngIf='!chartDef.hide' [chartDef]='chartDef'
             [renderOptions]='getChartOptions(i)' [colorManager]='colorManager'
             [onRender]='onRender' [renderer]='renderer'></uwt-chart>
@@ -101,7 +101,7 @@ export class UWTChart implements OnChanges {
     `
 })
 
-export class UWTSwimlaneChart implements OnChanges {
+export class UWTSwimlaneChart {
     @Input() chartTitle: string;
     @Input() chartDefs: UWT.ICartesianChart[];
     @Input() renderOptions: UWT.IOptions;
@@ -113,54 +113,13 @@ export class UWTSwimlaneChart implements OnChanges {
 
     private chartOptions: UWT.IOptions[] = [];
     getChartOptions = function (index: number) {
-        if (index < this.chartOptions.length) {
-            return this.chartOptions[index];
+        if (index >= this.chartOptions.length) {
+            this.chartOptions[index] = UWT.copy(this.renderOptions);
         }
-        return this.renderOptions;
+        return this.chartOptions[index];
     }
 
     ngOnChanges(changes: any) {
-        if (changes.chartDefs &&
-            changes.chartDefs.currentValue != changes.chartDefs.previousValue) {
-            let newList = changes.chartDefs.currentValue;
-            let oldList = changes.chartDefs.previousValue;
-            let chartMap: Map<UWT.IChart, boolean> = new Map<UWT.IChart, boolean>();
-            if (newList) {
-                for (let i = 0; i < newList.length; ++i) {
-                    chartMap.set(newList[i], true);
-                }
-            }
-            let legends: UWT.ILegend[] = [];
-            if (oldList) {
-                for (let i = 0; i < oldList.length; ++i) {
-                    var oldChart = oldList[i];
-                    if (!chartMap.has(oldChart)) {
-                        UWT.ChartGroup.handleRemoveChart(oldChart);
-                    }
-                    if (oldChart.legends) {
-                        legends = legends.concat(oldChart.legends);
-                    }
-                }
-            } else {
-                if (this.chartDefs !== undefined) {
-                    for (let i = 0; i < this.chartDefs.length; ++i) {
-                        if (this.chartDefs[i].legends) {
-                            legends = legends.concat(this.chartDefs[i].legends);
-                        }
-                    }
-                }
-            }
-
-            if (this.chartDefs) {
-                UWT.ChartGroup.handleChartUpdate(this.chartDefs,
-                    this.chartOptions, this, legends);
-            }
-        }
-        if (changes.renderOptions &&
-            changes.renderOptions.currentValue != changes.renderOptions.previousValue) {
-            UWT.ChartGroup.handleRenderOptionsUpdate(this, this.renderOptions,
-                this.chartOptions);
-        }
     }
 }
 

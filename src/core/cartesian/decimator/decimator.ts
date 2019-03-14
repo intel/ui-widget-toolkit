@@ -1356,7 +1356,7 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
                     }
                 } else {
                     // find the subpixel value with the most weight
-                    let pixelName;
+                    let pixelName: string;
                     let max = 0;
                     for (let name in subpixelMap) {
                         let groupWeight = subpixelMap[name];

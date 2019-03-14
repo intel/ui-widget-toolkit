@@ -611,7 +611,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
         }
 
         if (!this._pixiHelper) {
-            this._pixiHelper = new PIXIHelper(this._d3Chart.getOptions().forceWebGLRenderer);
+            this._pixiHelper = new PIXIHelper(!this._d3Chart.getOptions().forceCanvasRenderer);
             this._pixi = this._pixiHelper.getRenderer();
         }
 
@@ -680,7 +680,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
                 }, undefined, chart, decimatedValue.decimatedValues);
 
             // this is flame chart specific handling for brush
-            this.configureItemInteractionPIXI(selection, value);
+            this.configureItemInteractionPIXI(selection, decimatedValue.decimatedValues);
 
             let text: PIXI.Text = this._textMap[name];
             if (!text) {

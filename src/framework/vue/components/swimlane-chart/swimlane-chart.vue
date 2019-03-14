@@ -3,9 +3,9 @@
     <div class="chart-title">{{ chartTitle }}</div>
     <uwt-chart
       v-for="(wrapper, index) in chartDefWrappers"
+      :ref="'chart'"
       :key="index"
-      :id="wrapper.chartDef.title"
-      :chart-def="wrapper.chartDef"
+      :id="wrapper.title"
       :render-options="wrapper.options"
       :color-manager="colorManager"
       :on-render="onRender"
@@ -22,9 +22,9 @@ export default {
   components: {
     UWTChart: UWTChart
   },
-  data: function() {
+  data() {
     return {
-      chartDefWrappers: new Array(0)
+      chartDefWrappers: []
     };
   },
   props: {
@@ -65,93 +65,50 @@ export default {
     }
   },
   mounted: function() {
-    UWT.ChartGroup.handleRenderOptionsUpdate(
-      this,
-      this.renderOptions,
-      this.chartOptions
-    );
-    this._dataChanged();
+    this._createWrapper(this.chartDefs);
   },
   methods: {
     resize: function() {
-      for (let i = 0; i < this.chartDefWrappers.length; ++i) {
-        let chart = this.chartDefWrappers[i];
+      for (let i = 0; i < this.charts.length; ++i) {
+        let chart = this.charts[i];
 
         let options = { width: undefined };
-        if (chart.zoomEvent) {
-          options.xStart = chart.zoomEvent.xStart;
-          options.xEnd = chart.zoomEvent.xEnd;
-        }
-        chart.chartDef.renderer.render(chart.chartDef, options);
+        chart.renderer.render(chart, options);
       }
     },
-    _createWrapper: function() {
-      if (this.chartDefs) {
+    _createWrapper: function(chartDefs) {
+      if (chartDefs && chartDefs.length > 0) {
+        let self = this;
+        this.charts = chartDefs;
+
         let wrappers = [];
-        for (let i = 0; i < this.chartDefs.length; ++i) {
+        for (let i = 0; i < this.charts.length; ++i) {
           wrappers.push({
-            chartDef: this.chartDefs[i],
-            options: this.chartOptions[i]
+            title: this.charts[i].title,
+            options: UWT.copy(this.renderOptions)
           });
         }
         this.chartDefWrappers = wrappers;
+
+        this.$nextTick(function() {
+          for (let i = 0; i < self.charts.length; ++i) {
+            self.$refs["chart"][i].setData(self.charts[i]);
+          }
+        });
       }
     },
-    _dataChanged: function() {
-      let chartMap = new Map();
-      if (this.chartDefs) {
-        for (let i = 0; i < this.chartDefs.length; ++i) {
-          chartMap.set(this.chartDefs[i], true);
-        }
-      }
-      let legends = [];
-      let oldList = this.chartDefWrappers;
-      if (oldList) {
-        for (let i = 0; i < oldList.length; ++i) {
-          let oldChart = oldList[i];
-          if (!chartMap.has(oldChart.chartDef)) {
-            UWT.ChartGroup.handleRemoveChart(oldChart.chartDef);
-          }
-          if (oldChart.chartDef.legends) {
-            legends = legends.concat(oldChart.chartDef.legends);
-          }
-        }
-      } else {
-        for (let i = 0; i < this.chartDefs.length; ++i) {
-          if (this.chartDefs[i].legends) {
-            legends = legends.concat(this.chartDefs[i].legends);
-          }
-        }
-      }
 
-      this.chartOptions = [];
-      this.sharedOptions = this.renderOptions; // requires for API to work
-      UWT.ChartGroup.handleChartUpdate(
-        this.chartDefs,
-        this.chartOptions,
-        this,
-        legends
-      );
-
-      this._createWrapper();
+    /** use this instead of chartDef for large data due to how Vue handles reactivity */
+    setData(chartDefs) {
+      this._createWrapper(chartDefs);
     }
   },
   watch: {
     chartDefs: function() {
-      if (this.chartDefs) {
-        this._dataChanged();
-      }
+      this._createWrapper(this.chartDefs);
     },
     renderOptions: function() {
-      if (this.chartDefs) {
-        this.chartOptions = new Array(this.chartDefs.length);
-      }
-      UWT.ChartGroup.handleRenderOptionsUpdate(
-        this,
-        this.renderOptions,
-        this.chartOptions
-      );
-      this.createWrapper();
+      this.createWrapper(this.charts);
     },
     colorManager: function() {
       if (this.renderer) {

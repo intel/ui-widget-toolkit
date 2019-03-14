@@ -1081,7 +1081,7 @@ describe('sanity', function () {
             expect(canvas.length).toBe(1);
         });
         driver.findElements(By.tagName('svg')).then(function (svg) {
-            expect(svg.length).toBe(12);
+            expect(svg.length).toBe(18);
         });
         driver.findElements(By.className('ag-root')).then(function (grid) {
             expect(grid.length).toBe(1);

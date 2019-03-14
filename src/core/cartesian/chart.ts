@@ -130,111 +130,6 @@ export class Chart {
     }
 }
 
-/** a helper class to render a group of charts together */
-export class ChartGroup {
-    static handleChartUpdate(charts: ICartesianChart[], chartOptions: IOptions[],
-        stateObj: any, legends?: ILegend[]) {
-
-        if (charts) {
-            let legendsTop: ILegend[] = [];
-            let legendsBottom: ILegend[] = [];
-            if (legends) {
-                for (let i = 0; i < legends.length; ++i) {
-                    let legend = legends[i];
-                    if (legend.alignment === Alignment.Top) {
-                        legendsTop.push(legend);
-                    } else if (legend.alignment === Alignment.Bottom) {
-                        legendsBottom.push(legend);
-                    }
-                }
-            }
-
-            if (!stateObj.elemManager) {
-                stateObj.elemManager = new ElementManager();
-            }
-
-            chartOptions.length = 0;
-            for (let i = 0; i < charts.length; ++i) {
-                let chart = charts[i];
-                Chart.finalize(chart);
-                for (let j = 0; j < chart.axes.length; ++j) {
-                    if (chart.axes[j].alignment === Alignment.Bottom) {
-                        if (i !== charts.length - 1) {
-                            chart.axes[j].hidden = true;
-                        } else {
-                            chart.axes[j].hidden = false;
-                        }
-                    }
-                }
-
-                if (chart.legends) {
-                    for (let j = 0; j < chart.legends.length; ++j) {
-                        let chartLegend = chart.legends[j];
-                        if (chartLegend.alignment === Alignment.Top ||
-                            chartLegend.alignment === Alignment.Bottom) {
-                            chart.legends.splice(j, 1);
-                        }
-                    }
-                }
-
-                chartOptions[i] = stateObj.sharedOptions;
-                if (!chart.manager) {
-                    stateObj.elemManager.addElement(chart, undefined, 'default', 'default');
-                }
-            }
-
-            if (charts.length > 0) {
-                let endIdx = charts.length - 1;
-                chartOptions[endIdx] = stateObj.bottomOptions;
-
-                // put top/bottom legends in the right place
-                if (legendsTop.length > 0) {
-                    if (!charts[0].legends) {
-                        charts[0].legends = [];
-                    }
-                    charts[0].legends = charts[0].legends.concat(legendsTop);
-                }
-                if (legendsBottom.length > 0) {
-                    if (!charts[endIdx].legends) {
-                        charts[endIdx].legends = [];
-                    }
-                    charts[endIdx].legends = charts[endIdx].legends.concat(legendsBottom);
-                }
-            }
-        }
-    }
-
-    static handleRenderOptionsUpdate(stateObj: any, baseOptions: IOptions,
-        chartOptions: IOptions[]) {
-
-        stateObj.sharedOptions = copy(baseOptions);
-        stateObj.sharedOptions.topMargin = 1;
-        stateObj.sharedOptions.bottomMargin = 1;
-        stateObj.sharedOptions.disableAutoResizeWidth = true;
-
-        stateObj.bottomOptions = copy(baseOptions);
-        stateObj.bottomOptions.topMargin = 1;
-        stateObj.bottomOptions.bottomMargin = 15;
-        stateObj.bottomOptions.disableAutoResizeWidth = true;
-
-        if (chartOptions && chartOptions.length !== 0) {
-            let lastIdx = chartOptions.length - 1;
-            for (let i = 0; i < lastIdx; ++i) {
-                chartOptions[i] = stateObj.sharedOptions;
-            }
-            chartOptions[lastIdx] = stateObj.bottomOptions;
-        }
-    }
-
-    static handleRemoveChart(chart: IChart) {
-        if (chart.renderer) {
-            chart.renderer.destroy(chart);
-        }
-        if (chart.manager) {
-            chart.manager.removeElement(chart);
-        }
-    }
-}
 
 export interface ID3Chart {
     getTitle(): string;
@@ -341,9 +236,6 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
     /** Tooltip div id */
     protected _hoverLine: d3.Selection<d3.BaseType, {}, d3.BaseType, any>;
 
-    /** a map of the series to the associated data */
-    private _svgMap: WeakMap<Object, d3.Selection<any, any, d3.BaseType, any>>;
-
     /** the minimum height of the graph */
     private _minGraphHeight: number;
 
@@ -389,8 +281,6 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         this._options.bottomMargin = 0;
 
         this._minGraphHeight = 0;
-
-        this._svgMap = new WeakMap<Object, d3.Selection<d3.BaseType, {}, d3.BaseType, any>>();
 
         this._xMin = Number.MAX_VALUE;
         this._xMax = -Number.MAX_VALUE;
@@ -1239,7 +1129,6 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
 
 
         if (d3Series) {
-            this._svgMap.set(d3Series, graphSvg);
             this._seriesMap.set(layer, d3Series);
         }
         return d3Series;
@@ -1329,7 +1218,6 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         // keep these in case we have to adjust the graph width
         self._legends = [];
         self._axes = [];
-        self._svgMap = new WeakMap<Object, d3.Selection<d3.BaseType, {}, d3.BaseType, any>>();
         self._seriesMap = new Map<ILayer, ICartesianSeriesPlugin>();
         let leftRightAxes: D3Axis[] = [];
 

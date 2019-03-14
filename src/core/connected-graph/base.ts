@@ -1116,7 +1116,7 @@ export class D3ConnectedGraphPixi extends UIElementRenderer {
 
         let first = this._pixiHelper === undefined;
         if (first) {
-            this._pixiHelper = new PIXIHelper(this.getOptions().forceCanvasRenderer);
+            this._pixiHelper = new PIXIHelper(!this.getOptions().forceCanvasRenderer);
             this._pixi = this._pixiHelper.getRenderer();
             (this._parent.node() as any).appendChild(this._pixi.view);
 
