@@ -140,6 +140,14 @@ export class UWTSunburstChart implements OnChanges {
     chartElem: any;
     ngOnChanges(changes: any): void;
 }
+export class UWTAxis implements OnChanges {
+    axisDef: UWT.IAxis;
+    renderOptions: UWT.IOptions;
+    renderer: UWT.UIRenderer;
+    onRender: () => void;
+    axisElem: any;
+    ngOnChanges(changes: any): void;
+}
 export class UWTModule {
 }
 

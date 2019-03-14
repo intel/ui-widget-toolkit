@@ -10,11 +10,13 @@ var ScatterTest;
     };
     function createView() {
         var leftAxis2 = {
+            type: UWT.UIType.Axis,
             scaleType: UWT.AxisType.Linear,
             label: 'Values2',
             scalingInfo: TestData.defaultScalingInfo
         };
         var rightAxis1 = {
+            type: UWT.UIType.Axis,
             scaleType: UWT.AxisType.Linear,
             label: 'Values5'
         };
