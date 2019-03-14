@@ -68,7 +68,7 @@ export class UWTChart implements OnChanges {
     chartElem: any;
     ngOnChanges(changes: any): void;
 }
-export class UWTSwimlaneChart implements OnChanges {
+export class UWTSwimlaneChart {
     chartTitle: string;
     chartDefs: UWT.ICartesianChart[];
     renderOptions: UWT.IOptions;

@@ -1,0 +1,259 @@
+.axis path,
+.axis line {
+  fill: none;
+  stroke: grey;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.axis text {
+  font-size: larger;
+  fill: black;
+}
+.axis .lane-axis-label {
+  font-size: .8em;
+  fill: black;
+}
+.lane-title {
+  font-size: larger;
+  font-style: italic;
+}
+
+.chart-title {
+  text-align: center;
+  fill: black;
+}
+.chart-background {
+  stroke: white;
+  fill: white;
+}
+
+.hover-line,
+.selection {
+  stroke: blue;
+  fill: blue;
+  shape-rendering: crispEdges;
+  stroke-opacity: .5;
+  fill-opacity: 0.25;
+}
+
+.polar-hover-line{
+  stroke: blue;
+  fill: blue;
+  stroke-opacity: .5;
+  fill-opacity: 0.25;
+}
+
+/*
+ * tooltip.less
+ *
+ * CSS classes to support Tooltip.ts
+ */
+.tooltip-table {
+  font-size: 12px;
+  font-family: Arial;
+  font-weight: 100;
+  background-color: transparent;
+  color: black;
+}
+.tooltip-title {
+  padding-right: 10px;
+  white-space: nowrap;
+  font-size: larger;
+  font-weight: 400;
+}
+.tooltip-group-title {
+  padding-top: 10px;
+  padding-left: 10px;
+  white-space: nowrap;
+  font-weight: 400;
+}
+.tooltip-metric-name {
+  padding-left: 30px;
+  padding-right: 10px;
+  white-space: nowrap;
+}
+.tooltip-metric-value {
+  padding-right: 10px;
+  text-align: right;
+  white-space: nowrap;
+}
+.tooltip-metric-units {
+  padding-right: 10px;
+  white-space: nowrap;
+}
+.tooltip-t {
+  cursor: pointer;
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  background-color: white;
+  border: 1px solid #708090;
+  border-radius: 5px;
+  padding: 8px;
+  box-shadow: 0 0 10px #888888;
+  z-index: 2147483647;
+  /* Must be topmost! */
+}
+/**
+ * Support for context menu
+ */
+.context-menu {
+	position: absolute;
+	display: none;
+	background-color: white;
+	min-width: 150px;
+  border: 1px solid #708090;
+  border-radius: 5px;
+  box-shadow: 0 0 10px #888888;
+	z-index: 2147483647;
+}
+
+.context-menu ul {
+	list-style-type: none;
+	margin: 4px 0px;
+	padding: 0px;
+	cursor: default;
+}
+
+.context-menu ul li {
+	padding: 4px 16px;
+
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none;   /* Chrome/Safari/Opera */
+	-khtml-user-select: none;    /* Konqueror */
+	-moz-user-select: none;      /* Firefox */
+	-ms-user-select: none;       /* Internet Explorer/Edge */
+	user-select: none;
+}
+
+.context-menu ul li:hover {
+	background-color: #4677f8;
+	color: #fefefe;
+}
+
+/*
+	Header
+*/
+
+.context-menu ul li.is-header,
+.context-menu ul li.is-header:hover {
+	background-color: white;
+	color: #444;
+	font-weight: bold;
+	font-style: italic;
+}
+
+/*
+	Disabled
+*/
+
+.context-menu ul li.is-disabled,
+.context-menu ul li.is-disabled:hover {
+	background-color: white;
+	color: #888;
+	cursor: not-allowed;
+}
+
+/*
+	Divider
+*/
+
+.context-menu ul li.is-divider {
+	padding: 0px 0px;
+}
+
+.context-menu ul li.is-divider:hover {
+	background-color: white;
+}
+
+.context-menu ul hr {
+	border: 0;
+    height: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+.legendCells .cell .label {
+  font-size: 12px;
+  font-family: Arial;
+  fill: black;
+}
+.node {
+  cursor: pointer;
+}
+.node rect {
+  shape-rendering: crispEdges;
+}
+.link {
+    cursor: pointer;
+    stroke-opacity: .4;
+}
+.node rect {
+  cursor: move;
+  shape-rendering: crispEdges;
+}
+.node text {
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff;
+}
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+.chart-flame.labels {
+  font-size: 12px;
+  font-family: Arial;
+  font-weight: bold;
+  background-color: transparent;
+  color: black;
+}
+.no-pointer-events {
+  pointer-events: none;
+}
+/*.socket {
+  height: 150px;
+  width: 300px;
+}*/
+.Rank-5,
+.Rank-6,
+.Rank-8,
+.Rank-9,
+.Rank-11,
+.Rank-12 {
+  margin: 20px;
+}
+
+.DIMM-Parent4,
+.DIMM-Parent7,
+.DIMM-Parent10 {
+  margin: 10px;
+}
+
+.dimm {
+  padding: 1px;
+  margin: 1px;
+  height: 20px;
+  width: 40px;
+}
+
+image.dimm {
+    height: 20px;
+    width: 40px;
+}
+
+image.node.socket {
+  height: 60px;
+  width: 60px;
+}
+
+.core {
+  margin: 2px;
+  padding: 2px;
+  font-size: 11px;
+}
+
+.thread_core {
+  margin: 2px;
+  padding:5px;
+  font-size: 10px;
+  cursor: default;
+}

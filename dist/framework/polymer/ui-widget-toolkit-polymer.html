@@ -485,51 +485,16 @@ Base element to share all the default styles
                     for (let i = 0; i < this.chartDefs.length; ++i) {
                         wrappers.push({
                             chartDef: this.chartDefs[i],
-                            chartOptions: this.chartOptions[i]
+                            chartOptions: UWT.copy(this.renderOptions)
                         })
                     }
                     this.chartDefWrappers = wrappers;
                 }
             },
             _onDataChanged: function () {
-                let chartMap = new Map();
-                if (this.chartDefs) {
-                    for (let i = 0; i < this.chartDefs.length; ++i) {
-                        chartMap.set(this.chartDefs[i], true);
-                    }
-                }
-                let legends = [];
-                let oldList = this.chartDefWrappers;
-                if (oldList) {
-                    for (let i = 0; i < oldList.length; ++i) {
-                        let oldChart = oldList[i];
-                        if (!chartMap.has(oldChart.chartDef)) {
-                            UWT.ChartGroup.handleRemoveChart(oldChart.chartDef);
-                        }
-                        if (oldChart.chartDef.legends) {
-                            legends = legends.concat(oldChart.chartDef.legends);
-                        }
-                    }
-                } else {
-                    for (let i = 0; i < this.chartDefs.length; ++i) {
-                        if (this.chartDefs[i].legends) {
-                            legends = legends.concat(this.chartDefs[i].legends);
-                        }
-                    }
-                }
-
-                this.chartOptions = [];
-                UWT.ChartGroup.handleChartUpdate(this.chartDefs,
-                    this.chartOptions, this, legends);
-
                 this.createWrapper();
             },
             _onRenderOptionsChanged: function () {
-                if (this.chartDefs) {
-                    this.chartOptions = new Array(this.chartDefs.length);
-                }
-                UWT.ChartGroup.handleRenderOptionsUpdate(this, this.renderOptions,
-                    this.chartOptions);
                 this.createWrapper();
             },
             _onColorManagerChanged: function () {
