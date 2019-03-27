@@ -15,14 +15,21 @@ var GridTest;
                     columnDefs: [
                         { headerName: 'Make', field: 'make' },
                         { headerName: 'Model', field: 'model' },
-                        { headerName: 'Price', field: 'price' }
+                        { headerName: 'Price', field: 'price' },
+                        { headerName: 'abc', field: 'a' },
+                        { headerName: 'asdf', field: 'b' },
+                        { headerName: 'qwer', field: 'c' },
+                        { headerName: 'pou', field: 'd' },
+                        { headerName: 'asf', field: 'e' },
+                        { headerName: 'mlkj', field: 'f' }
                     ],
                     rowData: [
-                        { make: 'Toyota', model: 'Celica', price: 35000 },
-                        { make: 'Ford', model: 'Mondeo', price: 32000 },
-                        { make: 'Porsche', model: 'Boxster', price: 72000 },
-                        { make: 'Ferrari', model: 'California', price: 158000 },
-                        { make: 'Nissan', model: 'GT-R', price: 105000 }
+                        { make: 'Toyota', model: 'Celica', a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, price: 35000 },
+                        { make: 'Ford', model: 'Mondeo', a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, price: 32000 },
+                        { make: 'Porsche', model: 'Boxster', a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, price: 72000 },
+                        { make: 'Ferrari', model: 'California', a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, price: 158000 },
+                        { make: 'Nissan', model: 'GT-R', a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, price: 105000 },
+                        { make: 'Nissan', model: 'Sentra', a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, price: 105000 }
                     ]
                 }
             };

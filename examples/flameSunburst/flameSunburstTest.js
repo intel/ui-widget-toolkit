@@ -76,7 +76,7 @@ var FlameSunburstTest;
                 isXContinuous: true
             };
             UWT.Chart.finalize(chart);
-            TestBase.addElement(chart, '', 'group', '', { height: 30, forceSvgRenderer: true });
+            TestBase.addElement(chart, '', 'group', '', { forceSvgRenderer: true });
         }
         {
             var chart = {
