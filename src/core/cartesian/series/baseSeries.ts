@@ -151,7 +151,7 @@ export class BaseSeries {
     }
 
     public getRequiredHeight() {
-        return 1;
+        return 0;
     }
 
     protected getSelectionClasses(type: string): string {

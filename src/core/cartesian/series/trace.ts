@@ -148,7 +148,7 @@ export class TraceSeries implements ICartesianSeriesPlugin {
 
     /** get the minimum graph height */
     public getRequiredHeight() {
-        return 1;
+        return 0;
     }
 
     /** get the x scaling info for this series */

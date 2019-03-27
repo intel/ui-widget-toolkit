@@ -55,7 +55,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
     /**
      * used to generate a list of all rects that could be drawn
      */
-    private generateRects(values: IBuffer<ITraceValue>) {
+    private generateRects(values: IBuffer<ITraceValue>): IFlameChartValue[][] {
         let rects = []
         let stack: ITraceValue[] = []; // used to represent the current stack state
         let len = values.length();
@@ -376,20 +376,22 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
             ret.push({ source: elem, group: '', metrics: metrics });
         }
 
-        let tooltipData: ITooltipData = { source: elem, group: 'Stack', metrics: {} };
+        if (this._allRects.length > 1) {
+            let tooltipData: ITooltipData = { source: elem, group: 'Stack', metrics: {} };
 
-        for (let i = 0; i < this._data.length; ++i) {
-            let traceVal = this._data[i];
-            let start = this.getDataStart(traceVal);
-            if (event.xEnd > start) {
-                if (event.xEnd <= start + this.getDataDuration(traceVal)) {
-                    tooltipData.metrics[this.getDataName(traceVal)] = '';
+            for (let i = 0; i < this._data.length; ++i) {
+                let traceVal = this._data[i];
+                let start = this.getDataStart(traceVal);
+                if (event.xEnd > start) {
+                    if (event.xEnd <= start + this.getDataDuration(traceVal)) {
+                        tooltipData.metrics[this.getDataName(traceVal)] = '';
+                    }
+                } else {
+                    break;
                 }
-            } else {
-                break;
             }
+            ret.push(tooltipData);
         }
-        ret.push(tooltipData);
         return ret;
     }
 

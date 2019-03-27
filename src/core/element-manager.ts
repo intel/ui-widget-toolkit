@@ -1,7 +1,7 @@
-import { removeFromList } from './utilities';
+import { copy, removeFromList } from './utilities';
 import {
     UIElement, UIElementManager, UIRenderer, IEvent, IOptions,
-    ITooltipData
+    ITooltipData, EventType
 } from '../interface/ui-base';
 
 const enum GroupType {
@@ -420,7 +420,7 @@ export class ElementManager implements UIElementManager {
     public addToHighlightGroup(elem: UIElement, groupName: string): ElementManager {
         addHoverCallback(elem);
         this.removeFromHighlightGroup(elem);
-        this.addToGroup(elem, groupName, GroupType.Highlight);
+
         if (!elem.onBrush) {
             elem.onBrush = this._onBrushCallback;
         }
@@ -433,6 +433,20 @@ export class ElementManager implements UIElementManager {
         if (!elem.onZoom) {
             elem.onZoom = this._onZoomCallback;
         }
+        let elems = this._groupInfo[GroupType.Highlight]._nameMap[groupName];
+        if (elems && elems.length) {
+            let oldElem = elems[0];
+            if (oldElem.api.getOptions && elem.api && elem.api.zoom) {
+                let options: IOptions = oldElem.api.getOptions();
+                let zoomEvent: IEvent = copy(options);
+                zoomEvent.event = EventType.Zoom;
+
+                setTimeout(() => {
+                    elem.api.zoom(zoomEvent);
+                });
+            }
+        }
+        this.addToGroup(elem, groupName, GroupType.Highlight);
 
         return this;
     }

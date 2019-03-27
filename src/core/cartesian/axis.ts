@@ -710,6 +710,7 @@ export class D3Axis implements IRenderedAxis {
                                     scalar.units
                             }
                         }
+                        self._d3axes[0].tickFormat(this._formatter);
                         break;
                 }
             }

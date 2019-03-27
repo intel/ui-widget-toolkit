@@ -9,7 +9,7 @@ import * as d3 from 'd3';
 let UIRendererMap: { [index: number]: Object } = {};
 
 let testContext: any;
-if (document) {
+if (typeof document !== 'undefined') {
     testContext = document.createElement('canvas').getContext('2d');
 }
 export function getTextWidth(text: string, font: string, size: string) {

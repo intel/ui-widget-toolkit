@@ -239,6 +239,12 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
     /** the minimum height of the graph */
     private _minGraphHeight: number;
 
+    /** flag that determines whether to have a bottom handle.
+     * May be controlled by IOptions.disableResizeBottom or based on
+     * the data type in the chart
+     */
+    private _hasBottomHandle: boolean;
+
     /** handle below graph to resize it vertically */
     private _bottomHandle: d3.Selection<d3.BaseType, {}, d3.BaseType, any>;
 
@@ -274,6 +280,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         super();
 
         this._handleWidth = 10;
+        this._hasBottomHandle = true;
 
         this.DEFAULT_GRAPH_HEIGHT = 120;
         this._options.height = this.DEFAULT_GRAPH_HEIGHT;
@@ -385,11 +392,11 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         }
 
         if (!this._element.api) {
-            this._element.api = {
-                getOptions: () => {
-                    return this.getOptions();
-                }
-            };
+            this._element.api = {}
+        }
+
+        this._element.api.getOptions = function () {
+            return self.getOptions();
         }
     }
 
@@ -1140,7 +1147,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         let self = this;
 
         // create handles here then their positions are updated in the render call
-        if (!self._options.disableResizeBottom) {
+        if (self.hasBottomHandle()) {
             self._bottomHandle = self._svg.append('rect')
                 .attr('opacity', 0)
                 .attr('height', self._handleWidth)
@@ -1198,6 +1205,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         }
         if (this._minGraphHeight) {
             this._graphRect.height = Math.max(this._minGraphHeight, this._graphRect.height);
+            this._options.height = this._graphRect.height;
         }
     }
 
@@ -1364,6 +1372,11 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                     }
                 }
             }
+        }
+
+        if (self._minGraphHeight) {
+            self._options.height = self._minGraphHeight;
+            self._hasBottomHandle = false;
         }
 
         // set up x axes using computed x domain
@@ -1588,6 +1601,9 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         }
     }
 
+    private hasBottomHandle() {
+        return !this._options.disableResizeBottom && this._hasBottomHandle;
+    }
     /**
       * this sets the graph height to the options.height and grows
       * the svg height as other elements are added.
@@ -1646,7 +1662,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         let left = self._graphRect.x;
         let leftAxisWidth = 0;
         let rightAxisWidth = 0;
-        let allocateBottomHandleSpace = true;
+        let allocateBottomHandleSpace = self.hasBottomHandle();
         // adjust where the axes are drawn
         for (let key in self._axes) {
             let d3Axis = self._axes[key];
