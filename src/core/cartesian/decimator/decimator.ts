@@ -1205,11 +1205,15 @@ export class FlameChartRectLimitDecimator implements IFlameChartDecimator {
      * @param xEnd - start time of the region
      * @param values - Values to be decimated.
      */
-    public decimateValues(xStart: number, xEnd: number, values: IBuffer<IFlameChartValue>):
+    public decimateValues(xStart: number, xEnd: number, values: IBuffer<IFlameChartValue[]>):
         IFlameChartValue[] {
 
         // using the whole view
-        this._data = values.getData();
+        this._data = [];
+        let rects = values.getData();
+        rects.forEach((stackData) => {
+            this._data = this._data.concat(stackData);
+        });
 
         if (this._rectLimit) {
             this._data.sort(function (a: IFlameChartValue, b: IFlameChartValue): number {
@@ -1238,6 +1242,7 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
     protected _data: IFlameChartValue[];
     protected _rectLimit: number;
     protected _minRectDelta = 1;
+    protected _userPixelFunction: (IFlameChartValue) => IFlameChartValue;
 
     /** this function is used to map the input xyValues to x scaled values*/
     protected _xValueToCoord: (value: any) => number;
@@ -1278,117 +1283,210 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
         return this._data;
     }
 
+    /**
+     * Set the minimum width of a rectangle.  If there is multiple trace points
+     * within the the minimum width then the data is merged together into
+     * a single rectangle.  Once all data in a rectangle is merged then we call
+     * the [setUserPixelFunction] callback so the the user can modify the value
+     * to be rendered if needed
+     *
+     * @param width the minimum width of a pixel in which data is grouped together
+     */
     public setPixelWidth(width: number): FlameChartMergeRectDecimator {
         this._minRectDelta = width - 1;
         return this;
     }
 
+    public setUserPixelFunction(cb: (IFlameChartValue) => IFlameChartValue) {
+        this._userPixelFunction = cb;
+    }
+
     /**
      * used to generate a list of all rects that could be drawn sorted by duration
      */
-    protected mergeRects(values: IFlameChartValue[]): IFlameChartValue[] {
-        let len = values.length;
+    protected mergeRects(values: IFlameChartValue[][]): IFlameChartValue[] {
         let ret = [];
 
-        let prevValueByDepth: IFlameChartValue[] = [];
-        let prevXCoordbyDepth: number[] = [];
+        // get the width of a pixel
+        let buckets: number = Math.ceil(this._xValueToCoord(Number.MAX_VALUE)) + 1;
 
-        // compute rects
-        for (let i = 0; i < len; i++) {
-            let value = values[i];
-            if (prevValueByDepth.length < value.depth) {
-                prevValueByDepth.length = value.depth;
-                prevXCoordbyDepth.length = value.depth;
-            }
+        // NOTE: I do this up here so I can cheat and use the x values here
+        // so later I don't keep calling this._xCoordToValue
+        let xBucketValues = [];
+        for (let bucket = 0; bucket <= buckets; ++bucket) {
+            xBucketValues.push(this._xCoordToValue(bucket));
+        }
 
-            // first check if you need to merge with a previous rectangle of this depth
-            let prevValue = prevValueByDepth[value.depth];
-            if (prevValue && prevValue.traceValue.key === value.traceValue.key &&
-                prevValue.traceValue.x + prevValue.traceValue.dx === value.traceValue.x) {
-                prevValue.traceValue.dx += value.traceValue.dx;
-            } else {
-                // might have to merge things with subpixel accuracy
-                let startTime = values[i].traceValue.x;
-                let subpixelMap: any = {};
-                let valueList: ITraceValue[] = [];
+        // get the width of a pixel so we can force it to be visible by
+        // making the rect width value 1 full pixel delta wide
+        let bucketValueWidth: number = 0;
+        if (buckets > 1) {
+            bucketValueWidth = this._xCoordToValue(1) - this._xCoordToValue(0);
+        }
 
-                // before adding the next item iterate to a point where the next
-                // value starts in the next pixel for the given depth`
-                for (; i < len; ++i) {
-                    value = values[i];
-                    valueList.push(value.traceValue);
+        // compute merged rects
+        values.forEach((perLevelData) => {
 
-                    if (prevValueByDepth.length <= value.depth) {
-                        prevValueByDepth.length = value.depth + 1;
-                        prevXCoordbyDepth.length = value.depth + 1;
-                        break;
-                    } else {
-                        let endCurrX = Math.round(this._xValueToCoord(value.traceValue.x + value.traceValue.dx));
-                        if (endCurrX > prevXCoordbyDepth[value.depth] + this._minRectDelta) {
-                            break;
-                        } else {
-                            // if we have multiple items in the end pixel add up the
-                            // the durations and find the one with the most weight
-                            if (!subpixelMap.hasOwnProperty[value.traceValue.name]) {
-                                subpixelMap[value.traceValue.name] = 0;
-                            }
-                            subpixelMap[value.traceValue.name] += value.traceValue.dx;
+            let mergedLevelData: IFlameChartValue[] = [];
 
-                            // update the previous value as we iterate
-                            prevValue = value;
-                        }
-                    }
+            let prevValue: IFlameChartValue;
+            let mergeBucketEnd: number = -Number.MAX_VALUE;
+            let startXCoord: number;
+            let endXCoord: number;
+
+            // first we walk over all the data and create rects with at least
+            // the minimum width which is specified by this._minPixelWidth
+            let len = perLevelData.length;
+            for (let j = 0; j < len; j++) {
+                let value = perLevelData[j];
+
+                // check if you need to do a simple merge with the previous identical rectangle
+                if (prevValue && prevValue.traceValue.key === value.traceValue.key &&
+                    prevValue.traceValue.x + prevValue.traceValue.dx === value.traceValue.x) {
+                    prevValue.traceValue.dx += value.traceValue.dx;
+                    continue;
                 }
 
+                startXCoord = Math.floor(this._xValueToCoord(value.traceValue.x));
+                // check if we already partially counted this sample
+                if (mergeBucketEnd > startXCoord) {
+                    startXCoord = mergeBucketEnd;
+                }
+                endXCoord = Math.floor(this._xValueToCoord(value.traceValue.x + value.traceValue.dx));
+
                 let fcValue: IFlameChartValue;
-                if (Object.keys(subpixelMap).length === 0) {
-                    // if we have just one item just add it to the trace
+                if (endXCoord - startXCoord > this._minRectDelta) {
+                    // if this single trace value rectangle is wide enough to be rendered by itself
                     fcValue = {
                         traceValue: {
-                            x: value.traceValue.x,
-                            dx: value.traceValue.dx,
+                            x: xBucketValues[startXCoord],
+                            dx: xBucketValues[endXCoord] - xBucketValues[startXCoord],
                             key: value.traceValue.key,
                             name: value.traceValue.name,
                             desc: value.traceValue.desc,
                         },
-                        decimatedValues: valueList,
+                        decimatedValues: [value.traceValue],
                         depth: value.depth
                     }
                 } else {
-                    // find the subpixel value with the most weight
-                    let pixelName: string;
-                    let max = 0;
-                    for (let name in subpixelMap) {
-                        let groupWeight = subpixelMap[name];
-                        if (groupWeight > max) {
-                            pixelName = name;
-                            max = groupWeight;
+                    // might have to merge with other rectangles
+                    let subpixelMap: any = {};
+                    let valueList: ITraceValue[] = [];
+
+                    // set this so we know when to stop merging data for this rectangle
+                    mergeBucketEnd = startXCoord + this._minRectDelta;
+
+                    // add in the initial weight
+                    if (value.traceValue.x < xBucketValues[startXCoord]) {
+                        subpixelMap[value.traceValue.name] = value.traceValue.x + value.traceValue.dx - xBucketValues[startXCoord];
+                    } else {
+                        subpixelMap[value.traceValue.name] = value.traceValue.dx;
+                    }
+                    valueList.push(value.traceValue);
+
+                    // before adding the next item iterate to a point where the next
+                    // value starts in the next pixel for the given depth`
+                    for (++j; j < len; ++j) {
+                        value = perLevelData[j];
+                        let localStartXCoord = Math.floor(this._xValueToCoord(value.traceValue.x));
+
+                        if (localStartXCoord >= mergeBucketEnd) {
+                            // back up to the last item that broke the subpixel
+                            // iteration loop so it can be handled by the outer loop
+                            --j;
+                            break;
+                        } else {
+                            valueList.push(value.traceValue);
+
+                            // if we have multiple items in the end pixel add up the
+                            // the durations and find the one with the most weight
+                            if (!subpixelMap.hasOwnProperty(value.traceValue.name)) {
+                                subpixelMap[value.traceValue.name] = 0;
+                            }
+                            if (value.traceValue.x + value.traceValue.dx > xBucketValues[mergeBucketEnd]) {
+                                subpixelMap[value.traceValue.name] += xBucketValues[mergeBucketEnd] - value.traceValue.x;
+                                // back up to the last item that broke the subpixel
+                                // iteration loop so it can be handled by the outer loop
+                                --j;
+                                break;
+                            } else {
+                                subpixelMap[value.traceValue.name] += value.traceValue.dx;
+                            }
                         }
                     }
 
-                    fcValue = {
-                        traceValue: {
-                            x: startTime,
-                            dx: prevValue.traceValue.x + prevValue.traceValue.dx - startTime,
-                            key: 'merged',
-                            name: pixelName,
-                            desc: prevValue.traceValue.desc,
-                        },
-                        decimatedValues: valueList,
-                        depth: value.depth
+                    let lastTraceValue: ITraceValue = valueList[valueList.length - 1];
+                    if (valueList.length === 1) {
+                        // if we have just one item just add it to the trace
+                        fcValue = {
+                            traceValue: {
+                                x: xBucketValues[startXCoord],
+                                dx: xBucketValues[endXCoord] - xBucketValues[startXCoord],
+                                key: lastTraceValue.key,
+                                name: lastTraceValue.name,
+                                desc: lastTraceValue.desc,
+                            },
+                            decimatedValues: valueList,
+                            depth: value.depth
+                        }
+                    } else {
+                        // find the subpixel value with the most weight
+                        let pixelName: string;
+                        let max = 0;
+                        for (let name in subpixelMap) {
+                            let groupWeight = subpixelMap[name];
+                            if (groupWeight > max) {
+                                pixelName = name;
+                                max = groupWeight;
+                            }
+                        }
+
+                        fcValue = {
+                            traceValue: {
+                                x: xBucketValues[startXCoord],
+                                dx: mergeBucketEnd < xBucketValues.length ? xBucketValues[mergeBucketEnd] - xBucketValues[startXCoord] :
+                                    xBucketValues[startXCoord] + bucketValueWidth,
+                                key: 'merged',
+                                name: pixelName,
+                                desc: lastTraceValue.desc,
+                            },
+                            decimatedValues: valueList,
+                            depth: value.depth
+                        }
                     }
-                    // we back up to the last item tthat broke the subpixel iteration loop
-                    --i;
                 }
 
-                ret.push(fcValue);
+                mergedLevelData.push(fcValue);
 
                 // update the last value for this level
-                let lastX = Math.round(this._xValueToCoord(fcValue.traceValue.x + fcValue.traceValue.dx));
-                prevValueByDepth[value.depth] = fcValue;
-                prevXCoordbyDepth[value.depth] = lastX;
+                prevValue = fcValue;
             }
-        }
+
+            // now that we have computed rects and their the subpixel values
+            // if applicable we actually go through and clean things up and then
+            // merge the rects for rendering performance
+            prevValue = undefined;
+            mergedLevelData.forEach((value: IFlameChartValue) => {
+                if (value.traceValue.dx < bucketValueWidth) {
+                    // first make the rectangles at least 1 pixel wide
+                    value.traceValue.dx = bucketValueWidth;
+                }
+                if (this._userPixelFunction) {
+                    // let the user clean up the flame chart value if they want
+                    value = this._userPixelFunction(value);
+                }
+
+                // now actually merge the rects
+                if (prevValue && prevValue.traceValue.key === value.traceValue.key &&
+                    prevValue.traceValue.name === value.traceValue.name) {
+                    prevValue.traceValue.dx = value.traceValue.x + value.traceValue.dx - prevValue.traceValue.x;
+                    prevValue.decimatedValues.concat(value.decimatedValues);
+                } else {
+                    ret.push(value);
+                    prevValue = value;
+                }
+            })
+        });
         return ret;
     }
 
@@ -1399,25 +1497,11 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
      * @param xEnd - start time of the region
      * @param values - Values to be decimated.
      */
-    public decimateValues(xStart: number, xEnd: number, values: IBuffer<IFlameChartValue>):
+    public decimateValues(xStart: number, xEnd: number, values: IBuffer<IFlameChartValue[]>):
         IFlameChartValue[] {
 
-        let allData = values.getData();
-
         // using the whole view
-        if (xStart !== undefined && xEnd !== undefined) {
-            let filteredData = [];
-            for (let i = 0; i < allData.length; ++i) {
-                let fcValue = allData[i];
-                let rectEnd = fcValue.traceValue.x + fcValue.traceValue.dx;
-                if (rectEnd > xStart && fcValue.traceValue.x < xEnd) {
-                    filteredData.push(fcValue);
-                }
-            }
-            this._data = this.mergeRects(filteredData);
-        } else {
-            this._data = this.mergeRects(allData);
-        }
+        this._data = this.mergeRects(values.getData());
         return this._data;
     }
 };
@@ -1564,7 +1648,6 @@ export class TraceResidencyDecimator implements ITraceResidencyDecimator {
                 let endX = xEnd ? Math.min(xEnd, traceEndX) : traceEndX;
                 let startEndBucket = xBucketValues[endBucket];
                 tempValues[value.name][endBucket] += (endX - startEndBucket) * bucketScalar;
-
             }
         }
 

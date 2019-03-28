@@ -122,7 +122,7 @@ export interface IFlameChartDecimator extends IDecimator {
      * @param xEnd - start time of the region
      * @param values - Values to be decimated.
      */
-    decimateValues(xStart: number, xEnd: number, values: any): IFlameChartValue[];
+    decimateValues(xStart: number, xEnd: number, values: IBuffer<IFlameChartValue[]>): IFlameChartValue[];
 }
 
 /*************************************************************

@@ -18,7 +18,7 @@ rawXY.forEach((data) => {
     xyData.push(new SimpleBuffer(data));
 })
 
-let flameChartData = new SimpleBuffer(JSON.parse(fs.readFileSync(__dirname + '/../../data/data.flame')));
+let flameChartData = new SimpleBuffer([JSON.parse(fs.readFileSync(__dirname + '/../../data/data.flame'))]);
 let traceData = new SimpleBuffer(JSON.parse(fs.readFileSync(__dirname + '/../../data/data.trace')));
 
 // make scales assume 1200 pixels
@@ -39,9 +39,10 @@ let xyYScale = d3.scaleLinear()
     .clamp(true)
     .range([0, yPixels]);
 
-let lastTraceValue = flameChartData.get(flameChartData.length() - 1);
+let flameDepthZero = flameChartData.get(0);
+let lastTraceValue = flameDepthZero[flameDepthZero.length - 1];
 let traceDomain =
-    [flameChartData.get(0).traceValue.x,
+    [flameDepthZero[0].traceValue.x,
     lastTraceValue.traceValue.x + lastTraceValue.traceValue.dx];
 let tracePixelWidth = (traceDomain[1] - traceDomain[0]) / xPixels;
 let traceErrorMargin = tracePixelWidth / 1000;
@@ -70,7 +71,7 @@ describe("decimator-sanity", function () {
             expect(value.y).toBeGreaterThanOrEqual(0);
             expect(value.y).toBeLessThanOrEqual(10000);
         })
-    });
+    }, 1000);
 
     it("min-point", function () {
         let minPointDecimator = new MinPointDecimator()
@@ -90,7 +91,7 @@ describe("decimator-sanity", function () {
             expect(value.y).toBeGreaterThanOrEqual(0);
             expect(value.y).toBeLessThanOrEqual(10000);
         })
-    });
+    }, 1000);
 
     it("max-point", function () {
         let maxPointDecimator = new MaxPointDecimator()
@@ -110,7 +111,7 @@ describe("decimator-sanity", function () {
             expect(value.y).toBeGreaterThanOrEqual(0);
             expect(value.y).toBeLessThanOrEqual(10000);
         })
-    });
+    }, 1000);
 
     it("news-point", function () {
         let newsPointDecimator = new NEWSPointDecimator()
@@ -132,7 +133,7 @@ describe("decimator-sanity", function () {
             expect(value.exit).toBeGreaterThanOrEqual(0);
             expect(value.exit).toBeLessThanOrEqual(10000);
         })
-    });
+    }, 1000);
 
     it("news-point-cross-check", function () {
         let newsPointDecimator = new NEWSPointDecimator()
@@ -155,7 +156,7 @@ describe("decimator-sanity", function () {
             expect(newsValues[i].min).toBe(minValues[i].y)
             expect(newsValues[i].max).toBe(maxValues[i].y)
         }
-    });
+    }, 1000);
 
     it("xy-point", function () {
         let xyPointDecimator = new XYPointDecimator()
@@ -175,7 +176,7 @@ describe("decimator-sanity", function () {
             expect(value.y).toBeGreaterThanOrEqual(0);
             expect(value.y).toBeLessThanOrEqual(10000);
         })
-    });
+    }, 1000);
 
     it("summed-value", function () {
         let summedValue = new SummedValueXYSeriesDecimator()
@@ -195,7 +196,7 @@ describe("decimator-sanity", function () {
             expect(value.y).toBeGreaterThanOrEqual(0);
             expect(value.y).toBeLessThanOrEqual(xPixelWidth * 10000);
         })
-    });
+    }, 1000);
 
     it("residency", function () {
         let residency = new ResidencyDecimator()
@@ -220,7 +221,7 @@ describe("decimator-sanity", function () {
                 expect(value.y).toBeLessThanOrEqual(100);
             })
         });
-    });
+    }, 1000);
 
     it("summed-value-multi-xy", function () {
         let summedValueMultiXY = new SummedValueMultiXYSeriesDecimator()
@@ -245,7 +246,7 @@ describe("decimator-sanity", function () {
                 expect(value.y).toBeLessThanOrEqual(xPixelWidth * 10000);
             })
         });
-    });
+    }, 1000);
 
     it("merged-rect", function () {
         let mergedRect = new FlameChartMergeRectDecimator();
@@ -254,11 +255,11 @@ describe("decimator-sanity", function () {
         let mergedValues = mergedRect.decimateValues(traceDomain[0], traceDomain[1], flameChartData);
         let endTime = Date.now();
 
-        // expect decimation time to be < 50ms
-        expect(endTime - startTime).toBeLessThanOrEqual(300);
+        // expect decimation time to be < 250ms
+        expect(endTime - startTime).toBeLessThanOrEqual(250);
         expect(mergedValues.length).toBeGreaterThanOrEqual(0);
         expect(mergedValues.length).toBeLessThanOrEqual(xPixels + 1);
-    });
+    }, 1000);
 
     it("reduced-rect", function () {
         let limitRect = new FlameChartRectLimitDecimator();
@@ -271,7 +272,7 @@ describe("decimator-sanity", function () {
         // expect decimation time to be < 50ms
         expect(endTime - startTime).toBeLessThanOrEqual(500);
         expect(limitvalues.length).toBe(500);
-    });
+    }, 1000);
 
     it("traced-residency", function () {
         let states = {};
@@ -301,7 +302,7 @@ describe("decimator-sanity", function () {
                 expect(value.y).toBeLessThanOrEqual(100 * 12);
             })
         })
-    });
+    }, 1000);
 
 
     it("traced-residency-2", function () {
@@ -338,7 +339,7 @@ describe("decimator-sanity", function () {
 
             expect(pixelSum).toBeCloseTo(100, .01);
         }
-    });
+    }, 1000);
 
     it("traced-state", function () {
         let states = {};
@@ -362,7 +363,7 @@ describe("decimator-sanity", function () {
             expect(value.x + traceErrorMargin).toBeGreaterThanOrEqual(tracePixelWidth * i + traceDomain[0]);
             expect(value.x - traceErrorMargin).toBeLessThanOrEqual(tracePixelWidth * (i + 1) + traceDomain[0]);
         })
-    });
+    }, 1000);
 
     it("xy-state", function () {
         let stateXY = new SimpleBuffer(JSON.parse(fs.readFileSync(__dirname + '/../../data/data.xyState')));
@@ -393,5 +394,5 @@ describe("decimator-sanity", function () {
             expect(typeof value.min).toBe('string');
             expect(typeof value.max).toBe('string');
         });
-    });
+    }, 1000);
 });

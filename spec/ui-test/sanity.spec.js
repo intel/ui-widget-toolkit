@@ -414,7 +414,7 @@ describe('sanity', function () {
         driver.findElement(By.id('graphArea0')).then(function (graph) {
             graph.findElement(By.className('segments')).then(function (segment) {
                 segment.findElements(By.tagName('rect')).then(function (rects) {
-                    expect(rects.length > 30);
+                    expect(rects.length).toBe(10);
                 });
             });
             graph.findElement(By.className('labels')).then(function (labels) {
@@ -423,7 +423,9 @@ describe('sanity', function () {
                 });
             });
             graph.findElement(By.className('background')).then(function (background) {
-                expect(background !== undefined).toBe(true);
+                background.getAttribute('d').then(function (attr) {
+                    expect(attr.length).toBeGreaterThan(0);
+                })
             });
             graph.findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
@@ -437,7 +439,6 @@ describe('sanity', function () {
         driver.findElement(By.id('graphArea1')).then(function (graph) {
             graph.findElements(By.tagName('path')).then(function (segments) {
                 expect(segments.length).toBe(392);
-                done();
             });
         });
         driver.findElement(By.id('graphArea2')).then(function (graph) {
@@ -447,7 +448,9 @@ describe('sanity', function () {
                 });
             });
             graph.findElement(By.className('background')).then(function (background) {
-                expect(background !== undefined).toBe(true);
+                background.getAttribute('d').then(function (attr) {
+                    expect(attr).toBeNull();
+                })
             });
             graph.findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
@@ -459,7 +462,7 @@ describe('sanity', function () {
             });
         });
         driver.findElement(By.id('graphArea3')).then(function (graph) {
-            graph.findElement(By.className('chart-area')).then(function (area) {
+            graph.findElements(By.className('chart-area')).then(function (area) {
                 expect(area.length).toBe(19);
             });
             graph.findElement(By.className('lane-title')).then(function (title) {
@@ -472,7 +475,7 @@ describe('sanity', function () {
             });
         });
         driver.findElement(By.id('graphArea4')).then(function (graph) {
-            graph.findElement(By.className('chart-line')).then(function (line) {
+            graph.findElements(By.className('chart-line')).then(function (line) {
                 expect(line.length).toBe(1);
             });
             graph.findElement(By.className('lane-title')).then(function (title) {
@@ -485,12 +488,12 @@ describe('sanity', function () {
             });
         });
         driver.findElement(By.id('graphArea5')).then(function (graph) {
-            graph.findElement(By.className('chart-line')).then(function (line) {
-                expect(line.length).toBe(1);
+            graph.findElements(By.tagName('canvas')).then(function (canvas) {
+                expect(canvas.length).toBe(1);
             });
             graph.findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
-                    expect(text).toBe('Trace State');
+                    expect(text).toBe('Trace Sparse');
                 });
             });
             graph.findElements(By.className('axis')).then(function (axes) {
@@ -498,12 +501,12 @@ describe('sanity', function () {
             });
         });
         driver.findElement(By.id('graphArea6')).then(function (graph) {
-            graph.findElement(By.className('chart-line')).then(function (line) {
+            graph.findElements(By.className('chart-line')).then(function (line) {
                 expect(line.length).toBe(1);
             });
             graph.findElement(By.className('lane-title')).then(function (title) {
                 title.getText().then(function (text) {
-                    expect(text).toBe('Trace State');
+                    expect(text).toBe('Trace Sparse Line');
                 });
             });
             graph.findElements(By.className('axis')).then(function (axes) {
@@ -511,9 +514,27 @@ describe('sanity', function () {
             });
         });
         driver.findElement(By.id('graphArea7')).then(function (graph) {
+            graph.findElements(By.className('chart-area')).then(function (area) {
+                expect(area.length).toBe(2);
+            });
+            graph.findElement(By.className('lane-title')).then(function (title) {
+                title.getText().then(function (text) {
+                    expect(text).toBe('Trace Sparse Area');
+                });
+            });
+            graph.findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+            });
+        });
+        driver.findElement(By.id('graphArea8')).then(function (graph) {
             graph.findElements(By.tagName('canvas')).then(function (canvas) {
                 expect(canvas.length).toBe(1);
-                done();
+            });
+            graph.findElement(By.className('background')).then(function (background) {
+                background.getAttribute('d').then(function (attr) {
+                    expect(attr).toBeDefined();
+                    done();
+                })
             });
         });
 

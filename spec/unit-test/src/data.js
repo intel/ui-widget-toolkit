@@ -14,7 +14,7 @@ describe("Simple Buffer", function () {
             expect(buffer.get(i).x).toBe(i);
         }
         expect(buffer._data.length).toBe(10);
-    });
+    }, 1000);
 
     it("useInitialArray", function () {
         'use strict';
@@ -30,7 +30,7 @@ describe("Simple Buffer", function () {
         }
         expect(buffer.length()).toBe(20);
         expect(buffer._data.length).toBe(20);
-    });
+    }, 1000);
 
     it("growInitialArray", function () {
         'use strict';
@@ -51,7 +51,7 @@ describe("Simple Buffer", function () {
         }
         expect(buffer.length()).toBe(40);
         expect(buffer._data.length).toBe(40);
-    });
+    }, 1000);
 });
 
 describe("Ring Buffer", function () {
@@ -67,7 +67,7 @@ describe("Ring Buffer", function () {
             expect(buffer.get(i).x).toBe(i);
         }
         expect(buffer._data.length).toBe(10);
-    });
+    }, 1000);
 
     it("useRing", function () {
         'use strict';
@@ -84,7 +84,7 @@ describe("Ring Buffer", function () {
             expect(buffer.get(i).x).toBe(i + 10);
         }
         expect(buffer._data.length).toBe(10);
-    });
+    }, 1000);
 
     it("useRingMultipleTimes", function () {
         'use strict';
@@ -101,6 +101,6 @@ describe("Ring Buffer", function () {
             expect(buffer.get(i).x).toBe(i + 490);
         }
         expect(buffer._data.length).toBe(10);
-    });
+    }, 1000);
 });
 

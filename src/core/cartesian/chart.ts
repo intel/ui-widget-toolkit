@@ -243,7 +243,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
      * May be controlled by IOptions.disableResizeBottom or based on
      * the data type in the chart
      */
-    private _hasBottomHandle: boolean;
+    protected _hasBottomHandle: boolean;
 
     /** handle below graph to resize it vertically */
     private _bottomHandle: d3.Selection<d3.BaseType, {}, d3.BaseType, any>;

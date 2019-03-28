@@ -4,7 +4,7 @@ import {
     IAxis, IScalingInfo, AxisType, IScalar, IRenderedAxis
 } from '../../interface/chart/axis';
 
-import { mergeKeys, Brush, SVGRenderer } from '../svg-helper';
+import { mergeKeys, SVGRenderer } from '../svg-helper';
 import { D3Renderer } from '../renderer';
 import { CustomDivTooltip } from '../tooltip';
 import { showContextMenu } from '../context-menu';
@@ -494,11 +494,12 @@ export class D3Axis implements IRenderedAxis {
             this.setBandCommitRange(pixels);
         } else {
             switch (this._axis.axisDesc.scaleType) {
-                case AxisType.Linear:
-                    this.setLinearCommitRange(pixels);
-                    break;
                 case AxisType.Logarithmic:
                     this.setLogrithmicCommitRange(pixels);
+                    break;
+                case AxisType.Linear:
+                default:
+                    this.setLinearCommitRange(pixels);
                     break;
             }
         }
@@ -871,11 +872,13 @@ class D3AxisWrapper extends D3Chart {
         wrapper.axes = [element];
         wrapper.dataSets = [];
 
-
         if (element.alignment === Alignment.Left || element.alignment === Alignment.Right) {
             console.log('Error: cannot render standalone left/right axes');
         } else {
             super(element, renderer, parent);
+
+            this._hasBottomHandle = false;
+            this._options.bottomMargin = this._options.bottomMargin ? this._options.bottomMargin : 1;
             this._options.height = 0;
             if (!element.axisDesc.range) {
                 console.log('Error: standalone axis must have a specified range, defaulting to 0-100')
@@ -926,7 +929,6 @@ class D3AxisWrapper extends D3Chart {
             }
         }
 
-        let axis = this._svg.select('.axis');
         graphGroup.select('.overlay')
             .attr('width', this._svgRect.width)
             .attr('height', this._svgRect.height);

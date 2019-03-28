@@ -92,43 +92,36 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
         return rects;
     }
 
-    private getVisibleRects(xStart: number, xEnd: number,
-        allRects: IFlameChartValue[][]): IFlameChartValue[] {
-
-        let visibleRects: IFlameChartValue[] = [];
+    private getVisibleRects(xStart: number, xEnd: number): IFlameChartValue[][] {
         if (!xStart || !xEnd) {
-            this._allRects.forEach((stackData) => {
-                visibleRects = visibleRects.concat(stackData);
-            });
-        } else {
-            // assume rects are sorted in each stack level
-            let findFirstInsertionIdx: (buffer: IBuffer<IFlameChartValue>, x: number) => number =
-                bisectBuffer(function (val: IFlameChartValue) { return val.traceValue.x }).left;
-            let findLastInsertionIdx: (buffer: IBuffer<IFlameChartValue>, x: number) => number =
-                bisectBuffer(function (val: IFlameChartValue) { return val.traceValue.x }).right;
-
-            allRects.forEach((stackData) => {
-                let simpleBuffer = new SimpleBuffer(stackData);
-                let startIdx = findFirstInsertionIdx(simpleBuffer, xStart);
-                let endIdx = findLastInsertionIdx(simpleBuffer, xEnd);
-
-                if (startIdx > 0) {
-                    --startIdx;
-                }
-                let startValue = stackData[startIdx].traceValue;
-                if (startValue.x + startValue.dx < xStart) {
-                    ++startIdx;
-                }
-
-                if (startIdx < endIdx) {
-                    visibleRects = visibleRects.concat(stackData.slice(startIdx, endIdx));
-                }
-            })
+            return this._allRects;
         }
 
-        visibleRects.sort((a: IFlameChartValue, b: IFlameChartValue) => {
-            return a.traceValue.x - b.traceValue.x;
-        });
+        // assume rects are sorted in each stack level
+        let findFirstInsertionIdx: (buffer: IBuffer<IFlameChartValue>, x: number) => number =
+            bisectBuffer(function (val: IFlameChartValue) { return val.traceValue.x }).left;
+        let findLastInsertionIdx: (buffer: IBuffer<IFlameChartValue>, x: number) => number =
+            bisectBuffer(function (val: IFlameChartValue) { return val.traceValue.x }).right;
+
+        let visibleRects: IFlameChartValue[][] = [];
+        this._allRects.forEach((stackData) => {
+            let simpleBuffer = new SimpleBuffer(stackData);
+            let startIdx = findFirstInsertionIdx(simpleBuffer, xStart);
+            let endIdx = findLastInsertionIdx(simpleBuffer, xEnd);
+
+            if (startIdx > 0) {
+                --startIdx;
+            }
+            let startValue = stackData[startIdx].traceValue;
+            if (startValue.x + startValue.dx < xStart) {
+                ++startIdx;
+            }
+
+            if (startIdx < endIdx) {
+                visibleRects.push(stackData.slice(startIdx, endIdx));
+            }
+        })
+
         return visibleRects;
     }
 
@@ -325,9 +318,16 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
         let yScale = yAxis.getScale();
 
         // get just the visible rects first
-        let visibleRects = self.getVisibleRects(xStart, xEnd, self._allRects);
+        let visibleRects = self.getVisibleRects(xStart, xEnd);
         if (self._layer.enableBackground) {
-            self._backgroundData = self.generateBackground(xScale, visibleRects);
+            let flatRectList = [];
+            visibleRects.forEach((stackData) => {
+                flatRectList = flatRectList.concat(stackData);
+            });
+            flatRectList.sort((a: IFlameChartValue, b: IFlameChartValue) => {
+                return a.traceValue.x - b.traceValue.x;
+            });
+            self._backgroundData = self.generateBackground(xScale, flatRectList);
         }
 
         if (!self._decimator) {
@@ -537,7 +537,7 @@ class D3SVGFlameChart extends FlameChartSeries {
 
             this.configureHover(segment, decimatedValue);
 
-            if (xWidth > 50) {
+            if (xWidth > 50 && key !== 'merged') {
                 let labelBox = labelGroup.append('svg')
                     .attr('x', xStart)
                     .attr('width', xWidth)
@@ -630,7 +630,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
         let xStart = 0;
         let xEnd = xScale(Number.MAX_VALUE);
         let background = this._pixiHelper.createRectangleContainer(xStart, 0,
-            xEnd, this._stackHeight, 0);
+            xEnd, this.getRequiredHeight(), 0);
         background.alpha = 0;
         this.configureItemInteractionPIXI(background, undefined);
         stage.addChild(background);
@@ -684,18 +684,20 @@ class D3PIXIFlameChart extends FlameChartSeries {
             // this is flame chart specific handling for brush
             this.configureItemInteractionPIXI(selection, decimatedValue.decimatedValues);
 
-            let text: PIXI.Text = this._textMap[name];
-            if (!text) {
-                text = this._pixiHelper.renderText(name, labelGroup);
-                this._textMap[name] = text;
-            }
+            if (key !== 'merged') {
+                let text: PIXI.Text = this._textMap[name];
+                if (!text) {
+                    text = this._pixiHelper.renderText(name, labelGroup);
+                    this._textMap[name] = text;
+                }
 
-            let textWidth = text.width;
-            if (textWidth < rect.width) {
-                let tSprite = new PIXI.Sprite(this._pixi.generateTexture(text));
-                tSprite.x = (rect.width - text.width) * .5;
-                tSprite.y = this._stackHeight * .5 - text.height * .5;
-                rect.addChild(tSprite);
+                let textWidth = text.width;
+                if (textWidth < rect.width) {
+                    let tSprite = new PIXI.Sprite(this._pixi.generateTexture(text));
+                    tSprite.x = (rect.width - text.width) * .5;
+                    tSprite.y = this._stackHeight * .5 - text.height * .5;
+                    rect.addChild(tSprite);
+                }
             }
             stage.addChild(rect);
         }
