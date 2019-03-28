@@ -11,10 +11,14 @@ var FlameSunburstTest;
     };
     function createView() {
         {
+            var rectLimitDecimator = new UWT.FlameChartRectLimitDecimator();
+            rectLimitDecimator.setRectLimit(10);
             var chart = {
                 title: 'Flame Chart',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
+                        decimator: rectLimitDecimator,
+                        enableBackground: true,
                         renderType: UWT.RenderType.FlameChart,
                         data: calltrace,
                         onClick: function (event) {
@@ -83,7 +87,6 @@ var FlameSunburstTest;
                 title: 'Trace Residency',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
-                        disableWebWorkers: true,
                         renderType: UWT.RenderType.Area |
                             UWT.RenderType.Stacked,
                         data: trace
@@ -98,7 +101,6 @@ var FlameSunburstTest;
                 title: 'Trace State',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
-                        disableWebWorkers: true,
                         renderType: UWT.RenderType.Line,
                         data: trace
                     }],
@@ -112,7 +114,6 @@ var FlameSunburstTest;
                 title: 'Trace Sparse',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
-                        disableWebWorkers: true,
                         renderType: UWT.RenderType.FlameChart,
                         data: trace2,
                         onClick: function (event) {
@@ -132,7 +133,6 @@ var FlameSunburstTest;
                 title: 'Trace Sparse Line',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
-                        disableWebWorkers: true,
                         renderType: UWT.RenderType.Line,
                         data: trace2
                     }],
@@ -146,7 +146,6 @@ var FlameSunburstTest;
                 title: 'Trace Sparse Area',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
-                        disableWebWorkers: true,
                         renderType: UWT.RenderType.Area,
                         data: trace2
                     }],
