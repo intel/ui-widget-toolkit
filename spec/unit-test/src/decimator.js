@@ -207,7 +207,7 @@ describe("decimator-sanity", function () {
         let endTime = Date.now();
 
         // expect decimation time to be < 50ms
-        expect(endTime - startTime).toBeLessThanOrEqual(300);
+        expect(endTime - startTime).toBeLessThanOrEqual(450);
         expect(residencyValues.length).toBe(6);
 
         // simple bounds checking
@@ -232,7 +232,7 @@ describe("decimator-sanity", function () {
         let endTime = Date.now();
 
         // expect decimation time to be < 50ms
-        expect(endTime - startTime).toBeLessThanOrEqual(500);
+        expect(endTime - startTime).toBeLessThanOrEqual(250);
         expect(residencyValues.length).toBe(6);
 
         // simple bounds checking
@@ -256,7 +256,7 @@ describe("decimator-sanity", function () {
         let endTime = Date.now();
 
         // expect decimation time to be < 250ms
-        expect(endTime - startTime).toBeLessThanOrEqual(250);
+        expect(endTime - startTime).toBeLessThanOrEqual(150);
         expect(mergedValues.length).toBeGreaterThanOrEqual(0);
         expect(mergedValues.length).toBeLessThanOrEqual(xPixels + 1);
     }, 1000);
@@ -270,7 +270,7 @@ describe("decimator-sanity", function () {
         let endTime = Date.now();
 
         // expect decimation time to be < 50ms
-        expect(endTime - startTime).toBeLessThanOrEqual(500);
+        expect(endTime - startTime).toBeLessThanOrEqual(450);
         expect(limitvalues.length).toBe(500);
     }, 1000);
 

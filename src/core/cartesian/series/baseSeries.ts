@@ -163,7 +163,8 @@ export class BaseSeries {
         let self = this;
         if (this._d3Elems) {
             let selectionName = getSelectionName(selection);
-            self._d3Elems.forEach((elem) => {
+            for (let i = 0; i < self._d3Elems.length; ++i) {
+                let elem = self._d3Elems[i];
                 if (elem.classed && elem.classed(selectionName)) {
                     let hoverRadiusDelta = self._d3Chart.getOptions().hoverRadiusDelta;
 
@@ -176,7 +177,7 @@ export class BaseSeries {
 
                     addHover(elem, self._fillColors, self._strokeColors);
                 }
-            });
+            }
         }
     }
 
@@ -185,7 +186,8 @@ export class BaseSeries {
         let self = this;
         if (this._d3svg) {
             let selectionName = getSelectionName(selection);
-            self._d3Elems.forEach((elem) => {
+            for (let i = 0; i < self._d3Elems.length; ++i) {
+                let elem = self._d3Elems[i];
                 if (elem.classed && elem.classed(selectionName)) {
                     let hoverRadiusDelta = self._d3Chart.getOptions().hoverRadiusDelta;
 
@@ -198,7 +200,7 @@ export class BaseSeries {
 
                     removeHover(elem, self._fillColors, self._strokeColors);
                 }
-            });
+            }
         }
     }
 

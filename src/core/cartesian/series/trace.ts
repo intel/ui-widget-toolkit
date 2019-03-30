@@ -57,11 +57,16 @@ export class TraceSeries implements ICartesianSeriesPlugin {
         this._layer = layer as ITraceValueLayer;
 
         let stateMap: { [index: string]: boolean } = {};
-        (this._layer as ITraceValueLayer).data.forEach((traceItem: ITraceValue) => {
-            stateMap[traceItem.name] = true;
-        })
+        let data = (this._layer as ITraceValueLayer).data;
+        for (let i = 0; i < data.length; ++i) {
+            stateMap[data[i].name] = true;
+        }
 
         this._states = Object.keys(stateMap).sort((a, b) => { return a.localeCompare(b) });
+
+        if (this._states.length === 1 && this._states[0] === 'undefined') {
+            console.warn('Warning ITraceData does not have the name property: This is used for when rendering trace data');
+        }
 
         this._isStackedArea = (this._layer.renderType & RenderType.Area) !== 0 ||
             (this._layer.renderType & RenderType.Stacked) !== 0;

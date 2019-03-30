@@ -1211,9 +1211,9 @@ export class FlameChartRectLimitDecimator implements IFlameChartDecimator {
         // using the whole view
         this._data = [];
         let rects = values.getData();
-        rects.forEach((stackData) => {
-            this._data = this._data.concat(stackData);
-        });
+        for (let i = 0; i < rects.length; ++i) {
+            this._data = this._data.concat(rects[i]);
+        }
 
         if (this._rectLimit) {
             this._data.sort(function (a: IFlameChartValue, b: IFlameChartValue): number {
@@ -1325,7 +1325,8 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
         }
 
         // compute merged rects
-        values.forEach((perLevelData) => {
+        for (let i = 0; i < values.length; ++i) {
+            let perLevelData = values[i];
 
             let mergedLevelData: IFlameChartValue[] = [];
 
@@ -1466,7 +1467,9 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
             // if applicable we actually go through and clean things up and then
             // merge the rects for rendering performance
             prevValue = undefined;
-            mergedLevelData.forEach((value: IFlameChartValue) => {
+
+            for (let j = 0; j < mergedLevelData.length; ++j) {
+                let value: IFlameChartValue = mergedLevelData[j];
                 if (value.traceValue.dx < bucketValueWidth) {
                     // first make the rectangles at least 1 pixel wide
                     value.traceValue.dx = bucketValueWidth;
@@ -1485,8 +1488,8 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
                     ret.push(value);
                     prevValue = value;
                 }
-            })
-        });
+            }
+        }
         return ret;
     }
 
@@ -1714,7 +1717,7 @@ export class TraceStateDecimator implements ITraceStateDecimator {
      * Returns the key of this decimator
      */
     public getKey(): string {
-        return TraceResidencyDecimator.KEY;
+        return TraceStateDecimator.KEY;
     }
 
     /**
@@ -1809,14 +1812,15 @@ export class TraceStateDecimator implements ITraceStateDecimator {
         }
 
         // convert state index to actual state names for rendering
-        this._decimatedValues.forEach(newsValue => {
+        for (let i = 0; i < this._decimatedValues.length; ++i) {
+            let newsValue = this._decimatedValues[i];
             let exit = newsValue.exit;
             newsValue.entry = this._states[newsValue.entry];
             newsValue.exit = this._states[exit];
             newsValue.y = this._states[exit];
             newsValue.min = this._states[newsValue.min];
             newsValue.max = this._states[newsValue.max];
-        })
+        }
         return this._decimatedValues;
     }
 };
@@ -1871,13 +1875,14 @@ export class SimpleMarkerDecimator implements IDecimator {
         let ret: ITraceValue[] = [];
 
         let lastCoord = -Number.MAX_VALUE;
-        values.forEach((value) => {
+        for (let i = 0; i < values.length; ++i) {
+            let value = values[i];
             let coord = this._xValueToCoord(value.x);
             if (coord !== lastCoord) {
                 ret.push(value);
                 lastCoord = coord;
             }
-        });
+        }
         return ret;
     }
     /**
@@ -1895,14 +1900,15 @@ export class SimpleMarkerDecimator implements IDecimator {
         // using the whole view
         if (xStart !== undefined && xEnd !== undefined) {
             let filteredData: ITraceValue[] = [];
-            allData.forEach(function (value) {
+            for (let i = 0; i < allData.length; ++i) {
+                let value = allData[i];
                 if (value.x < xEnd && value.x > xStart) {
                     filteredData.push(value);
                 } else if (value.dx && value.x + value.dx < xEnd &&
                     value.x + value.dx > xStart) {
                     filteredData.push(value);
                 }
-            });
+            }
 
             this._data = this.mergeMarkers(filteredData);
         } else {
