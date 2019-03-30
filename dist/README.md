@@ -147,4 +147,9 @@ if the polymer serve command runs on port 8081.
 	- npm run build-test
 	- npm run test
 
-[GitHub](https://github.com/intel/ui-widget-toolkit) [npm](https://www.npmjs.com/package/ui-widget-toolkit)
+# Reference
+[API Documentation](https://intel.github.io/ui-widget-toolkit)
+
+[GitHub](https://github.com/intel/ui-widget-toolkit)
+
+[npm](https://www.npmjs.com/package/ui-widget-toolkit)
