@@ -1576,7 +1576,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             .attr('pointer-events', 'none')
             .style('display', 'none');
 
-        this._graphSvg
+        this.getGraphGroup()
             .on('mouseover', this.cursorEnter)
             .on('mousemove', this.cursorMove)
             .on('mouseout', this.cursorExit);

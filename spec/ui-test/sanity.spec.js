@@ -1033,6 +1033,35 @@ describe('sanity', function () {
         });
     }, 10000);
 
+    it('polygon', function (done) {
+        driver.get('file://' + path.join(__dirname + '../../../examples/polygon/polygonTest.html'));
+        driver.findElements(By.tagName('svg')).then(function (svgs) {
+            expect(svgs.length).toBe(6);
+            svgs[1].findElements(By.className('chart-line')).then(function (lines) {
+                expect(lines.length).toBe(1);
+            });
+            svgs[0].findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+            });
+            svgs[3].findElements(By.tagName('path')).then(function (lines) {
+                expect(lines.length).toBe(2);
+            });
+            svgs[3].findElements(By.tagName('text')).then(function (text) {
+                expect(text.length).toBe(1);
+            });
+            svgs[2].findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+            });
+            svgs[5].findElements(By.className('chart-line')).then(function (lines) {
+                expect(lines.length).toBe(1);
+            });
+            svgs[4].findElements(By.className('axis')).then(function (axes) {
+                expect(axes.length).toBe(2);
+                done();
+            });
+        });
+    }, 10000);
+
     it('gradient-legend', function (done) {
         driver.get('file://' + path.join(__dirname + '../../../examples/gradientLegend/gradientLegendTest.html'));
         driver.findElements(By.tagName('svg')).then(function (graphs) {

@@ -62,7 +62,7 @@ export class XYGroupSeries implements ICartesianSeriesPlugin {
         if (layer.data.length !== this._d3SeriesList.length) {
             this._d3SeriesList = [];
             for (let i = 0; i < layer.data.length; ++i) {
-                let series = new XYSeries(this._d3Chart, layer, this._svg, this._xAxis,
+                let series: XYSeries = new XYSeries(this._d3Chart, layer, this._svg, this._xAxis,
                     this._yAxis, this._isXContinuous);
                 this._d3SeriesList.push(series);
             }

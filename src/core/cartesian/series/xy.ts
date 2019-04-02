@@ -11,7 +11,7 @@ import {
 
 import {
     InternalDecimatorMap, NEWSDecimationValue, NEWSPointDecimator,
-    NEWSStateDecimator, XYPointDecimator, AvgContinuousDecimator
+    NEWSStateDecimator, XYPointDecimator, AvgContinuousDecimator, XYDummyDecimator
 } from '../decimator/decimator';
 import {
     getSelectionName, SimpleBuffer, bisectBuffer, isOverlapping
@@ -217,6 +217,8 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
 
             if (self._layer.decimator) {
                 decimator = self._layer.decimator;
+            } else if (self._layer.renderType & RenderType.Raw) {
+                decimator = new XYDummyDecimator();
             } else if (self._layer.renderType & RenderType.Line) {
                 if (self._d3YAxis.isBanded()) {
                     decimator = new NEWSStateDecimator();
@@ -286,7 +288,10 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
     /** fill in tooltip information  */
     public getTooltipMetrics(elem: UIElement, event: IEvent): ITooltipData[] {
         let tooltipData: ITooltipData = { source: elem, group: '', metrics: {} };
-        if (this._outputData && this._outputData.length() > 0 && event.xEnd) {
+        if (this._layer.renderType & RenderType.Raw) {
+            // ignore raw data for now as we don't know what the user
+            // is using it for
+        } else if (this._outputData && this._outputData.length() > 0 && event.xEnd) {
             if (this._layer.renderType & RenderType.Line ||
                 this._layer.renderType & RenderType.Area) {
                 if (!this._d3XAxis.isBanded()) {
@@ -474,12 +479,51 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
         let isFirst = elem.empty();
 
         if (isFirst) {
+            let configureItemInteraction = function () {
+                self.configureItemInteraction(d3.select(this));
+
+                if (self._layer.renderType & RenderType.Raw || self._layer.onHover) {
+                    d3.select(this)
+                        .on('mouseenter', function () {
+                            let event = {
+                                caller: self._d3Chart.getElement(),
+                                selection: self.getName(),
+                                event: EventType.HoverStart,
+                                data: {
+                                    tooltip: self._d3Chart.getTooltip(),
+                                    data: self.getName()
+                                },
+                            }
+                            self._d3Chart.onHover(event);
+                            if (self._layer.onHover) {
+                                self._layer.onHover(event);
+                            }
+                        })
+                        .on('mouseleave', function () {
+                            let event = {
+                                caller: self._d3Chart.getElement(),
+                                selection: self.getName(),
+                                event: EventType.HoverEnd,
+                                data: {
+                                    tooltip: self._d3Chart.getTooltip(),
+                                    data: self.getName()
+                                },
+                            }
+                            self._d3Chart.onHover(event);
+                            if (self._layer.onHover) {
+                                self._layer.onHover(event);
+                            }
+                        });
+                }
+            }
+
             elem = this._d3svg.append('path')
                 .classed(this._classes, true)
                 .attr('id', self._classes)
                 .attr('fill', 'none')
                 .attr('stroke-width', 1)
                 .attr('stroke', color)
+                .each(configureItemInteraction); 3
 
             if (this._data.css) {
                 for (let className in this._data.css.classes) {
@@ -506,8 +550,6 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
                     .text(this._data.description.text);
             }
         }
-
-        this.configureItemInteraction(elem);
 
         /** if we we have min/max data for the lines render this information */
         if (!isStacked && this._outputData.length() > 0
@@ -546,7 +588,7 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
 
             elem.attr('d', line(path));
         } else {
-            let optimizedPath;
+            let optimizedPath: IXYValue[];
             if (isStacked) {
                 optimizedPath = self.optimizeLinePath(self.yIndexPostStackMap);
             } else {
@@ -635,7 +677,7 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
 
         this.configureItemInteraction(elem);
 
-        let optimizedPath;
+        let optimizedPath: IXYValue[];
         if (isStacked) {
             optimizedPath = this.optimizeAreaPath(self.yIndexPreStackMap, self.yIndexPostStackMap);
         } else {

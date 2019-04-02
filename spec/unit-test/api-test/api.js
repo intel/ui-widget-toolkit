@@ -54,6 +54,14 @@ window.onload = () => {
             throw 'Error with panRight API';
         }
 
+        if (chart.api.createImage === undefined) {
+            throw 'Error with createImage API';
+        }
+
+        if (chart.api.saveImage === undefined) {
+            throw 'Error with saveImage API';
+        }
+
         r.invalidate(chart, { leftMargin: 200 });
     }
 }

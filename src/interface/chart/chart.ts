@@ -9,7 +9,8 @@ import { IContextMenuItem, ITooltipData } from '../ui-base';
 
 /**
  * bit mask to define how to render the data.  This is an input to the RenderSeries.
- * Note Stacked can be compbined with Line/Area/Bar
+ * Note Stacked can be compbined with Line/Area/Bar.  In the future release (2.x) note
+ * that we will make this a flat enum, not a bitmask as it is now.
  *
  * @enum {number}
  */
@@ -38,8 +39,13 @@ export enum RenderType {
     /** render the data as a box plot */
     BoxPlot = 512,
     /** render the data as a heat map */
-    HeatMap = 1024
-
+    HeatMap = 1024,
+    /** render the data with no decimation but just as a line between XY values
+     * Note this has other side effects like we do not include the data
+     * by default in the tooltip metric list since we cannot be sure it is a metric
+     * being rendered.
+     */
+    Raw = 2048
 };   // bitmask RenderType
 
 /**

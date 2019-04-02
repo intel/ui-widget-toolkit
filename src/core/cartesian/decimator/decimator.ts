@@ -32,6 +32,49 @@ export type IXYXSimpleDecimationFunction = (inputValues: IBuffer<IXYValue>,
     xValueToCoord: (value: any) => number,
     xStart: number, xEnd: number) => IXYValue[];
 
+export class XYDummyDecimator implements IDecimator {
+    private _values: any[] = [];
+
+    public initialize(xValueToCoord: (value: any) => number,
+        xCoordToValue: (value: any) => number,
+        yValueToCoord: (value: any) => number): void {
+    }
+
+    public getKey(): string {
+        return '';
+    }
+
+    public getName(): string {
+        return '';
+    }
+
+    /**
+     * Returns the decimated list of data
+     */
+    public getValues(): IXYValue[] {
+        return this._values;
+    }
+
+    /**
+     * Values to be decimated
+     *
+     * @param xStart - start time of the region
+     * @param xEnd - start time of the region
+     * @param values - Values to be decimated.
+     */
+    public decimateValues(xStart: number, xEnd: number, values: IBuffer<IXYValue>): IXYValue[] {
+        if (Array.isArray(values)) {
+            values.forEach((data) => {
+                this._values.push(data.getData());
+            })
+        } else {
+            this._values = values.getData();
+        }
+
+        return this._values;
+    }
+}   // interface IDecimator
+
 /**
  * this class allows a decimation function to be passed in to allow for
  * generic decimation
