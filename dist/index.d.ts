@@ -141,7 +141,8 @@ export interface IRenderedAxis {
 
 /**
     * bit mask to define how to render the data.  This is an input to the RenderSeries.
-    * Note Stacked can be compbined with Line/Area/Bar
+    * Note Stacked can be compbined with Line/Area/Bar.  In the future release (2.x) note
+    * that we will make this a flat enum, not a bitmask as it is now.
     *
     * @enum {number}
     */
@@ -170,7 +171,13 @@ export enum RenderType {
         /** render the data as a box plot */
         BoxPlot = 512,
         /** render the data as a heat map */
-        HeatMap = 1024
+        HeatMap = 1024,
+        /** render the data with no decimation but just as a line between XY values
+            * Note this has other side effects like we do not include the data
+            * by default in the tooltip metric list since we cannot be sure it is a metric
+            * being rendered.
+            */
+        Raw = 2048
 }
 /**
     * how to render a line graph
@@ -1910,6 +1917,23 @@ export var findLastInsertionIdx: (buffer: IBuffer<{
     *
     */
 export type IXYXSimpleDecimationFunction = (inputValues: IBuffer<IXYValue>, startIdx: number, endIdx: number, yValueToCoord: (value: any) => number, xValueToCoord: (value: any) => number, xStart: number, xEnd: number) => IXYValue[];
+export class XYDummyDecimator implements IDecimator {
+        initialize(xValueToCoord: (value: any) => number, xCoordToValue: (value: any) => number, yValueToCoord: (value: any) => number): void;
+        getKey(): string;
+        getName(): string;
+        /**
+            * Returns the decimated list of data
+            */
+        getValues(): IXYValue[];
+        /**
+            * Values to be decimated
+            *
+            * @param xStart - start time of the region
+            * @param xEnd - start time of the region
+            * @param values - Values to be decimated.
+            */
+        decimateValues(xStart: number, xEnd: number, values: IBuffer<IXYValue>): IXYValue[];
+}
 /**
     * this class allows a decimation function to be passed in to allow for
     * generic decimation
