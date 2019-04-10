@@ -180,6 +180,45 @@ export class UWTPieChart extends React.Component {
     }
 }
 
+export class UWTRadarChart extends React.Component {
+    constructor(props) {
+        super(props);
+        this.chart = React.createRef();
+    }
+
+    update() {
+        if (!this.renderer) {
+            this.renderer = new UWT.D3Renderer('', this.props.colorManager);
+        }
+
+        if (this.props.chartDef) {
+            this.renderer.setDiv(this.chart.current);
+            this.renderer.invalidate(this.props.chartDef, this.props.renderOptions);
+        }
+    }
+
+    componentDidMount() {
+        this.update();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.chartDef !== this.props.chartDef) {
+            this.update();
+        }
+    }
+
+    render() {
+        if (this.props.chartTitle) {
+            return <div>
+                <div className='chart-title'>{this.props.chartTitle}</div>
+                <div ref={this.chart} id='chart'></div>
+            </div>;
+        } else {
+            return <div ref={this.chart} id='chart'></div>;
+        }
+    }
+}
+
 export class UWTGrid extends React.Component {
     constructor(props) {
         super(props);

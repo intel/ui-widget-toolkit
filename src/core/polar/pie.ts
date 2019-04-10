@@ -28,7 +28,7 @@ export class D3Pie extends D3Polar {
     private getRenderData(): IPolarSegment[] {
         if (!this._renderData) {
             let self = this;
-            this._renderData = Array.prototype.slice.call(this.getLegendData())
+            this._renderData = Array.prototype.slice.call(this.createArcData())
                 .sort(function (a: any, b: any) {
                     if (self.getDataValue(a) > self.getDataValue(b)) {
                         return -1;
@@ -58,7 +58,7 @@ export class D3Pie extends D3Polar {
         return this._renderData;
     }
 
-    protected getLegendData(): IPolarSegment[] {
+    private createArcData(): IPolarSegment[] {
         if (!this._arcData) {
             let pieChart = this._element as IPieChart;
             if (pieChart.colors) {
@@ -82,6 +82,12 @@ export class D3Pie extends D3Polar {
         return this._arcData;
     }
 
+    protected getLegendData(): any[] {
+        return this.createArcData().map(function (value) {
+            return value.rawData;
+        })
+    }
+
     protected renderData() {
         let self = this;
 
@@ -102,7 +108,7 @@ export class D3Pie extends D3Polar {
         let animateDuration = self.getAnimateDuration();
         let pieUpdate = self._graphArea.selectAll('.arc').data(arcData);
 
-        let arcPath = pieUpdate
+        pieUpdate
             .enter()
             .append('path')
             .attr('class', classFunc)
@@ -142,7 +148,7 @@ export class D3Pie extends D3Polar {
         if (!this._options.disableTooltip) {
             this.configureTooltip(arcs);
         }
-        this.configureSegmentHover(arcs);
+        this.configureItemHover(arcs);
     }
 };
 D3Renderer.register(UIType.Pie, D3Pie);

@@ -29,6 +29,7 @@ The various widgets currently supported by the library are:
 * [Min Max Value](https://intel.github.io/ui-widget-toolkit/examples/minMaxValue/minMaxValueTest.html)
 * [Pie Chart](https://intel.github.io/ui-widget-toolkit/examples/pie/pieTest.html)
 * [Port Diagram](https://intel.github.io/ui-widget-toolkit/examples/portDiagram/portDiagramTest.html)
+* [Radar/Spider Chart](https://intel.github.io/ui-widget-toolkit/examples/radar/radarTest.html)
 * [Rectangle](https://intel.github.io/ui-widget-toolkit/examples/rect/rectTest.html)
 * [Scatter Plot](https://intel.github.io/ui-widget-toolkit/examples/scatter/scatterTest.html)
 * [Treemap](https://intel.github.io/ui-widget-toolkit/examples/treemap/treemap.html)

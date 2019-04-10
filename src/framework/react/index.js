@@ -1,6 +1,6 @@
 import {
   UWTAxis, UWTChart, UWTFlowDiagram, UWTGraph, UWTGrid,
-  UWTHierarchyGraph, UWTPieChart, UWTSunburstChart,
+  UWTHierarchyGraph, UWTPieChart, UWTRadarChart, UWTSunburstChart,
   UWTSwimlaneChart, UWTTreeMap
 } from './components/ui-widget-toolkit-react.jsx'
 
@@ -14,6 +14,7 @@ export {
   UWTGrid,
   UWTHierarchyGraph,
   UWTPieChart,
+  UWTRadarChart,
   UWTSunburstChart,
   UWTSwimlaneChart,
   UWTTreeMap

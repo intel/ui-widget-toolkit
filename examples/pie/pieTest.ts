@@ -23,14 +23,14 @@ module PieTest {
                     console.log('pie double click');
                     console.log(event);
                 },
-                contextMenuItems: {
+                contextMenuItems: [{
                     title: 'PieMenuItem',
                     action(elem: any, data: any, index: any) {
                         console.log('index: ' + index);
                         console.log(data);
                         console.log(elem);
                     }
-                },
+                }],
                 legend: { alignment: UWT.Alignment.Right }
             }
 
@@ -50,14 +50,14 @@ module PieTest {
                     console.log('pie double click');
                     console.log(event);
                 },
-                contextMenuItems: {
+                contextMenuItems: [{
                     title: 'PieMenuItem',
                     action(elem: any, data: any, index: any) {
                         console.log('index: ' + index);
                         console.log(data);
                         console.log(elem);
                     }
-                },
+                }],
                 legend: { alignment: UWT.Alignment.Bottom },
                 innerRadius: .5
             }

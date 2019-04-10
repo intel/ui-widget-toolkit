@@ -9,7 +9,7 @@
 import * as UWT from "ui-widget-toolkit";
 
 export default {
-  name: "uwtPieChart",
+  name: "uwtRadarChart",
   props: {
     chartTitle: {
       type: String,

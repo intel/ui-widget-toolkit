@@ -28,5 +28,6 @@ export * from '../core/cartesian/series/xy';
 export * from '../core/cartesian/series/xy-group';
 export * from '../core/polar/pie';
 export * from '../core/polar/sunburst';
+export * from '../core/polar/radar';
 export * from '../core/renderer';
 

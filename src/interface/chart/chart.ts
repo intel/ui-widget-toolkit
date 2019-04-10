@@ -367,3 +367,9 @@ export interface ISunburstChart extends IPolarChart {
     /** a decimator for the data */
     decimator?: ISunburstDecimator;
 }
+
+/** defines a sunburst chart */
+export interface IRadarChart extends IPolarChart {
+    /** the data for the sunburst, each key/value pair is a pie segment */
+    data: ISummaryValue[];
+}

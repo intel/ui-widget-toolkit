@@ -69,6 +69,9 @@ Base element to share all the default styles
                 }
             }
             _onDataChanged() {
+                while (this.$.chart.firstChild) {
+                    this.$.chart.remove(this.$.chart.firstChild);
+                }
                 if (this.renderer && this.chartDef) {
                     this.renderer.setDiv(this.$.chart);
                     this.renderer.invalidate(this.chartDef, this.renderOptions);
@@ -90,6 +93,95 @@ Base element to share all the default styles
         customElements.define(PieChart.is, PieChart);
     </script>
 </dom-module>
+
+<dom-module id='uwt-radar-chart'>
+    <template>
+        <style>
+            .legendCells .cell .label {
+                font-size: var(--uwt-legend-text-size, 12px);
+                font-family: Arial;
+            }
+
+            .chart {
+                margin: auto;
+                width: inherit;
+            }
+
+            .no-pointer-events {
+                pointer-events: none;
+            }
+        </style>
+
+        <div class='chart-title'>{{chartTitle}}</div>
+        <div id='chart'></div>
+    </template>
+    <script>
+        class RadarChart extends Polymer.Element {
+            static get is() { return 'uwt-pie-chart'; }
+            static get properties() {
+                return {
+                    chartTitle: {
+                        type: String
+                    },
+                    chartDef: {
+                        type: Object,
+                        notify: true,
+                        observer: '_onDataChanged'
+                    },
+                    renderOptions: {
+                        type: Object,
+                        notify: true,
+                        observer: '_onRenderOptionsChanged'
+                    },
+                    colorManager: {
+                        type: Object,
+                        value: function () { return new UWT.ColorManager() },
+                        observer: '_onColorManagerChanged'
+                    },
+                    onRender: {
+                        type: Function
+                    },
+                    renderer: {
+                        type: Object
+                    }
+                }
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                if (!this.renderer) {
+                    this.renderer = new UWT.D3Renderer('', this.colorManager);
+                }
+                this.renderer.setOnRenderCallback(this.onRender);
+
+                if (this.chartDef) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chartDef, this.renderOptions);
+                }
+            }
+            _onDataChanged() {
+                this.renderer.clearDiv(this.$.chart);
+                if (this.renderer && this.chartDef) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chartDef, this.renderOptions);
+                }
+            }
+            _onRenderOptionsChanged() {
+                if (this.renderer && this.chart) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chart, this.renderOptions);
+                }
+            }
+            _onColorManagerChanged() {
+                if (this.renderer) {
+                    this.renderer.setColorManager(this.colorManager);
+                }
+            }
+        }
+
+        customElements.define(RadarChart.is, RadarChart);
+    </script>
+</dom-module>
+
 <dom-module id='uwt-sunburst-chart'>
     <template>
         <style>
@@ -157,6 +249,7 @@ Base element to share all the default styles
             }
 
             _onDataChanged() {
+                this.renderer.clearDiv(this.$.chart);
                 if (this.renderer && this.chartDef) {
                     this.renderer.setDiv(this.$.chart);
                     this.renderer.invalidate(this.chartDef, this.renderOptions);

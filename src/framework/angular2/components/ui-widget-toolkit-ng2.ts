@@ -162,6 +162,58 @@ export class UWTPieChart implements OnChanges {
             this.renderer = new UWT.D3Renderer('', this.colorManager);
         }
 
+        while (this.chartElem.firstChild) {
+            this.chartElem.remove(this.chartElem.firstChild);
+        }
+        if (this.chartDef) {
+            this.renderer.setDiv(this.chartElem.nativeElement);
+            this.renderer.invalidate(this.chartDef, this.renderOptions);
+        }
+    }
+}
+
+@Component({
+    selector: 'uwt-radar-chart',
+    styles: [`
+        .legendCells .cell .label {
+            font-size: 12px;
+            font-family: Arial;
+        }
+
+        .chart {
+            margin: auto;
+            width: inherit;
+        }
+
+        .no-pointer-events {
+            pointer-events: none;
+        }
+    `],
+    template: `
+        <div *ngIf='chartTitle' class='chart-title'>{{chartTitle}}</div>
+        <div #chart id='chart'></div>
+    `,
+    changeDetection: ChangeDetectionStrategy.OnPush
+})
+
+export class UWTRadarChart implements OnChanges {
+    @Input() chartTitle: string;
+    @Input() chartDef: UWT.IPieChart;
+    @Input() renderOptions: UWT.IOptions;
+    @Input() colorManager: UWT.ColorManager;
+    @Input() renderer: UWT.UIRenderer;
+    @Input() onRender: () => void;
+
+    @ViewChild('chart') chartElem: any;
+
+    ngOnChanges(changes: any) {
+        if (!this.renderer) {
+            this.renderer = new UWT.D3Renderer('', this.colorManager);
+        }
+
+        while (this.chartElem.firstChild) {
+            this.chartElem.remove(this.chartElem.firstChild);
+        }
         if (this.chartDef) {
             this.renderer.setDiv(this.chartElem.nativeElement);
             this.renderer.invalidate(this.chartDef, this.renderOptions);
@@ -262,7 +314,7 @@ export class UWTFlowDiagram implements OnChanges {
 }
 
 @Component({
-    selector: 'ui-widget-toolkit-graph',
+    selector: 'uwt-graph',
     styles: [`
         div#graph {
             height: 400px
@@ -401,6 +453,9 @@ export class UWTSunburstChart implements OnChanges {
         }
         this.renderer.setOnRenderCallback(this.onRender);
 
+        while (this.chartElem.firstChild) {
+            this.chartElem.remove(this.chartElem.firstChild);
+        }
         if (this.chartDef) {
             this.renderer.setDiv(this.chartElem.nativeElement);
             this.renderer.invalidate(this.chartDef, this.renderOptions);
@@ -477,8 +532,8 @@ export class UWTAxis implements OnChanges {
 @NgModule({
     imports: [BrowserModule, CommonModule],
     declarations: [UWTAxis, UWTChart, UWTSwimlaneChart, UWTPieChart, UWTGrid, UWTFlowDiagram,
-        UWTGraph, UWTSunburstChart, UWTHierarchyGraph, UWTAxis],
+        UWTGraph, UWTSunburstChart, UWTHierarchyGraph, UWTAxis, UWTRadarChart],
     exports: [UWTAxis, UWTChart, UWTSwimlaneChart, UWTPieChart, UWTGrid, UWTFlowDiagram,
-        UWTGraph, UWTSunburstChart, UWTHierarchyGraph]
+        UWTGraph, UWTSunburstChart, UWTHierarchyGraph, UWTRadarChart]
 })
 export class UWTModule { }

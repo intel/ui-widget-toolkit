@@ -103,10 +103,9 @@ export class D3Polar extends SVGRenderer {
     /** configures segment hover and stores the current hovered
      * item for others to use in the _selection variable
      **/
-    protected configureSegmentHover(target: d3.Selection<d3.BaseType, any, d3.BaseType, any>): void {
+    protected configureItemHover(target: d3.Selection<d3.BaseType, any, d3.BaseType, any>): void {
         let self = this;
         let chart = self._element as IChart;
-
 
         target.on('mouseenter', hoverStart)
             .on('mouseleave', hoverEnd);
@@ -149,7 +148,7 @@ export class D3Polar extends SVGRenderer {
         function hoverStart(): boolean {
             let rawData = this.__data__.rawData;
             let selection = getSelectionName(self.getDataName(rawData));
-            self._hoverItem = this.__data__.rawData;
+            self._hoverItem = rawData;
             if (self._hoverItem) {
                 return onHoverChanged({
                     caller: self._element,
@@ -234,7 +233,7 @@ export class D3Polar extends SVGRenderer {
     /**
      * get the polar data for the legend
      */
-    protected getLegendData(): IPolarSegment[] {
+    protected getLegendData(): any[] {
         throw 'Please override getLegendData for D3Polar in subclass'
     }
 
@@ -263,7 +262,7 @@ export class D3Polar extends SVGRenderer {
             let colorMgr = self._renderer.getColorManager();
             let legendItems: ILegendItem[] = [];
             for (let i = 0; i < legendData.length; ++i) {
-                let data = legendData[i].rawData;
+                let data = legendData[i];
                 let name = self.getDataName(data);
                 let selectionKey = getSelectionName(name);
                 let elem = self._svg.selectAll('.' + selectionKey);
@@ -309,16 +308,16 @@ export class D3Polar extends SVGRenderer {
         this._svgRect.width = this._options.width;
 
         // CALCULATE GRAPH PARAMS
-        let pieTop = self._options.topMargin;
-        let pieBottom = self._options.height - self._options.bottomMargin;
-        let pieLeft = self._options.leftMargin;
-        let pieRight = self._svgRect.width - self._options.rightMargin;
+        let graphTop = self._options.topMargin;
+        let graphBottom = self._options.height - self._options.bottomMargin;
+        let graphLeft = self._options.leftMargin;
+        let graphRight = self._svgRect.width - self._options.rightMargin;
 
-        let diameter = Math.min(pieBottom - pieTop, pieRight - pieLeft);
+        let diameter = Math.min(graphBottom - graphTop, graphRight - graphLeft);
         self._radius = diameter / 2;
 
-        self._graphRect.x = pieLeft;
-        self._graphRect.y = pieTop;
+        self._graphRect.x = graphLeft;
+        self._graphRect.y = graphTop;
         self._graphRect.width = diameter;
         self._graphRect.height = diameter;
 
@@ -334,9 +333,9 @@ export class D3Polar extends SVGRenderer {
         // RENDER THE CHART
         self.renderData();
 
-        self._options.width = pieLeft + diameter;
-        self._options.height = pieTop + diameter;
-        self.renderLegend(pieLeft, pieTop, diameter);
+        self._options.width = graphLeft + diameter + self._options.rightMargin;
+        self._options.height = graphTop + diameter + self._options.bottomMargin;
+        self.renderLegend(graphLeft, graphTop, diameter);
         // self.updateHandles();
 
         self._svg

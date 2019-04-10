@@ -7,6 +7,7 @@ import UWTGraph from './components/graph'
 import UWTGrid from './components/grid'
 import UWTHierarchyGraph from './components/hierarchy-graph'
 import UWTPieChart from './components/pie-chart'
+import UWTRadarChart from './components/radar-chart';
 import UWTSunburstChart from './components/sunburst-chart'
 import UWTSwimlaneChart from './components/swimlane-chart'
 import UWTTreeMap from './components/tree-map'
@@ -21,6 +22,7 @@ export {
   UWTGrid,
   UWTHierarchyGraph,
   UWTPieChart,
+  UWTRadarChart,
   UWTSunburstChart,
   UWTSwimlaneChart,
   UWTTreeMap
@@ -37,6 +39,7 @@ const UWTVue = {
     Vue.component(UWTGrid.name, UWTGrid)
     Vue.component(UWTHierarchyGraph.name, UWTHierarchyGraph)
     Vue.component(UWTPieChart.name, UWTPieChart)
+    Vue.component(UWTRadarChart.name, UWTRadarChart)
     Vue.component(UWTSunburstChart.name, UWTSunburstChart)
     Vue.component(UWTSwimlaneChart.name, UWTSwimlaneChart)
     Vue.component(UWTTreeMap.name, UWTTreeMap)

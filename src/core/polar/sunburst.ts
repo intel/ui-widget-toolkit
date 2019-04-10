@@ -259,7 +259,6 @@ export class D3Sunburst extends D3Polar {
     }
 
     protected getLegendData(): IPolarSegment[] {
-        //return this.createArcData();
         return [];
     }
 
@@ -636,7 +635,7 @@ export class D3Sunburst extends D3Polar {
 
         // configure to tooltip and selection on hover over arcs
         let arcs = this._graphArea.selectAll('.arc');
-        this.configureSegmentHover(arcs);
+        this.configureItemHover(arcs);
         this.configureHoverLine();
     }
 }

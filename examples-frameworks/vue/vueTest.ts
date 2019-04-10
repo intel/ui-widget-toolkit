@@ -948,6 +948,46 @@ let checkboxData = {
     let swimlaneDefs = [swimChart, swimChart2, swimChart3];
     let swimlaneOptions = { leftMargin: 100, height: 34 };
 
+    let radar1 = {
+        title: 'Product1',
+        type: UWT.UIType.Radar,
+        data: [{
+            key: 'group1', data: [
+                { key: 'Sales', data: 42 },
+                { key: 'Marketing', data: 60 },
+                { key: 'Development', data: 32 },
+                { key: 'IT', data: 65 },
+                { key: 'Administration', data: 90 }
+            ]
+        },
+        {
+            key: 'group2', data: [
+                { key: 'Sales', data: 86 },
+                { key: 'Marketing', data: 34 },
+                { key: 'Development', data: 67 },
+                { key: 'IT', data: 56 },
+                { key: 'Administration', data: 90 }
+            ]
+        }],
+        onClick: function (event: UWT.IEvent) {
+            console.log('on click');
+            console.log(event);
+        },
+        onDoubleClick: function (event: UWT.IEvent) {
+            console.log('on double click');
+            console.log(event);
+        },
+        contextMenuItems: [{
+            title: 'RadarMenuItem',
+            action(elem: any, data: any, index: any) {
+                console.log('index: ' + index);
+                console.log(data);
+                console.log(elem);
+            }
+        }],
+        legend: { alignment: UWT.Alignment.Right }
+    }
+
     let app = new Vue({
         el: '#app',
         data: function () {
@@ -963,6 +1003,7 @@ let checkboxData = {
                 sunburst: sunburst,
                 hGraph: hGraph,
                 axis: axis,
+                radar: radar1,
                 swimlaneDefs: swimlaneDefs,
                 swimlaneOptions: swimlaneOptions,
                 colorManager: TestBase.colorManager

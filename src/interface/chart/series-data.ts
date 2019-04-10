@@ -99,4 +99,6 @@ export interface IFunctionMap {
 export interface ISummaryValue {
     key: string;
     data: { [index: string]: number } | number | ISummaryValue[];
+    range?: { min: number, max: number },
+    units?: string;
 }

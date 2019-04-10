@@ -5,7 +5,8 @@ import ReactDOM from 'react-dom';
 
 import {
     UWTAxis, UWTChart, UWTPieChart, UWTGrid, UWTFlowDiagram, UWTGraph,
-    UWTHierarchyGraph, UWTSunburstChart, UWTSwimlaneChart, UWTCheckboxTree
+    UWTHierarchyGraph, UWTSunburstChart, UWTSwimlaneChart, UWTCheckboxTree,
+    UWTRadarChart
 } from 'ui-widget-toolkit/framework/react';
 
 let colorManager = new UWT.ColorManager();
@@ -990,6 +991,46 @@ let axis = {
     alignment: UWT.Alignment.Top
 }
 
+let radar1 = {
+    title: 'Product1',
+    type: UWT.UIType.Radar,
+    data: [{
+        key: 'group1', data: [
+            { key: 'Sales', data: 42 },
+            { key: 'Marketing', data: 60 },
+            { key: 'Development', data: 32 },
+            { key: 'IT', data: 65 },
+            { key: 'Administration', data: 90 }
+        ]
+    },
+    {
+        key: 'group2', data: [
+            { key: 'Sales', data: 86 },
+            { key: 'Marketing', data: 34 },
+            { key: 'Development', data: 67 },
+            { key: 'IT', data: 56 },
+            { key: 'Administration', data: 90 }
+        ]
+    }],
+    onClick: function (event: UWT.IEvent) {
+        console.log('on click');
+        console.log(event);
+    },
+    onDoubleClick: function (event: UWT.IEvent) {
+        console.log('on double click');
+        console.log(event);
+    },
+    contextMenuItems: [{
+        title: 'RadarMenuItem',
+        action(elem: any, data: any, index: any) {
+            console.log('index: ' + index);
+            console.log(data);
+            console.log(elem);
+        }
+    }],
+    legend: { alignment: UWT.Alignment.Right }
+}
+
 // Define the area and graphs.
 const App = () => (
     <div>
@@ -1006,6 +1047,7 @@ const App = () => (
         <UWTChart chartDef={flameChart} chartTitle='Flame Chart' colorManager={TestBase.colorManager} />
         <UWTSunburstChart chartDef={sunburst} chartTitle='Sunburst Chart' colorManager={TestBase.colorManager} />
         <UWTAxis axisDef={axis}></UWTAxis>
+        <UWTRadarChart chartDef={radar1} chartTitle='Radar Chart'></UWTRadarChart>
     </div>
 );
 ReactDOM.render(

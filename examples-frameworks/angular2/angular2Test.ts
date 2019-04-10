@@ -31,10 +31,11 @@ window.onload = () => {
         <uwt-pie-chart id='pie1' [chartTitle]='pieTitle' [chartDef]='pieDef' [renderOptions]='renderOptions' [colorManager]='colorManager'></uwt-pie-chart>
         <uwt-grid id='grid1' [gridTitle]='gridTitle' [gridDef]='gridDef' [gridStyle]='gridStyle' [gridClass]='gridClass' [colorManager]='colorManager'></uwt-grid>
         <uwt-flow-diagram id='flow1' [diagramTitle]='flowTitle' [diagramDef]='diagramDef' [colorManager]='colorManager'></uwt-flow-diagram>
-        <ui-widget-toolkit-graph id='graph1' [graphTitle]='graphTitle' [graphDef]='graphDef' [colorManager]='colorManager'></ui-widget-toolkit-graph>
+        <uwt-graph id='graph1' [graphTitle]='graphTitle' [graphDef]='graphDef' [colorManager]='colorManager'></uwt-graph>
         <uwt-chart id='chart3' [chartTitle]='flameTitle' [chartDef]='flameChart' [colorManager]='colorManager' [renderOptions]='flameRenderOptions'></uwt-chart>
         <uwt-sunburst-chart id='chart4' [chartTitle]='sunTitle' [chartDef]='sunChart' [colorManager]='colorManager'></uwt-sunburst-chart>
         <uwt-axis [axisDef]='axis'></uwt-axis>
+        <uwt-radar-chart [chartTitle]='radarTitle' [chartDef]='radarDef'></uwt-radar-chart>
     `
 })
 
@@ -62,6 +63,8 @@ export class TestApp {
     sunTitle: string;
     sunChart: UWT.ISunburstChart;
     axis: UWT.IAxis;
+    radarTitle = 'Radar Chart';
+    radarDef: UWT.IRadarChart;
     node: any;
 
     onChecked(node: any) {
@@ -297,5 +300,45 @@ export class TestApp {
         UWT.addCallbacks(chart8);
         this.sunTitle = 'Sunburst Chart';
         this.sunChart = chart8;
+
+        this.radarDef = {
+            title: 'Product1',
+            type: UWT.UIType.Radar,
+            data: [{
+                key: 'group1', data: [
+                    { key: 'Sales', data: 42 },
+                    { key: 'Marketing', data: 60 },
+                    { key: 'Development', data: 32 },
+                    { key: 'IT', data: 65 },
+                    { key: 'Administration', data: 90 }
+                ]
+            },
+            {
+                key: 'group2', data: [
+                    { key: 'Sales', data: 86 },
+                    { key: 'Marketing', data: 34 },
+                    { key: 'Development', data: 67 },
+                    { key: 'IT', data: 56 },
+                    { key: 'Administration', data: 90 }
+                ]
+            }],
+            onClick: function (event: UWT.IEvent) {
+                console.log('on click');
+                console.log(event);
+            },
+            onDoubleClick: function (event: UWT.IEvent) {
+                console.log('on double click');
+                console.log(event);
+            },
+            contextMenuItems: [{
+                title: 'RadarMenuItem',
+                action(elem: any, data: any, index: any) {
+                    console.log('index: ' + index);
+                    console.log(data);
+                    console.log(elem);
+                }
+            }],
+            legend: { alignment: UWT.Alignment.Right }
+        }
     }
 }

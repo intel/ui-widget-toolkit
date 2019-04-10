@@ -95,6 +95,44 @@ export function initializeAngular1(angular) {
                 scope.renderer.setOnRenderCallback(scope.onRender);
 
                 scope.$watch('chartDef', function () {
+                    scope.renderer.clearDiv(element[0].children[1]);
+                    if (scope.chartDef) {
+                        scope.renderer.setDiv(element[0].children[1]);
+                        scope.renderer.invalidate(scope.chartDef, scope.renderOptions);
+                    }
+                });
+
+                scope.$watch('renderOptions', function () {
+                    if (scope.chartDef) {
+                        scope.renderer.setDiv(element[0].children[1]);
+                        scope.renderer.render(scope.chartDef, scope.renderOptions);
+                    }
+                });
+            }
+        };
+    });
+
+    angularModule.directive('uwtRadarChart', function () {
+        return {
+            template: '<div class="chart-title">{{chartTitle}}</div>' +
+                '<div id="chart"></div>',
+            restrict: 'E',
+            scope: {
+                chartDef: '=',
+                chartTitle: '=?',
+                renderOptions: '=?',
+                colorManager: '=?',
+                onRender: '=?',
+                renderer: '=?'
+            },
+            link: function (scope, element, attrs) {
+                if (!scope.renderer) {
+                    scope.renderer = new UWT.D3Renderer('', scope.colorManager);
+                }
+                scope.renderer.setOnRenderCallback(scope.onRender);
+
+                scope.$watch('chartDef', function () {
+                    scope.renderer.clearDiv(element[0].children[1]);
                     if (scope.chartDef) {
                         scope.renderer.setDiv(element[0].children[1]);
                         scope.renderer.invalidate(scope.chartDef, scope.renderOptions);
@@ -131,6 +169,7 @@ export function initializeAngular1(angular) {
                 scope.renderer.setOnRenderCallback(scope.onRender);
 
                 scope.$watch('chartDef', function () {
+                    scope.renderer.clearDiv(element[0].children[1]);
                     if (scope.chartDef) {
                         scope.renderer.setDiv(element[0].children[1]);
                         scope.renderer.invalidate(scope.chartDef, scope.renderOptions);

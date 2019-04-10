@@ -81,6 +81,7 @@ export default {
     _initializeChildren(vm, node) {
       if (vm) {
         vm.checked = node.checked;
+        vm.indeterminate = node.indeterminate;
       }
       if (node && node.open) {
         for (let i = 0; i < node.children.length; ++i) {

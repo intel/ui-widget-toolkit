@@ -67,6 +67,7 @@ Base element to share all the default styles
                 }
             },
             _onDataChanged: function () {
+                this.renderer.clearDiv(this.$.chart);
                 if (this.renderer && this.chartDef) {
                     this.renderer.setDiv(this.$.chart);
                     this.renderer.invalidate(this.chartDef, this.renderOptions);
@@ -86,6 +87,92 @@ Base element to share all the default styles
         });
     </script>
 </dom-module>
+
+<dom-module id='uwt-radar-chart'>
+    <style>
+        .legendCells .cell .label {
+            font-size: var(--uwt-legend-text-size, 12px);
+            font-family: Arial;
+        }
+
+        .chart {
+            margin: auto;
+            width: inherit;
+        }
+
+        .no-pointer-events {
+            pointer-events: none;
+        }
+    </style>
+    <template>
+        <div class='chart-title'>{{chartTitle}}</div>
+        <div id='chart'></div>
+    </template>
+    <script>
+        Polymer({
+            is: 'uwt-radar-chart',
+            properties: {
+                chartTitle: {
+                    type: String
+                },
+                chartDef: {
+                    type: Object,
+                    notify: true,
+                    observer: '_onDataChanged'
+                },
+                renderOptions: {
+                    type: Object,
+                    notify: true,
+                    observer: '_onRenderOptionsChanged'
+                },
+                colorManager: {
+                    type: Object,
+                    value: function () { return new UWT.ColorManager() },
+                    observer: '_onColorManagerChanged'
+                },
+                onRender: {
+                    type: Function
+                },
+                renderer: {
+                    type: Object
+                }
+            },
+            ready: function () {
+                this.scopeSubtree(this.$.chart, true);
+            },
+            attached: function () {
+                if (!this.renderer) {
+                    this.renderer = new UWT.D3Renderer('', this.colorManager);
+                }
+                this.renderer.setOnRenderCallback(this.onRender);
+
+                if (this.chartDef) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chartDef, this.renderOptions);
+                }
+            },
+            _onDataChanged: function () {
+                this.renderer.clearDiv(this.$.chart);
+                if (this.renderer && this.chartDef) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chartDef, this.renderOptions);
+                }
+            },
+            _onRenderOptionsChanged: function () {
+                if (this.renderer && this.chart) {
+                    this.renderer.setDiv(this.$.chart);
+                    this.renderer.invalidate(this.chart, this.renderOptions);
+                }
+            },
+            _onColorManagerChanged: function () {
+                if (this.renderer) {
+                    this.renderer.setColorManager(this.colorManager);
+                }
+            }
+        });
+    </script>
+</dom-module>
+
 <dom-module id='uwt-sunburst-chart'>
     <style>
         .legendCells .cell .label {
@@ -150,6 +237,7 @@ Base element to share all the default styles
                 }
             },
             _onDataChanged: function () {
+                this.renderer.clearDiv(this.$.chart);
                 if (this.renderer && this.chartDef) {
                     this.renderer.setDiv(this.$.chart);
                     this.renderer.invalidate(this.chartDef, this.renderOptions);

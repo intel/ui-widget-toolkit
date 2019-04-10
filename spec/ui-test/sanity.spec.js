@@ -1062,6 +1062,82 @@ describe('sanity', function () {
         });
     }, 10000);
 
+    it('radar', function (done) {
+        driver.get('file://' + path.join(__dirname + '../../../examples/radar/radarTest.html'));
+        driver.findElements(By.tagName('svg')).then(function (svgs) {
+            expect(svgs.length).toBe(3);
+            svgs[0].findElements(By.className('axis-circle')).then(function (axisCircles) {
+                expect(axisCircles.length).toBe(5);
+            });
+            svgs[0].findElements(By.className('axis-line')).then(function (axisLines) {
+                expect(axisLines.length).toBe(5);
+            });
+            svgs[0].findElements(By.className('radar-blob')).then(function (blobs) {
+                expect(blobs.length).toBe(2);
+
+                blobs[0].findElements(By.className('radar-area')).then(function (areas) {
+                    expect(areas.length).toBe(2);
+                });
+                blobs[0].findElements(By.className('radar-circle')).then(function (circles) {
+                    expect(circles.length).toBe(5);
+                });
+                blobs[1].findElements(By.className('radar-area')).then(function (areas) {
+                    expect(areas.length).toBe(2);
+                });
+                blobs[1].findElements(By.className('radar-circle')).then(function (circles) {
+                    expect(circles.length).toBe(5);
+                });
+            });
+
+            svgs[1].findElements(By.className('axis-circle')).then(function (axisCircles) {
+                expect(axisCircles.length).toBe(5);
+            });
+            svgs[1].findElements(By.className('axis-line')).then(function (axisLines) {
+                expect(axisLines.length).toBe(6);
+            });
+            svgs[1].findElements(By.className('radar-blob')).then(function (blobs) {
+                expect(blobs.length).toBe(2);
+
+                blobs[0].findElements(By.className('radar-area')).then(function (areas) {
+                    expect(areas.length).toBe(2);
+                });
+                blobs[0].findElements(By.className('radar-circle')).then(function (circles) {
+                    expect(circles.length).toBe(6);
+                });
+                blobs[1].findElements(By.className('radar-area')).then(function (areas) {
+                    expect(areas.length).toBe(2);
+                });
+                blobs[1].findElements(By.className('radar-circle')).then(function (circles) {
+                    expect(circles.length).toBe(6);
+                });
+            });
+
+            svgs[2].findElements(By.className('axis-circle')).then(function (axisCircles) {
+                expect(axisCircles.length).toBe(5);
+            });
+            svgs[2].findElements(By.className('axis-line')).then(function (axisLines) {
+                expect(axisLines.length).toBe(6);
+            });
+            svgs[2].findElements(By.className('radar-blob')).then(function (blobs) {
+                expect(blobs.length).toBe(2);
+
+                blobs[0].findElements(By.className('radar-area')).then(function (areas) {
+                    expect(areas.length).toBe(1);
+                });
+                blobs[0].findElements(By.className('radar-circle')).then(function (circles) {
+                    expect(circles.length).toBe(6);
+                });
+                blobs[1].findElements(By.className('radar-area')).then(function (areas) {
+                    expect(areas.length).toBe(1);
+                });
+                blobs[1].findElements(By.className('radar-circle')).then(function (circles) {
+                    expect(circles.length).toBe(6);
+                    done();
+                });
+            });
+        });
+    }, 10000);
+
     it('gradient-legend', function (done) {
         driver.get('file://' + path.join(__dirname + '../../../examples/gradientLegend/gradientLegendTest.html'));
         driver.findElements(By.tagName('svg')).then(function (graphs) {
@@ -1131,7 +1207,7 @@ describe('sanity', function () {
             expect(canvas.length).toBe(1);
         });
         driver.findElements(By.tagName('svg')).then(function (svg) {
-            expect(svg.length).toBe(18);
+            expect(svg.length).toBe(19);
         });
         driver.findElements(By.className('ag-root')).then(function (grid) {
             expect(grid.length).toBe(1);
@@ -1148,7 +1224,7 @@ describe('sanity', function () {
             expect(canvas.length).toBe(1);
         });
         driver.findElements(By.tagName('svg')).then(function (svg) {
-            expect(svg.length).toBe(18);
+            expect(svg.length).toBe(19);
         });
         driver.findElements(By.className('ag-root')).then(function (grid) {
             expect(grid.length).toBe(1);
@@ -1162,7 +1238,7 @@ describe('sanity', function () {
             expect(canvas.length).toBe(1);
         });
         driver.findElements(By.tagName('svg')).then(function (svg) {
-            expect(svg.length).toBe(22);
+            expect(svg.length).toBe(23);
         });
         driver.findElements(By.className('ag-root')).then(function (grid) {
             expect(grid.length).toBe(1);
@@ -1180,7 +1256,7 @@ describe('sanity', function () {
             expect(canvas.length).toBe(1);
         });
         driver.findElements(By.tagName('svg')).then(function (svg) {
-            expect(svg.length).toBe(26);
+            expect(svg.length).toBe(27);
         });
         driver.findElements(By.className('ag-root')).then(function (grid) {
             expect(grid.length).toBe(1);

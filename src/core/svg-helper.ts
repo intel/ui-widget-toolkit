@@ -976,7 +976,6 @@ export class SVGRenderer extends UIElementRenderer {
     /**
      * hover event
      *
-     * @param element to fire the hover event on
      * @param event the event to pass to the renderer
      */
     public hover(event: IEvent): void {

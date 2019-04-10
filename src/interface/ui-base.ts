@@ -139,7 +139,8 @@ export enum UIType {
     PortDiagram,
     SimpleGraph,
     TreeMap,
-    Axis
+    Axis,
+    Radar
 }
 
 export interface IContextMenuItem {
