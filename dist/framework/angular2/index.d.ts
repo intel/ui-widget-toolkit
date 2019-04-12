@@ -38,11 +38,11 @@ export class UWTCheckboxTreeNodeImpl implements OnChanges, DoCheck {
         /**
             * Returns the parent tree node. Returns `null` if root.
             */
-        getParent(): any;
+        getParent(): UWT.ICheckboxTreeNode;
         /**
             * Returns the children tree nodes.
             */
-        getChildren(): any;
+        getChildren(): UWT.ICheckboxTreeNode[];
         /**
             * Display/Hide the children nodes.
             */
@@ -80,6 +80,16 @@ export class UWTSwimlaneChart {
     ngOnChanges(changes: any): void;
 }
 export class UWTPieChart implements OnChanges {
+    chartTitle: string;
+    chartDef: UWT.IPieChart;
+    renderOptions: UWT.IOptions;
+    colorManager: UWT.ColorManager;
+    renderer: UWT.UIRenderer;
+    onRender: () => void;
+    chartElem: any;
+    ngOnChanges(changes: any): void;
+}
+export class UWTRadarChart implements OnChanges {
     chartTitle: string;
     chartDef: UWT.IPieChart;
     renderOptions: UWT.IOptions;

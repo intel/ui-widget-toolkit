@@ -6,6 +6,7 @@
 import * as d3 from 'd3';
 import * as PIXI from 'pixi.js';
 
+export as namespace UWT;
 export function showContextMenu(event: MouseEvent, data: any, contextMenuItems: IContextMenuItem[], propogateEvent?: boolean): void;
 
 export function getSelectionName(className: string): string;
@@ -450,6 +451,11 @@ export interface ISunburstChart extends IPolarChart {
         /** a decimator for the data */
         decimator?: ISunburstDecimator;
 }
+/** defines a sunburst chart */
+export interface IRadarChart extends IPolarChart {
+        /** the data for the sunburst, each key/value pair is a pie segment */
+        data: ISummaryValue[];
+}
 
 /**
     * XY Data can be rendered using RenderType
@@ -550,6 +556,11 @@ export interface ISummaryValue {
         data: {
                 [index: string]: number;
         } | number | ISummaryValue[];
+        range?: {
+                min: number;
+                max: number;
+        };
+        units?: string;
 }
 
 export interface ICartesianSeriesPlugin {
@@ -942,7 +953,8 @@ export enum UIType {
         PortDiagram = 8,
         SimpleGraph = 9,
         TreeMap = 10,
-        Axis = 11
+        Axis = 11,
+        Radar = 12
 }
 export interface IContextMenuItem {
         /** add a clickable item title */
@@ -1882,7 +1894,6 @@ export class SVGRenderer extends UIElementRenderer {
         /**
             * hover event
             *
-            * @param element to fire the hover event on
             * @param event the event to pass to the renderer
             */
         hover(event: IEvent): void;
@@ -3289,7 +3300,7 @@ export class D3Pie extends D3Polar {
     protected _arcData: IPolarSegment[];
     protected _renderData: IPolarSegment[];
     getTooltipData(event: IEvent): ITooltipData[];
-    protected getLegendData(): IPolarSegment[];
+    protected getLegendData(): any[];
     protected renderData(): void;
     /**
       * Render the given element
@@ -3350,6 +3361,26 @@ export class D3Sunburst extends D3Polar {
             * @param the options to render
             */
         render(options: IOptions): void;
+}
+
+export class D3Radar extends D3Polar {
+        /**
+            * hover event
+            *
+            * @param event the event to pass to the renderer
+            */
+        hover(event: IEvent): void;
+        getTooltipData(event: IEvent): ITooltipData[];
+        protected configureTooltip(target?: d3.Selection<d3.BaseType, any, d3.BaseType, any>, value?: ISummaryValue): void;
+        /** configures segment hover and stores the current hovered
+            * item for others to use in the _selection variable
+            **/
+        protected configureItemHover(target: d3.Selection<d3.BaseType, any, d3.BaseType, any>, value?: any): void;
+        protected getLegendData(): any[];
+        /**
+            * Render the given element
+            */
+        protected renderData(): void;
 }
 
 export function getTextWidth(text: string, font: string, size: string): any;
@@ -4334,13 +4365,13 @@ export class D3Polar extends SVGRenderer {
         /** configures segment hover and stores the current hovered
             * item for others to use in the _selection variable
             **/
-        protected configureSegmentHover(target: d3.Selection<d3.BaseType, any, d3.BaseType, any>): void;
+        protected configureItemHover(target: d3.Selection<d3.BaseType, any, d3.BaseType, any>): void;
         protected configureTooltip(target?: d3.Selection<d3.BaseType, any, d3.BaseType, any>): void;
         protected renderData(): void;
         /**
             * get the polar data for the legend
             */
-        protected getLegendData(): IPolarSegment[];
+        protected getLegendData(): any[];
         protected renderLegend(pieLeft: number, pieTop: number, diameter: number): void;
         /**
             * Render the given element

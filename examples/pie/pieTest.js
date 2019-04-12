@@ -22,14 +22,14 @@ var PieTest;
                     console.log('pie double click');
                     console.log(event);
                 },
-                contextMenuItems: {
-                    title: 'PieMenuItem',
-                    action: function (elem, data, index) {
-                        console.log('index: ' + index);
-                        console.log(data);
-                        console.log(elem);
-                    }
-                },
+                contextMenuItems: [{
+                        title: 'PieMenuItem',
+                        action: function (elem, data, index) {
+                            console.log('index: ' + index);
+                            console.log(data);
+                            console.log(elem);
+                        }
+                    }],
                 legend: { alignment: UWT.Alignment.Right }
             };
             TestBase.addElement(pie1, 'group2', 'group2');
@@ -47,14 +47,14 @@ var PieTest;
                     console.log('pie double click');
                     console.log(event);
                 },
-                contextMenuItems: {
-                    title: 'PieMenuItem',
-                    action: function (elem, data, index) {
-                        console.log('index: ' + index);
-                        console.log(data);
-                        console.log(elem);
-                    }
-                },
+                contextMenuItems: [{
+                        title: 'PieMenuItem',
+                        action: function (elem, data, index) {
+                            console.log('index: ' + index);
+                            console.log(data);
+                            console.log(elem);
+                        }
+                    }],
                 legend: { alignment: UWT.Alignment.Bottom },
                 innerRadius: .5
             };

@@ -1,6 +1,6 @@
 {
     "name": "ui-widget-toolkit",
-    "version": "1.7.0",
+    "version": "1.8.0",
     "description": "UI widgets built on top of D3, Pixi.js and ag-grid-community",
     "author": {
         "email": "tony.mongkolsmai@intel.com"
@@ -35,6 +35,7 @@
         "d3": "^5.9.1",
         "d3-sankey": "^0.4.2",
         "dagre": "^0.8.4",
+        "dts-bundle": "^0.7.3",
         "pixi.js": "^4.8.6",
         "worker-loader": "^2.0.0"
     },
