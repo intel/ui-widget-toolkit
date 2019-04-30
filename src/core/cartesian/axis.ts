@@ -385,7 +385,7 @@ export class D3Axis implements IRenderedAxis {
             max > 0 ? min = 0 : max = 0;
         }
         if (min > max) {
-            console.log('Error no data for axis');
+            console.log('Error minimum axis value is greater than maximum axis value');
             min = 0;
             max = 1;
         }

@@ -2224,9 +2224,11 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             // if we are using webworkers then rendered the last data in the new
             // zoom state so the user has some context.  If not using webworkers
             // skip this to just re-render as soon as possible
-            if (d3Series && layer.enableWebWorkers) {
+            if (d3Series) {
                 d3Series.setData(layer);
-                d3Series.render();
+                if (layer.enableWebWorkers) {
+                    d3Series.render();
+                }
             }
         }
 

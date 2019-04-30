@@ -48,7 +48,7 @@ export default {
   },
   watch: {
     chartDef: function(newValue, oldValue) {
-this.renderer.clearDiv(this.$refs["chart"]);
+      this.renderer.clearDiv(this.$refs["chart"]);
       if (this.renderer && this.chartDef) {
         if (oldValue) {
           this.renderer.destroy(oldValue);

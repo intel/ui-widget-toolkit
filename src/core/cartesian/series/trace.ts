@@ -54,12 +54,16 @@ export class TraceSeries implements ICartesianSeriesPlugin {
     }
 
     public setData(layer: ITraceValueLayer) {
+        if (this._layer && this._data && this._data === this._layer.data) {
+            return;
+        }
+
         this._layer = layer as ITraceValueLayer;
 
         let stateMap: { [index: string]: boolean } = {};
-        let data = (this._layer as ITraceValueLayer).data;
-        for (let i = 0; i < data.length; ++i) {
-            stateMap[data[i].name] = true;
+        this._data = (this._layer as ITraceValueLayer).data;
+        for (let i = 0; i < this._data.length; ++i) {
+            stateMap[this._data[i].name] = true;
         }
 
         this._states = Object.keys(stateMap).sort((a, b) => { return a.localeCompare(b) });

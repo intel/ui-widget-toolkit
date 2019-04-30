@@ -427,4 +427,10 @@ export class BaseSeries {
             }
         }
     }
+
+    public clear() {
+        this._d3Elems.forEach((elem) => {
+            elem.remove();
+        })
+    }
 }

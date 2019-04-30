@@ -244,6 +244,8 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
 
             let xScale = xAxis.getScale();
             let yScale = yAxis.getScale();
+
+            // force refresh if any data changes
             if ((self._layer.enableWebWorkers || self._d3Chart.getOptions().enableWebWorkers) &&
                 InternalDecimatorMap[decimator.getKey()]) {
                 return new Promise<any>(function (resolve, reject) {
@@ -347,6 +349,9 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
     public getLegendInfo(): ILegendItem[] {
         let legendItems: ILegendItem[] = [];
 
+        if (this._layer.renderType === RenderType.DirectionalArrow) {
+            return legendItems;
+        }
         for (let i = 0; i < this._d3Elems.length; ++i) {
             let key = this._data.name;
             if (this._layer.decimator) {
@@ -419,6 +424,8 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
                     elem.classed(className, true);
                 }
             }
+            this._d3Elems.push(elem);
+            this._d3Elems.push(arrow);
         }
 
         let line: d3.Line<number>;
@@ -930,60 +937,76 @@ class D3SVGXYSeries extends XYSeries {
             }
         }
 
-        let dataUpdate = self._d3svg.selectAll(self._selectionClasses).filter('circle').data(indices);
-        dataUpdate.exit().remove();
-        dataUpdate
-            .enter()
-            .append('circle')
-            .classed(this._classes, true)
-            .attr('r', radius)
-            .attr('cx', self.xIndexMap)
-            .attr('cy', self.yIndexMap)
-            .attr('fill', getColor)
-            .attr('stroke', getColor)
-            .each(configureItem)
-            .each(configureItemInteraction);
-
-        dataUpdate
-            .classed(this._classes, true)
-            .attr('cx', self.xIndexMap)
-            .attr('cy', self.yIndexMap)
-            .attr('fill', getColor)
-            .attr('stroke', getColor)
-            .each(configureItem);
 
         if (this._data.showTitleText) {
+            // sort the data by distance from the origin
+            let data = this._outputData.getData();
+            data = data.sort((a: IXYValue, b: IXYValue) => {
+                return (a.x * a.x + a.y * a.y) - (b.x * b.x + b.y * b.y)
+            });
+
+            this._outputData = new SimpleBuffer(data);
+
+            let graphRect = this._d3Chart.getGraphGroup().node().getBoundingClientRect();
+
             let textBoxes: any[] = [];
-            let positionTextHelper = function (obj: any, dy: number,
-                isLeft: boolean, prevRight: IRect) {
-                let d3Text = d3.select(obj);
+            let prevRight: any;
+            let prevLeft: any;
+            let positionTextHelper = function (obj: any, width: number, isLeft: boolean) {
+                let dx: number;
                 if (isLeft) {
-                    d3Text.attr('dx', `-${(obj.innerHTML.length + .5) / 2}em`);
+                    dx = -width - 10;
                 } else {
-                    d3Text.attr('dx', `${.5}em`);
+                    dx = 10;
                 }
-                d3Text.attr('dy', `${dy}em`);
+
+                let d3Text = d3.select(obj);
+                d3Text.attr('dx', `${dx}px`);
 
                 let rect: any = obj.getBoundingClientRect();
-                for (let i = 0; i < textBoxes.length; ++i) {
-                    let existing = textBoxes[i];
-                    if (isOverlapping(existing, rect)) {
-                        if (isLeft) {
-                            if (prevRight.y > rect.y) {
-                                dy = dy - 1.2;
-                            } else {
-                                dy = dy + 1.2;
+                if (rect.left < graphRect.left) {
+                    let d3TextY = Number(d3Text.attr('y'));
+                    d3Text.attr('y', d3TextY - 1 - (rect.height - (prevRight.y - rect.y)));
+                    return positionTextHelper(obj, width, !isLeft);
+                } else if (rect.y < graphRect.y) {
+                    console.log('Unable to render XY Scatter text in graph area');
+                } else {
+                    for (let i = 0; i < textBoxes.length; ++i) {
+                        let existing = textBoxes[i];
+                        if (isOverlapping(existing, rect)) {
+                            if (!isLeft && Math.round(rect.x) === Math.round(existing.x) &&
+                                Math.round(rect.y) === Math.round(existing.y)) {
+                                // if this is the same X/Y and you're on the right
+                                let d3TextX = Number(d3Text.attr('x'));
+                                let text = d3Text.text();
+                                d3Text.text(',' + text);
+                                d3Text.attr('x', d3TextX + 1 + existing.width);
+                                prevRight = existing;
+                                return positionTextHelper(obj, width, false);
                             }
-                        } else {
-                            prevRight = existing;
+                            // move this to just above the text on the right
+                            let d3TextY = Number(d3Text.attr('y'));
+                            if (isLeft) {
+                                prevLeft = existing;
+                                // prevRight must exist since we try the right first
+                                d3Text.attr('y', d3TextY - 1 - (rect.height - (prevRight.y - rect.y)));
+                            } else {
+                                prevRight = existing;
+                                if (prevLeft) {
+                                    d3Text.attr('y', d3TextY - 1 - (rect.height - (prevLeft.y - rect.y)));
+                                }
+                            }
+                            return positionTextHelper(obj, width, !isLeft);
                         }
-                        return positionTextHelper(obj, dy, !isLeft, prevRight);
                     }
                 }
                 textBoxes.push(rect);
             }
             let positionText = function () {
-                positionTextHelper(this, .5, false, undefined);
+                prevLeft = undefined;
+                prevRight = undefined;
+                let rect: any = this.getBoundingClientRect();
+                positionTextHelper(this, rect.width, false);
             }
 
             let text = self._d3svg.selectAll(self.getSelectionClasses('chart-scatter')).filter('text').data(indices);
@@ -994,6 +1017,7 @@ class D3SVGXYSeries extends XYSeries {
                 .text(function (d: any) { return self._outputData.get(d).info.title })
                 .attr('x', self.xIndexMap)
                 .attr('y', self.yIndexMap)
+                .attr('dy', .5)
                 .attr('fill', getColor)
                 .each(configureItem)
                 .each(positionText);
@@ -1007,8 +1031,28 @@ class D3SVGXYSeries extends XYSeries {
                 .each(positionText);
         }
 
-        let elem = self._d3svg.selectAll(this.getSelectionClasses('chart-scatter'));
-        this._d3Elems.push(elem);
+        let dataUpdate = self._d3svg.selectAll(self._selectionClasses).filter('circle').data(indices);
+        dataUpdate.exit().remove();
+        dataUpdate
+            .enter()
+            .append('circle')
+            .classed(this._classes, true)
+            .attr('r', radius)
+            .attr('cx', self.xIndexMap)
+            .attr('cy', self.yIndexMap)
+            .attr('fill', getColor)
+            .attr('stroke', getColor)
+            .each(configureItem)
+            .each(configureItemInteraction)
+            .each(function () { self._d3Elems.push(d3.select(this)); })
+
+        dataUpdate
+            .classed(this._classes, true)
+            .attr('cx', self.xIndexMap)
+            .attr('cy', self.yIndexMap)
+            .attr('fill', getColor)
+            .attr('stroke', getColor)
+            .each(configureItem);
     }
 }
 

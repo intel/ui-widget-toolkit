@@ -59,6 +59,9 @@ export class XYGroupSeries implements ICartesianSeriesPlugin {
 
     public setData(layer: ILayer) {
         this._layer = layer;
+        for (let i = 0; i < this._d3SeriesList.length; ++i) {
+            this._d3SeriesList[i].clear();
+        }
         if (layer.data.length !== this._d3SeriesList.length) {
             this._d3SeriesList = [];
             for (let i = 0; i < layer.data.length; ++i) {
