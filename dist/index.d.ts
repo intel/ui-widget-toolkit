@@ -6,7 +6,6 @@
 import * as d3 from 'd3';
 import * as PIXI from 'pixi.js';
 
-export as namespace UWT;
 export function showContextMenu(event: MouseEvent, data: any, contextMenuItems: IContextMenuItem[], propogateEvent?: boolean): void;
 
 export function getSelectionName(className: string): string;
@@ -4314,6 +4313,7 @@ export class BaseSeries {
             * do the brush selection correctly.
             */
         protected configureItemInteractionPIXI(elem: any, value: any): void;
+        clear(): void;
 }
 
 export class GraphicsManager {
