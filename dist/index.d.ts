@@ -2678,6 +2678,12 @@ export class Chart {
         static finalize(chart: ICartesianChart): boolean;
         static mergeCharts(category: string, title: string, chart1: ICartesianChart, chart2: ICartesianChart): ICartesianChart;
 }
+/** a helper class to render a group of charts together */
+export class ChartGroup {
+        static handleChartUpdate(charts: ICartesianChart[], chartOptions: IOptions[], stateObj: any, legends?: ILegend[]): void;
+        static handleRenderOptionsUpdate(stateObj: any, baseOptions: IOptions, chartOptions: IOptions[]): void;
+        static handleRemoveChart(chart: IChart): void;
+}
 export interface ID3Chart {
         getTitle(): string;
         getOptions(): IOptions;
