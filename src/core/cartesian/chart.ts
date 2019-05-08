@@ -130,6 +130,111 @@ export class Chart {
     }
 }
 
+/** a helper class to render a group of charts together */
+export class ChartGroup {
+    static handleChartUpdate(charts: ICartesianChart[], chartOptions: IOptions[],
+        stateObj: any, legends?: ILegend[]) {
+
+        if (charts) {
+            let legendsTop: ILegend[] = [];
+            let legendsBottom: ILegend[] = [];
+            if (legends) {
+                for (let i = 0; i < legends.length; ++i) {
+                    let legend = legends[i];
+                    if (legend.alignment === Alignment.Top) {
+                        legendsTop.push(legend);
+                    } else if (legend.alignment === Alignment.Bottom) {
+                        legendsBottom.push(legend);
+                    }
+                }
+            }
+
+            if (!stateObj.elemManager) {
+                stateObj.elemManager = new ElementManager();
+            }
+
+            chartOptions.length = 0;
+            for (let i = 0; i < charts.length; ++i) {
+                let chart = charts[i];
+                Chart.finalize(chart);
+                for (let j = 0; j < chart.axes.length; ++j) {
+                    if (chart.axes[j].alignment === Alignment.Bottom) {
+                        if (i !== charts.length - 1) {
+                            chart.axes[j].hidden = true;
+                        } else {
+                            chart.axes[j].hidden = false;
+                        }
+                    }
+                }
+
+                if (chart.legends) {
+                    for (let j = 0; j < chart.legends.length; ++j) {
+                        let chartLegend = chart.legends[j];
+                        if (chartLegend.alignment === Alignment.Top ||
+                            chartLegend.alignment === Alignment.Bottom) {
+                            chart.legends.splice(j, 1);
+                        }
+                    }
+                }
+
+                chartOptions[i] = stateObj.sharedOptions;
+                if (!chart.manager) {
+                    stateObj.elemManager.addElement(chart, undefined, 'default', 'default');
+                }
+            }
+
+            if (charts.length > 0) {
+                let endIdx = charts.length - 1;
+                chartOptions[endIdx] = stateObj.bottomOptions;
+
+                // put top/bottom legends in the right place
+                if (legendsTop.length > 0) {
+                    if (!charts[0].legends) {
+                        charts[0].legends = [];
+                    }
+                    charts[0].legends = charts[0].legends.concat(legendsTop);
+                }
+                if (legendsBottom.length > 0) {
+                    if (!charts[endIdx].legends) {
+                        charts[endIdx].legends = [];
+                    }
+                    charts[endIdx].legends = charts[endIdx].legends.concat(legendsBottom);
+                }
+            }
+        }
+    }
+
+    static handleRenderOptionsUpdate(stateObj: any, baseOptions: IOptions,
+        chartOptions: IOptions[]) {
+
+        stateObj.sharedOptions = copy(baseOptions);
+        stateObj.sharedOptions.topMargin = 1;
+        stateObj.sharedOptions.bottomMargin = 1;
+        stateObj.sharedOptions.disableAutoResizeWidth = true;
+
+        stateObj.bottomOptions = copy(baseOptions);
+        stateObj.bottomOptions.topMargin = 1;
+        stateObj.bottomOptions.bottomMargin = 15;
+        stateObj.bottomOptions.disableAutoResizeWidth = true;
+
+        if (chartOptions && chartOptions.length !== 0) {
+            let lastIdx = chartOptions.length - 1;
+            for (let i = 0; i < lastIdx; ++i) {
+                chartOptions[i] = stateObj.sharedOptions;
+            }
+            chartOptions[lastIdx] = stateObj.bottomOptions;
+        }
+    }
+
+    static handleRemoveChart(chart: IChart) {
+        if (chart.renderer) {
+            chart.renderer.destroy(chart);
+        }
+        if (chart.manager) {
+            chart.manager.removeElement(chart);
+        }
+    }
+}
 
 export interface ID3Chart {
     getTitle(): string;

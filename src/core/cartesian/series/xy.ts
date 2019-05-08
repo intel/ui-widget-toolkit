@@ -965,9 +965,16 @@ class D3SVGXYSeries extends XYSeries {
 
                 let rect: any = obj.getBoundingClientRect();
                 if (rect.left < graphRect.left) {
-                    let d3TextY = Number(d3Text.attr('y'));
-                    d3Text.attr('y', d3TextY - 1 - (rect.height - (prevRight.y - rect.y)));
-                    return positionTextHelper(obj, width, !isLeft);
+                    if (prevRight) {
+                        // if we are off the left and have a previous right value
+                        let d3TextY = Number(d3Text.attr('y'));
+                        d3Text.attr('y', d3TextY - 1 - (rect.height - (prevRight.y - rect.y)));
+                        return positionTextHelper(obj, width, !isLeft);
+                    } else {
+                        // here we are just off the screen completely so we shouldn't
+                        // even be shown
+                        obj.remove();
+                    }
                 } else if (rect.y < graphRect.y) {
                     console.log('Unable to render XY Scatter text in graph area');
                 } else {
