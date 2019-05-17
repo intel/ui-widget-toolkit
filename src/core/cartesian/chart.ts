@@ -1767,7 +1767,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         let left = self._graphRect.x;
         let leftAxisWidth = 0;
         let rightAxisWidth = 0;
-        let allocateBottomHandleSpace = self.hasBottomHandle();
+        let hasBottomAxisOrLegend = false;
+
         // adjust where the axes are drawn
         for (let key in self._axes) {
             let d3Axis = self._axes[key];
@@ -1805,7 +1806,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                         rightAxisWidth += width + self.AXIS_PADDING.X
                         break;
                     case Alignment.Bottom:
-                        allocateBottomHandleSpace = false;
+                        hasBottomAxisOrLegend = true;
                         self._svgRect.height += d3Axis.getRenderedRect().height;
                         break;
                 }
@@ -1839,7 +1840,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                                 self._graphRect.y, 0, self._graphRect.height));
                         break;
                     case Alignment.Bottom:
-                        allocateBottomHandleSpace = false;
+                        hasBottomAxisOrLegend = true;
                         d3Legend.setPosition(new Rect(self._graphRect.x,
                             self._svgRect.height + self.LEGEND_PADDING.Y.BOTTOM,
                             self._graphRect.width, 0));
@@ -1867,14 +1868,22 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         }
 
         // update the svg height/width
-        if (allocateBottomHandleSpace) {
-            self._svgRect.height += this._handleWidth;
-        }
         self._svgRect.height += self._options.bottomMargin;
+
+        if (!hasBottomAxisOrLegend && self.hasBottomHandle()) {
+            self._svgRect.height = Math.max(self._handleWidth,
+                self._svgRect.height);
+        }
 
         self.addHoverline();
         self.configureSVG(left);
         self.updateHandles();
+
+        if (!hasBottomAxisOrLegend) {
+            self._svg.select('.chart-handle.bottom')
+                .attr('y', self._graphRect.y +
+                    self._graphRect.height - self._handleWidth);
+        }
     }
 
     /**
@@ -1941,10 +1950,12 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         /////////////////////////////////////////////////////////////////
         // draw the bottom stuff and shrink the useable graph size
         /////////////////////////////////////////////////////////////////
+        let hasBottomAxisOrLegend = false;
         for (let legendIdx = 0; legendIdx < this._legends.length; ++legendIdx) {
             let d3Legend = this._legends[legendIdx];
 
             if (d3Legend.getAlignment() === Alignment.Bottom) {
+                hasBottomAxisOrLegend = true;
                 d3Legend.setPosition(new Rect(self._graphRect.x,
                     self._svgRect.height + self.LEGEND_PADDING.Y.BOTTOM,
                     self._graphRect.width, 0));
@@ -1974,6 +1985,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             let rect: Rect;
 
             if (d3Axis.getAxis().alignment === Alignment.Bottom) {
+                hasBottomAxisOrLegend = true;
                 rect = new Rect(self._graphRect.x,
                     self._graphRect.y + self._graphRect.height);
                 d3Axis.commitRange(self._graphRect.width);
@@ -2059,6 +2071,12 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         self.addHoverline();
         self.configureSVG(left);
         self.updateHandles();
+
+        if (!hasBottomAxisOrLegend) {
+            self._svg.select('.chart-handle.bottom')
+                .attr('y', self._graphRect.y +
+                    self._graphRect.height - self._handleWidth);
+        }
     }
 
     private addZoomContextMenuItem(title: string, func: () => void) {
