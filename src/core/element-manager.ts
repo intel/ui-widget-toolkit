@@ -346,6 +346,17 @@ export class ElementManager implements UIElementManager {
     }
 
     /**
+     * user callback called when a tooltip is created
+     *
+     * @param the functiotn to be called
+     */
+    public setZoomCallback(callback: (group: UIElement[],
+        event: IEvent) => ITooltipData): ElementManager {
+        this._zoomCallback = callback;
+        return this;
+    }
+
+    /**
      * user callback called when a hover event happens
      *
      * @param the function to be called
@@ -389,7 +400,15 @@ export class ElementManager implements UIElementManager {
         addTooltipCallback(elem);
         this.removeFromTooltipGroup(elem);
         this.addToGroup(elem, groupName, GroupType.Tooltip);
-        if (!elem.onTooltip) {
+
+        let self = this;
+        if (elem.onTooltip) {
+            let func = elem.onTooltip;
+            elem.onTooltip = function (event: IEvent) {
+                self._onTooltipCallback(event);
+                func(event);
+            }
+        } else {
             elem.onTooltip = this._onTooltipCallback;
         }
 
@@ -421,18 +440,47 @@ export class ElementManager implements UIElementManager {
         addHoverCallback(elem);
         this.removeFromHighlightGroup(elem);
 
-        if (!elem.onBrush) {
-            elem.onBrush = this._onBrushCallback;
+        let self = this;
+        if (elem.onBrush) {
+            let func = elem.onBrush;
+            elem.onBrush = function (event: IEvent) {
+                self._onBrushCallback(event);
+                func(event);
+            }
+        } else {
+            elem.onBrush = self._onBrushCallback;
         }
-        if (!elem.onHover) {
-            elem.onHover = this._onHoverCallback;
+
+        if (elem.onHover) {
+            let func = elem.onHover;
+            elem.onHover = function (event: IEvent) {
+                self._onHoverCallback(event);
+                func(event);
+            }
+        } else {
+            elem.onHover = self._onHoverCallback;
         }
-        if (!elem.onCursorChanged) {
+
+        if (elem.onCursorChanged) {
+            let func = elem.onCursorChanged;
+            elem.onCursorChanged = function (event: IEvent) {
+                self._onCursorChangeCallback(event);
+                func(event);
+            }
+        } else {
             elem.onCursorChanged = this._onCursorChangeCallback;
         }
-        if (!elem.onZoom) {
+
+        if (elem.onZoom) {
+            let func = elem.onZoom;
+            elem.onZoom = function (event: IEvent) {
+                self._onZoomCallback(event);
+                func(event);
+            }
+        } else {
             elem.onZoom = this._onZoomCallback;
         }
+
         let elems = this._groupInfo[GroupType.Highlight]._nameMap[groupName];
         if (elems && elems.length) {
             let oldElem = elems[0];
@@ -476,7 +524,15 @@ export class ElementManager implements UIElementManager {
         addRenderCallback(elem);
         this.removeFromRenderGroup(elem);
         this.addToGroup(elem, groupName, GroupType.Render);
-        if (!elem.handleUpdate) {
+
+        let self = this;
+        if (elem.handleUpdate) {
+            let func = elem.handleUpdate;
+            elem.handleUpdate = function (caller: UIElement, options: IOptions) {
+                self._onUpdateCallback(caller, options);
+                func(caller, options);
+            }
+        } else {
             elem.handleUpdate = this._onUpdateCallback
         }
 

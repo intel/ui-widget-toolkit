@@ -63,7 +63,7 @@ The ui-widget-toolkit provides helper classes to enable designers to create a si
 all have callbacks for each widget and/or per data series.
 
 ## Element Manager and Color Manager
-The element manager and color manager helpers go even further enable a cohesive user experience.  The element manager groups widgets together by tooltip group, hover/selection/zoom group and render group.  When a widget in a group receives a given event, all widgets in that group are notified and can response accordingly.  This simplifies coordinating selection, zooming and resizing widgets.
+The element manager and color manager helpers go even further enable a cohesive user experience.  The element manager groups widgets together by tooltip group, hover/selection/zoom group and render group.  When a widget in a group receives a given event, all widgets in that group are notified and can respond accordingly.  This simplifies coordination of selection, zooming and resizing of widgets.
 
 Each widget may also have an associated color manager. The color manager maintains a list of colors by keyword and when widgets request a color it returns that color if it exists or a random color defined by the library or a user defined function.  This allows for a unified experience across widgets and a simpler developer implementation.
 
