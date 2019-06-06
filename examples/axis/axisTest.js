@@ -28,7 +28,10 @@ var AxisTest;
         TestBase.addElement({
             type: UWT.UIType.Axis,
             axisDesc: xAxis,
-            alignment: UWT.Alignment.Bottom
+            alignment: UWT.Alignment.Bottom,
+            onZoom: function (event) {
+                console.log(event);
+            }
         }, '', 'axis1', 'axis1');
         TestBase.addElement({
             type: UWT.UIType.Axis,

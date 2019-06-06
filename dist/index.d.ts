@@ -1498,6 +1498,12 @@ export class ElementManager implements UIElementManager {
             */
         getElements(): UIElement[];
         /**
+            * user callback called when a tooltip is created
+            *
+            * @param the functiotn to be called
+            */
+        setZoomCallback(callback: (group: UIElement[], event: IEvent) => ITooltipData): ElementManager;
+        /**
             * user callback called when a hover event happens
             *
             * @param the function to be called
