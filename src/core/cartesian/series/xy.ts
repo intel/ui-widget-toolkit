@@ -1059,7 +1059,8 @@ class D3SVGXYSeries extends XYSeries {
             .attr('cy', self.yIndexMap)
             .attr('fill', getColor)
             .attr('stroke', getColor)
-            .each(configureItem);
+            .each(configureItem)
+            .each(configureItemInteraction);
     }
 }
 
