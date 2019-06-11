@@ -6,6 +6,19 @@ import { showContextMenu } from './context-menu';
 
 import * as PIXI from 'pixi.js';
 
+function getChromeVersion() {
+    let pieces: any = navigator.userAgent.match(/Chrom(?:e|ium)\/([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/);
+    if (pieces == null || pieces.length != 5) {
+        return undefined;
+    }
+    let splitVersion = pieces.map(piece => parseInt(piece, 10));
+    return {
+        major: splitVersion[1],
+        minor: splitVersion[2],
+        build: splitVersion[3]
+    };
+}
+
 export class GraphicsManager {
     protected _renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
     protected _graphicsMap: { [index: string]: any } = {}
@@ -87,19 +100,22 @@ export class PIXIHelper {
         let canvas = foreignObjectElem
             .appendChild(this._renderer.view);
 
-        // this is a hack to fix the fact that transforms aren't working
-        // in chrome
-        canvas.style.position = 'fixed';
-        canvas.style.top = -window.scrollY + 'px';
+        let chromeVersion = getChromeVersion();
+        if (chromeVersion !== undefined && chromeVersion.major < 75) {
+            // this is a hack to fix the fact that transforms aren't working
+            // in chrome
+            canvas.style.position = 'fixed';
+            canvas.style.top = -window.scrollY + 'px';
 
-        let top = -window.scrollY;
-        let oldY = window.scrollY;
-        document.addEventListener('scroll', function () {
-            top = top - (window.scrollY - oldY)
-            canvas.style.top = top + 'px';
-            oldY = window.scrollY;
-        });
-        // end hack
+            let top = -window.scrollY;
+            let oldY = window.scrollY;
+            document.addEventListener('scroll', function () {
+                top = top - (window.scrollY - oldY)
+                canvas.style.top = top + 'px';
+                oldY = window.scrollY;
+            });
+            // end hack
+        }
 
         this._renderer.resize(width, height);
 
