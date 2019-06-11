@@ -378,6 +378,11 @@ export interface IChart extends UIElement {
                     * @param event any event to pass to the renderer
                     */
                 brush?: (event?: IEvent) => void;
+                /**
+                    * re-render the chart
+                    *
+                    */
+                render?: (renderer?: UIRenderer, options?: IOptions) => Promise<any>;
                 /** [[createImage]] is triggered and prompts the user to save it via
                     * the browser save dialog
                     */
