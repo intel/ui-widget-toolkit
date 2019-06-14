@@ -1120,6 +1120,12 @@ export interface UIElement {
                     */
                 hover?: (event?: IEvent) => void;
                 /**
+                    * fire a select event for this element
+                    *
+                    * @param event any event to pass to the renderer
+                    */
+                select?: (event?: IEvent) => void;
+                /**
                     * fire a zoom event for this element
                     *
                     * @param event any event to pass to the renderer
@@ -3869,7 +3875,10 @@ export interface IGridOptions {
     contextMenuItems?: IContextMenuItem[];
     /** called after the grid is rendered */
     onGridReady?: (event: any) => void;
+    /** the field to use for a selection */
     selectionKey?: any;
+    /** auto scroll to make the row visible when a selection happens */
+    autoScrollToSelection?: boolean;
 }
 export interface IGrid extends UIElement {
     type: UIType;
@@ -3903,7 +3912,11 @@ export class AgGridRenderer implements UIRenderer {
         setOnRenderCallback(callback: (elem: UIElement, options: IOptions) => void): void;
         /** update any options */
         setOptions(options: any): void;
+        /**
+            * @deprecated
+            */
         hover(element: UIElement, event: IEvent): void;
+        select(element: UIElement, event: IEvent): void;
         setDiv(element: UIElement, div: Element): void;
         /**
             * Render the given element
