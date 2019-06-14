@@ -332,6 +332,13 @@ export interface UIElement {
         hover?: (event?: IEvent) => void;
 
         /**
+         * fire a select event for this element
+         *
+         * @param event any event to pass to the renderer
+         */
+        select?: (event?: IEvent) => void;
+
+        /**
          * fire a zoom event for this element
          *
          * @param event any event to pass to the renderer

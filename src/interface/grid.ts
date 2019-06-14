@@ -72,7 +72,10 @@ export interface IGridOptions {
     contextMenuItems?: IContextMenuItem[];
     /** called after the grid is rendered */
     onGridReady?: (event: any) => void;
+    /** the field to use for a selection */
     selectionKey?: any;
+    /** auto scroll to make the row visible when a selection happens */
+    autoScrollToSelection?: boolean;
 }
 
 export interface IGrid extends UIElement {

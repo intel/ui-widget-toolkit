@@ -884,7 +884,7 @@ class D3SVGXYSeries extends XYSeries {
         }
 
         let configureItemInteraction = function (d: any) {
-            self.configureItemInteraction(d3.select(this));
+            self.configureItemInteraction(d3.select(this), self.getOutputData().get(d));
             if (self._layer.onHover) {
                 let xy = self._outputData.get(d);
                 let selection = '';

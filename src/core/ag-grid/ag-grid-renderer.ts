@@ -7,6 +7,8 @@ import { getSelectionName } from '../utilities';
 import { ColorManager } from '../color-manager';
 import { showContextMenu } from '../context-menu';
 import * as agGrid from 'ag-grid-community';
+import { deprecate } from 'util';
+import { select } from 'd3';
 
 // from https://www.ag-grid.com/best-javascript-data-grid/#gsc.tab=0
 export function percentCellRenderer(params: any) {
@@ -236,9 +238,12 @@ class AgGrid {
                 this._prevSelection = event.selection;
 
                 gridOptions.api.forEachNode(function (rowNode: any) {
-                    if (getSelectionName(rowNode.data[key]) === selection) {
+                    if (getSelectionName(rowNode.data[key]) === getSelectionName(selection)) {
                         // select the node
                         rowNode.setSelected(true);
+                        if (self._element.gridOptions.autoScrollToSelection) {
+                            gridOptions.api.ensureNodeVisible(rowNode);
+                        }
                     }
                 });
             } else if (event.event === EventType.HoverClear) {
@@ -248,7 +253,7 @@ class AgGrid {
                     selection = self._prevSelection;
                 }
                 gridOptions.api.forEachNode(function (rowNode: any) {
-                    if (getSelectionName(rowNode.data[key]) === selection) {
+                    if (getSelectionName(rowNode.data[key]) === getSelectionName(selection)) {
                         // deselect the node
                         rowNode.setSelected(false);
                         // clear the previous selection if it's what we just removed
@@ -285,17 +290,27 @@ class AgGrid {
 
         // make typescript happy to hardcode some things
         let gridOptions: any = this._element.gridOptions;
-        gridOptions.animateRows = true;
-        gridOptions.rowSelection = 'multiple';
-        gridOptions.rowDeselection = true;
-        gridOptions.suppressScrollOnNewData = true;
-        gridOptions.suppressPropertyNamesCheck = true;
-        if (!gridOptions.defaultColDef) {
-            gridOptions.defaultColDef = {};
-        }
-        gridOptions.defaultColDef.sortable = true;
-        gridOptions.defaultColDef.resizable = true;
-        gridOptions.defaultColDef.filter = true;
+        gridOptions.animateRows = gridOptions.animateRows !== undefined ?
+            gridOptions.animateRows : true;
+        gridOptions.rowSelection = gridOptions.rowSelection !== undefined ?
+            gridOptions.rowSelection : 'multiple';
+        gridOptions.rowDeselection = gridOptions.rowDeselection !== undefined ?
+            gridOptions.rowDeselection : true;
+        gridOptions.suppressScrollOnNewData = gridOptions.suppressScrollOnNewData !== undefined ?
+            gridOptions.suppressScrollOnNewData : true;
+        gridOptions.suppressPropertyNamesCheck = gridOptions.suppressPropertyNamesCheck !== undefined ?
+            gridOptions.suppressPropertyNamesCheck : true;
+        gridOptions.defaultColDef = gridOptions.defaultColDef !== undefined ?
+            gridOptions.defaultColDef : {};
+        gridOptions.defaultColDef.sortable = gridOptions.defaultColDef.sortable !== undefined ?
+            gridOptions.defaultColDef.sortable : true;
+        gridOptions.defaultColDef.resizable = gridOptions.defaultColDef.resizable !== undefined ?
+            gridOptions.defaultColDef.resizable : true;
+        gridOptions.defaultColDef.filter = gridOptions.defaultColDef.filter !== undefined ?
+            gridOptions.defaultColDef.filter : true;
+        gridOptions.autoScrollToSelection = gridOptions.autoScrollToSelection !== undefined ?
+            gridOptions.autoScrollToSelection : true
+
         if (!gridOptions.onRowSelected) {
             gridOptions.onRowSelected = this.onRowSelectedDefaultCallback;
         } else {
@@ -448,6 +463,11 @@ class AgGrid {
         while (this._div.firstChild) {
             this._div.removeChild(this._div.firstChild);
         }
+        this._element.api = {
+            select: function (event: IEvent) {
+                self.select(event);
+            }
+        }
         new agGrid.Grid(this._div as HTMLElement, this._element.gridOptions as any); //create a new grid
     }
 }
@@ -491,7 +511,16 @@ export class AgGridRenderer implements UIRenderer {
         }
     }
 
+    /**
+     * @deprecated
+     */
     public hover(element: UIElement, event: IEvent) {
+        if (this._rendererMap.has(element)) {
+            return this._rendererMap.get(element).select(event);
+        }
+    }
+
+    public select(element: UIElement, event: IEvent) {
         if (this._rendererMap.has(element)) {
             return this._rendererMap.get(element).select(event);
         }
