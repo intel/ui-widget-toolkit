@@ -184,7 +184,7 @@ var FlameSunburstTest;
                 isXContinuous: true
             };
             UWT.Chart.finalize(chart);
-            TestBase.addElement(chart, '', '', '', { forceCanvasRenderer: true });
+            TestBase.addElement(chart, '', '', '', { forceWebGLRenderer: true });
             TestBase.elemManager.addToHighlightGroup(chart, 'trace');
         }
     }

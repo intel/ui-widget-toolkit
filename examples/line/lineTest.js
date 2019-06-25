@@ -274,16 +274,6 @@ var LineTest;
                                     yMin: 0,
                                     yMax: 100
                                 }
-                            },
-                            {
-                                name: 'data',
-                                functionMap: {
-                                    y: function (x) { return x * x; },
-                                    xMin: 0,
-                                    xMax: 10,
-                                    yMin: 0,
-                                    yMax: 100
-                                }
                             }
                         ]
                     }],
