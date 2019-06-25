@@ -986,7 +986,9 @@ class D3SVGXYSeries extends XYSeries {
                                 // if this is the same X/Y and you're on the right
                                 let d3TextX = Number(d3Text.attr('x'));
                                 let text = d3Text.text();
-                                d3Text.text(',' + text);
+                                if (text.length > 0 && text[0].localeCompare(',') !== 0) {
+                                    d3Text.text(',' + text);
+                                }
                                 d3Text.attr('x', d3TextX + 1 + existing.width);
                                 prevRight = existing;
                                 return positionTextHelper(obj, width, false);
