@@ -361,6 +361,9 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
 
     private _zoom: d3.ZoomBehavior<Element, {}>;
 
+    /** this is used to prevent stack overflow from zoom behavior change in 5.10.x on */
+    protected _ignoreZoomHack = false;
+
     private _defaultXScale: any;
     private _defaultYScale: any;
 
@@ -621,7 +624,9 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
     }
 
     protected updateZoom(xStart: number, xEnd: number, yStart: number, yEnd: number) {
-        this.updateZoomHelper(this.getGraphGroup(), xStart, xEnd, yStart, yEnd);
+        if (!this._ignoreZoomHack) {
+            this.updateZoomHelper(this.getGraphGroup(), xStart, xEnd, yStart, yEnd);
+        }
     }
 
     /**
@@ -848,7 +853,9 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                         xEnd: xScale.domain()[1],
                         caller: self._element
                     };
+                    self._ignoreZoomHack = true;
                     self.onZoomChanged(event);
+                    self._ignoreZoomHack = false;
                 }
                 self._zoom = d3.zoom()
                     .scaleExtent([1, Number.MAX_SAFE_INTEGER])

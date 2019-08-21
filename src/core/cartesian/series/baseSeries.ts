@@ -278,7 +278,7 @@ export class BaseSeries {
                         }
                     }
                     let brush = self._d3Chart.getGraphGroup().select('.brush');
-                    let brushStart: any = brush.on('touchstart.brush');
+                    let brushStart: any = brush.on('mousedown.brush');
                     let event: any = new MouseEvent('mousedown touchstart', d3.event);
                     event['changedTouches'] = d3.event.changedTouches;
                     event['touches'] = d3.event.touches;
