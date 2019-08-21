@@ -2731,6 +2731,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         protected _brushTooltip: OneLineTooltip;
         protected _xMin: number;
         protected _xMax: number;
+        /** this is used to prevent stack overflow from zoom behavior change in 5.10.x on */
+        protected _ignoreZoomHack: boolean;
         onHover: (event: IEvent) => boolean;
         cursorEnter: () => boolean;
         cursorMove: () => boolean;
