@@ -260,6 +260,7 @@ export class BaseSeries {
                                     event: EventType.DoubleClick,
                                     data: value
                                 });
+                                return;
                             } else {
                                 wait = setTimeout(function () {
                                     if (wait) {
@@ -363,6 +364,7 @@ export class BaseSeries {
                                     event: EventType.DoubleClick,
                                     data: value
                                 });
+                                return;
                             } else {
                                 wait = setTimeout(function () {
                                     if (wait) {
