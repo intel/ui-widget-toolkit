@@ -1511,7 +1511,10 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
             // merge the rects for rendering performance
             prevValue = undefined;
 
+            let lastTs = 0;
+            let isNewValue = true;
             for (let j = 0; j < mergedLevelData.length; ++j) {
+                isNewValue = true;
                 let value: IFlameChartValue = mergedLevelData[j];
                 if (value.traceValue.dx < bucketValueWidth) {
                     // first make the rectangles at least 1 pixel wide
@@ -1525,9 +1528,16 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
                 // now actually merge the rects
                 if (prevValue && prevValue.traceValue.key === value.traceValue.key &&
                     prevValue.traceValue.name === value.traceValue.name) {
-                    prevValue.traceValue.dx = value.traceValue.x + value.traceValue.dx - prevValue.traceValue.x;
-                    prevValue.decimatedValues.concat(value.decimatedValues);
-                } else {
+                    
+                    lastTs = prevValue.traceValue.x + prevValue.traceValue.dx;
+                    
+                    if (lastTs >= value.traceValue.x) {
+                        prevValue.traceValue.dx = value.traceValue.x + value.traceValue.dx - prevValue.traceValue.x;
+                        prevValue.decimatedValues.concat(value.decimatedValues);
+                        isNewValue = false;
+                    }
+                }
+                if (isNewValue) {
                     ret.push(value);
                     prevValue = value;
                 }
