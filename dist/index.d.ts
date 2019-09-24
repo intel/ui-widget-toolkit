@@ -6,6 +6,7 @@
 import * as d3 from 'd3';
 import * as PIXI from 'pixi.js';
 
+export as namespace UWT;
 export function showContextMenu(event: MouseEvent, data: any, contextMenuItems: IContextMenuItem[], propogateEvent?: boolean): void;
 
 export function getSelectionName(className: string): string;
