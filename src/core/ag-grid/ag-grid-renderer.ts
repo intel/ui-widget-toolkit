@@ -463,8 +463,14 @@ class AgGrid {
         while (this._div.firstChild) {
             this._div.removeChild(this._div.firstChild);
         }
-        this._element.api = {
-            select: function (event: IEvent) {
+        if (!this._element.api) {
+            this._element.api = {
+                select: function (event: IEvent) {
+                    self.select(event);
+                }
+            }
+        } else {
+            this._element.api.select = function (event: IEvent) {
                 self.select(event);
             }
         }
