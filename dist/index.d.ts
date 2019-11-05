@@ -6,7 +6,6 @@
 import * as d3 from 'd3';
 import * as PIXI from 'pixi.js';
 
-export as namespace UWT;
 export function showContextMenu(event: MouseEvent, data: any, contextMenuItems: IContextMenuItem[], propogateEvent?: boolean): void;
 
 export function getSelectionName(className: string): string;
@@ -400,6 +399,10 @@ export interface IChart extends UIElement {
                 panRight?: () => void;
                 /** pan left by one step */
                 panLeft?: () => void;
+                /** limit the X range of the chart */
+                rangeUpdate?: (event?: IEvent) => void;
+                /** reset the X range of the chart to default values */
+                rangeReset?: () => void;
         };
 }
 /** cartesian chart is used to define a chart with an X and Y axis */
@@ -944,7 +947,8 @@ export enum EventType {
         HoverClear = 8,
         Zoom = 9,
         Click = 10,
-        DoubleClick = 11
+        DoubleClick = 11,
+        RangeUpdate = 12
 }
 export enum UIType {
         Unrendered = 0,
@@ -2730,6 +2734,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         protected _hasBottomHandle: boolean;
         /** the tooltip object */
         protected _brushTooltip: OneLineTooltip;
+        protected _xMinLimit: number;
+        protected _xMaxLimit: number;
         protected _xMin: number;
         protected _xMax: number;
         /** this is used to prevent stack overflow from zoom behavior change in 5.10.x on */

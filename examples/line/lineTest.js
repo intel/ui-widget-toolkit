@@ -443,6 +443,95 @@ var LineTest;
             UWT.Chart.finalize(chart);
             TestBase.addElement(chart);
         }
+        {
+            var chart3_1 = {
+                title: 'Function Graph',
+                type: UWT.UIType.Cartesian,
+                dataSets: [{
+                        renderType: UWT.RenderType.Line,
+                        data: [
+                            {
+                                name: 'data4',
+                                functionMap: {
+                                    y: function (x) { return x * x; },
+                                    xMin: 0,
+                                    xMax: 10,
+                                    yMin: 0,
+                                    yMax: 100
+                                }
+                            }
+                        ]
+                    }],
+                axes: [{
+                        alignment: UWT.Alignment.Bottom,
+                        axisDesc: { scaleType: UWT.AxisType.Linear }
+                    }, {
+                        alignment: UWT.Alignment.Left,
+                        enableDynamicRange: true,
+                        axisDesc: { scaleType: UWT.AxisType.Linear }
+                    }],
+                isXContinuous: true,
+                onRender: function () {
+                    chart3_1.api.rangeUpdate({
+                        event: UWT.EventType.RangeUpdate,
+                        xStart: 3,
+                        xEnd: 7
+                    });
+                    chart3_1.api.zoom({
+                        event: UWT.EventType.Zoom,
+                        xStart: 4,
+                        xEnd: 6
+                    });
+                }
+            };
+            UWT.Chart.finalize(chart3_1);
+            TestBase.addElement(chart3_1);
+        }
+        {
+            var chart3_2 = {
+                title: 'Function Graph 2',
+                type: UWT.UIType.Cartesian,
+                dataSets: [{
+                        renderType: UWT.RenderType.Line,
+                        data: [
+                            {
+                                name: 'data4',
+                                functionMap: {
+                                    y: function (x) { return x * x; },
+                                    xMin: 0,
+                                    xMax: 10,
+                                    yMin: 0,
+                                    yMax: 100
+                                }
+                            }
+                        ]
+                    }],
+                axes: [{
+                        alignment: UWT.Alignment.Bottom,
+                        axisDesc: { scaleType: UWT.AxisType.Linear }
+                    }, {
+                        alignment: UWT.Alignment.Left,
+                        enableDynamicRange: true,
+                        axisDesc: { scaleType: UWT.AxisType.Linear }
+                    }],
+                isXContinuous: true,
+                onRender: function () {
+                    chart3_2.api.rangeUpdate({
+                        event: UWT.EventType.RangeUpdate,
+                        xStart: 3,
+                        xEnd: 7
+                    });
+                    chart3_2.api.zoom({
+                        event: UWT.EventType.Zoom,
+                        xStart: 4,
+                        xEnd: 6
+                    });
+                    chart3_2.api.rangeReset();
+                }
+            };
+            UWT.Chart.finalize(chart3_2);
+            TestBase.addElement(chart3_2);
+        }
     }
     LineTest.createView = createView;
 })(LineTest || (LineTest = {}));
