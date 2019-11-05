@@ -356,6 +356,9 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
     /** the tooltip object */
     protected _brushTooltip: OneLineTooltip;
 
+    protected _xMinLimit: number;
+    protected _xMaxLimit: number;
+
     protected _xMin: number;
     protected _xMax: number;
 
@@ -636,36 +639,55 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
      * @param event the event to pass to the renderer
      */
     public zoom(event: IEvent): void {
-        if (event.event !== EventType.Zoom) {
+        if (event.event !== EventType.Zoom &&
+            event.event !== EventType.RangeUpdate) {
             throw 'Error passing a non zoom event to zoom function'
         }
 
         if (!this._scaleAxis.isBanded()) {
-            if (this._options.disableZoomViewUpdate) {
-                // when showing zoom as overlay we just use the brush so move the
-                // brush to the right spot
-                let xScale = this._scaleAxis.getScale();
-                this._brush.disableCallbacks();
-                if (this._options.enableXYZoom) {
-                    let yScale = this._axes[1].getScale();
-                    this._brush.brushMove([
-                        [xScale(event.xStart), yScale(event.yStart)],
-                        [xScale(event.xEnd), yScale(event.yEnd)]
-                    ]);
+            if (event.event === EventType.RangeUpdate) {
+                if (event.xStart === undefined && event.xEnd === undefined) {
+                    this._xMin = this._xMinLimit;
+                    this._xMax = this._xMaxLimit;
                 } else {
-                    this._brush.brushMove([xScale(event.xStart), xScale(event.xEnd)]);
+                    if (event.xStart !== undefined) {
+                        this._xMin = event.xStart < this._xMinLimit ?
+                            this._xMinLimit : event.xStart;
+                    }
+                    if (event.xEnd !== undefined) {
+                        this._xMax = event.xEnd > this._xMaxLimit ?
+                            this._xMaxLimit : event.xEnd;
+                    }
                 }
+            } else if (event.event === EventType.Zoom) {
+                if (this._options.disableZoomViewUpdate) {
+                    // when showing zoom as overlay we just use the brush so move the
+                    // brush to the right spot
+                    let xScale = this._scaleAxis.getScale();
+                    this._brush.disableCallbacks();
+                    if (this._options.enableXYZoom) {
+                        let yScale = this._axes[1].getScale();
+                        this._brush.brushMove([
+                            [xScale(event.xStart), yScale(event.yStart)],
+                            [xScale(event.xEnd), yScale(event.yEnd)]
+                        ]);
+                    } else {
+                        this._brush.brushMove([xScale(event.xStart), xScale(event.xEnd)]);
+                    }
 
-                this._brush.enableCallbacks();
-            } else {
-                this.updateZoom(event.xStart, event.xEnd, event.yStart, event.yEnd);
-                // render this chart using the new start/end values
-                this.render(event);
+                    this._brush.enableCallbacks();
+                } else {
+                    event.xStart = event.xStart < this._xMin ? this._xMin : event.xStart;
+                    event.xEnd = event.xEnd > this._xMax ? this._xMax : event.xEnd;
+                    this.updateZoom(event.xStart, event.xEnd, event.yStart, event.yEnd);
+                    // render this chart using the new start/end values
+                    this.render(event);
+                }
+                this._options.xStart = event.xStart;
+                this._options.xEnd = event.xEnd;
+                this._options.yStart = event.yStart;
+                this._options.yEnd = event.yEnd;
             }
-            this._options.xStart = event.xStart;
-            this._options.xEnd = event.xEnd;
-            this._options.yStart = event.yStart;
-            this._options.yEnd = event.yEnd;
         }
     }
 
@@ -1450,6 +1472,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 }
                 self._xMin = Math.min(xMinMax[0], self._xMin);
                 self._xMax = Math.max(xMinMax[1], self._xMax);
+                self._xMinLimit = self._xMin;
+                self._xMaxLimit = self._xMax;
             }
 
             let yD3Axis = self._axes[layer.yAxisIdx];
@@ -1698,6 +1722,11 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         this._graphSvg
             .attr('width', this._graphRect.width)
             .attr('height', this._graphRect.height);
+
+
+        this._svg
+            .attr('width', this._svgRect.width)
+            .attr('height', this._svgRect.height);
 
         this._svg
             .attr('width', this._svgRect.width)
@@ -2123,20 +2152,22 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             let zoomEvent = {
                 caller: self._element,
                 event: EventType.Zoom,
-                xStart: undefined,
-                xEnd: undefined,
+                xStart: self._xMin ? self._xMin : undefined,
+                xEnd: self._xMax ? self._xMax : undefined,
                 yStart: undefined,
                 yEnd: undefined
             };
             self.onZoomChanged(zoomEvent);
         }
 
+        let zoomInStart = xStart + range * zoomInFactor;
+        let zoomInEnd = xEnd - range * zoomInFactor;
         element.api.zoomIn = function () {
             let zoomEvent = {
                 caller: self._element,
                 event: EventType.Zoom,
-                xStart: xStart + range * zoomInFactor,
-                xEnd: xEnd - range * zoomInFactor,
+                xStart: zoomInStart,
+                xEnd: zoomInEnd,
                 yStart: self._options.yStart,
                 yEnd: self._options.yEnd
             };
@@ -2153,6 +2184,19 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 xEnd: self._xMax < zoomOutEnd ? self._xMax : zoomOutEnd,
                 yStart: self._options.yStart,
                 yEnd: self._options.yEnd
+            };
+            self.onZoomChanged(zoomEvent);
+        }
+
+        element.api.rangeUpdate = function (event: IEvent) {
+            event.event = EventType.RangeUpdate;
+            self.onZoomChanged(event);
+        }
+
+        element.api.rangeReset = function () {
+            let zoomEvent = {
+                caller: self._element,
+                event: EventType.RangeUpdate
             };
             self.onZoomChanged(zoomEvent);
         }

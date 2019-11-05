@@ -124,7 +124,8 @@ export enum EventType {
     HoverClear,
     Zoom,
     Click,
-    DoubleClick
+    DoubleClick,
+    RangeUpdate
 }
 
 export enum UIType {
