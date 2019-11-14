@@ -314,10 +314,10 @@ export interface IChart extends UIElement {
         /** pan left by one step */
         panLeft?: () => void;
 
-        /** limit the X range of the chart */
+        /** limit the X range of the chart, works only with 1 x axis */
         rangeUpdate?: (event?: IEvent) => void;
 
-        /** reset the X range of the chart to default values */
+        /** reset the X range of the chart to default values, works only with 1 x axis */
         rangeReset?: () => void;
     }
 }

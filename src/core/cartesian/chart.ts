@@ -650,15 +650,13 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                     this._xMin = this._xMinLimit;
                     this._xMax = this._xMaxLimit;
                 } else {
-                    if (event.xStart !== undefined) {
-                        this._xMin = event.xStart < this._xMinLimit ?
-                            this._xMinLimit : event.xStart;
-                    }
-                    if (event.xEnd !== undefined) {
-                        this._xMax = event.xEnd > this._xMaxLimit ?
-                            this._xMaxLimit : event.xEnd;
-                    }
+                    this._xMin = event.xStart ? event.xStart : this._xMinLimit;
+                    this._xMax = event.xEnd ? event.xEnd : this._xMaxLimit;
                 }
+                // TODO this sets the d3 axis domain, likely we need to
+                // figure out how to set our domain values correctly?
+                this._scaleAxis.setDomain([this._xMin, this._xMax]);
+                this._scaleAxis.commitRange(this._graphRect.width);
             } else if (event.event === EventType.Zoom) {
                 if (this._options.disableZoomViewUpdate) {
                     // when showing zoom as overlay we just use the brush so move the
@@ -1416,6 +1414,14 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             // create the new series and map it to the correct render axes
             let layer = layers[seriesIdx];
 
+            let isStacked = (layer.renderType & RenderType.Stacked) !== 0;
+            if (isStacked) {
+                if (layer.renderType - RenderType.Stacked == 0) {
+                    console.warn('Error RenderType.Stacked must be used with a line, area or bar type');
+                    continue;
+                }
+            }
+
             let xD3Axis = self._axes[layer.xAxisIdx];
             let d3Series = self.addToD3SeriesMap(layer, self._graphSvg);
 
@@ -1432,9 +1438,6 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             }
 
             self._minGraphHeight = Math.max(d3Series.getRequiredHeight(), self._minGraphHeight);
-
-            // Compute the ranges for the Y Axis
-            let isStacked = (layer.renderType & RenderType.Stacked) !== 0;
 
             // Compute the ranges for the X Axis
             if (isXBanded) {
@@ -1476,6 +1479,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 self._xMaxLimit = self._xMax;
             }
 
+            // Compute the ranges for the Y Axis
             let yD3Axis = self._axes[layer.yAxisIdx];
             if (chart.axes[layer.yAxisIdx].axisDesc.scaleType === AxisType.Ordinal ||
                 !d3Series.isYContinuousSeries()) {
@@ -1604,12 +1608,14 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 }
 
                 let d3Series = self._seriesMap.get(layer);
-                for (let i = 0; i < layer.data.length; ++i) {
-                    let str = d3Series.getName() + decimationChars;
-                    maxChars = str.length > maxChars.length ? str : maxChars;
-                    if (d3Series['getMaxName'] !== undefined) {
-                        str = (d3Series as any).getMaxName() + decimationChars;
+                if (d3Series !== undefined) {
+                    for (let i = 0; i < layer.data.length; ++i) {
+                        let str = d3Series.getName() + decimationChars;
                         maxChars = str.length > maxChars.length ? str : maxChars;
+                        if (d3Series['getMaxName'] !== undefined) {
+                            str = (d3Series as any).getMaxName() + decimationChars;
+                            maxChars = str.length > maxChars.length ? str : maxChars;
+                        }
                     }
                 }
             }
@@ -2293,8 +2299,10 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         let self = this;
         let chart = self._element as ICartesianChart;
 
-        if (chart.axes.length === 0 && chart.dataSets && chart.dataSets.length === 0) {
-            throw 'Error no data in the chart';
+        if (chart.axes.length === 0 && 
+            ((chart.dataSets && chart.dataSets.length === 0) || this._seriesMap.size === 0)) {
+            console.warn('Error no data in the chart');
+            return;
         }
 
         // load the graph layout parameters

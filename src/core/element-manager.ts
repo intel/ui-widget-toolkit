@@ -138,7 +138,9 @@ export class ElementManager implements UIElementManager {
         }
 
         this._onHoverCallback = function (event: IEvent): void {
-
+            if (!event.caller) {
+                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
+            }
             let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
             if (elems) {
                 if (self._hoverCallback) {
@@ -154,7 +156,9 @@ export class ElementManager implements UIElementManager {
             }
         }
         this._onZoomCallback = function (event: IEvent): void {
-
+            if (!event.caller) {
+                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
+            }
             let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
             if (elems) {
                 if (self._zoomCallback) {
@@ -170,7 +174,9 @@ export class ElementManager implements UIElementManager {
             }
         }
         this._onTooltipCallback = function (event: IEvent): ITooltipData[] {
-
+            if (!event.caller) {
+                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
+            }
             let ret: ITooltipData[] = [];
             let elems = self._groupInfo[GroupType.Tooltip]._objectMap.get(event.caller);
             if (elems) {
@@ -190,7 +196,9 @@ export class ElementManager implements UIElementManager {
             }
         }
         this._onCursorChangeCallback = function (event: IEvent): void {
-
+            if (!event.caller) {
+                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
+            }
             let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
             if (elems) {
                 if (self._cursorChangeCallback) {
@@ -206,7 +214,9 @@ export class ElementManager implements UIElementManager {
             }
         }
         this._onBrushCallback = function (event: IEvent): void {
-
+            if (!event.caller) {
+                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
+            }
             let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
             if (elems) {
                 if (self._brushCallback) {
@@ -223,7 +233,9 @@ export class ElementManager implements UIElementManager {
         }
         this._onUpdateCallback = function (caller: UIElement,
             options: IOptions): void {
-
+            if (!caller) {
+                console.warn('Warning no caller specified for this event, cannot propoate changes');
+            }
             let elems = self._groupInfo[GroupType.Render]._objectMap.get(caller);
             if (elems) {
                 for (let i = 0; i < elems.length; ++i) {
