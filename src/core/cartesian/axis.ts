@@ -557,7 +557,7 @@ export class D3Axis implements IRenderedAxis {
             // find the first tick with text
             let i = 0;
             let currTick = ticks[i] as any;
-            for (; i < ticks.length && currTick.innerHTML.length === 0; ++i) {
+            for (; i < ticks.length && currTick.textContent.length === 0; ++i) {
                 currTick = ticks[i];
             }
             domain[currTick.__data__] = true;
@@ -571,7 +571,7 @@ export class D3Axis implements IRenderedAxis {
                 for (++i; i < ticks.length; ++i) {
                     let tick = ticks[i] as any;
                     let testTickRect = tick.getBoundingClientRect();
-                    if (tick.innerHTML.length !== 0 && useTickFunc(currTickRect, testTickRect)) {
+                    if (tick.textContent.length !== 0 && useTickFunc(currTickRect, testTickRect)) {
                         break;
                     }
                 }
@@ -602,7 +602,7 @@ export class D3Axis implements IRenderedAxis {
             // find the first tick with text
             let i = ticks.length - 1;
             let currTick = ticks[i] as any;
-            for (; i >= 0 && currTick.innerHTML.length === 0; --i) {
+            for (; i >= 0 && currTick.textContent.length === 0; --i) {
                 currTick = ticks[i];
             }
             domain[currTick.__data__] = true;
@@ -616,7 +616,7 @@ export class D3Axis implements IRenderedAxis {
                 for (--i; i >= 0; --i) {
                     let tick = ticks[i] as any;
                     let testTickRect = tick.getBoundingClientRect();
-                    if (tick.innerHTML.length !== 0 && useTickFunc(currTickRect, testTickRect)) {
+                    if (tick.textContent.length !== 0 && useTickFunc(currTickRect, testTickRect)) {
                         break;
                     }
                 }

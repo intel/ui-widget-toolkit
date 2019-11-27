@@ -194,10 +194,10 @@ export class TreeMap extends SVGRenderer {
             .style('fill', function (node) {
                 return getColor(self._colorMgr, node);
             })
-            .style('width', function (node: any) {
+            .attr('width', function (node: any) {
                 return (node.x1 - node.x0) + 'px';
             })
-            .style('height', function (node: any) {
+            .attr('height', function (node: any) {
                 return (node.y1 - node.y0) + 'px';
             })
 
@@ -318,10 +318,10 @@ export class TreeMap extends SVGRenderer {
                             .selectAll('rect')
                             .transition()
                             .duration(self.getAnimateDuration())
-                            .style('width', function (d: any) {
+                            .attr('width', function (d: any) {
                                 return (data.x1 - data.x0) + 'px';
                             })
-                            .style('height', function (d: any) {
+                            .attr('height', function (d: any) {
                                 return (data.y1 - data.y0) + 'px';
                             })
                     });
@@ -333,10 +333,10 @@ export class TreeMap extends SVGRenderer {
                     .each(function (data: any) {
                         let node = d3.select(this);
                         node.selectAll('rect')
-                            .style('width', function (d: any) {
+                            .attr('width', function (d: any) {
                                 return (data.x1 - data.x0) + 'px';
                             })
-                            .style('height', function (d: any) {
+                            .attr('height', function (d: any) {
                                 return (data.y1 - data.y0) + 'px';
                             })
                         onEnd(node);
@@ -390,10 +390,10 @@ export class TreeMap extends SVGRenderer {
             .style('fill', function (node: any) {
                 return getColor(self._colorMgr, node);
             })
-            .style('width', function (d: any) {
+            .attr('width', function (d: any) {
                 return d.x1 - d.x0 + 'px';
             })
-            .style('height', function (d: any) {
+            .attr('height', function (d: any) {
                 return d.y1 - d.y0 + 'px';
             });
 
@@ -514,8 +514,8 @@ export class TreeMap extends SVGRenderer {
             }
         }
         navBar.append('rect')
-            .style('width', width)
-            .style('height', self._navBarHeight)
+            .attr('width', width)
+            .attr('height', self._navBarHeight)
             .style('fill', 'orange')
             .on('mousedown touchstart', function () {
                 moveUp();
