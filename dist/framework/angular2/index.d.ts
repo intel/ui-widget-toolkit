@@ -38,11 +38,11 @@ export class UWTCheckboxTreeNodeImpl implements OnChanges, DoCheck {
         /**
             * Returns the parent tree node. Returns `null` if root.
             */
-        getParent(): UWT.ICheckboxTreeNode;
+        getParent(): any;
         /**
             * Returns the children tree nodes.
             */
-        getChildren(): UWT.ICheckboxTreeNode[];
+        getChildren(): any;
         /**
             * Display/Hide the children nodes.
             */
