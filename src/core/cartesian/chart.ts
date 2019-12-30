@@ -1470,11 +1470,14 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                     xD3Axis.setDomain([
                         Math.min(xAxisRange[0], xMinMax[0] ? xMinMax[0] : Number.MAX_VALUE),
                         Math.max(xAxisRange[1], xMinMax[1] ? xMinMax[1] : -Number.MAX_VALUE)]);
+                    self._xMin = Math.min(xAxisRange[0], self._xMin);
+                    self._xMax = Math.max(xAxisRange[1], self._xMax);
                 } else {
                     xD3Axis.setDomain([xMinMax[0], xMinMax[1]]);
+                    self._xMin = Math.min(xMinMax[0], self._xMin);
+                    self._xMax = Math.max(xMinMax[1], self._xMax);
                 }
-                self._xMin = Math.min(xMinMax[0], self._xMin);
-                self._xMax = Math.max(xMinMax[1], self._xMax);
+
                 self._xMinLimit = self._xMin;
                 self._xMaxLimit = self._xMax;
             }
