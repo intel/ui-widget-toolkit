@@ -138,11 +138,11 @@ export class ConnectedGraphBase {
             if (SVGRenderer.IS_RESIZING) {
                 return;
             }
+            renderer.hover(graph, event);
+
             let hoverCallback = graph.onHover;
             if (hoverCallback) {
                 hoverCallback(event);
-            } else {
-                renderer.hover(graph, event);
             }
             return true;
         }

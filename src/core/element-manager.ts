@@ -148,7 +148,7 @@ export class ElementManager implements UIElementManager {
                 } else {
                     for (let i = 0; i < elems.length; ++i) {
                         let elem = elems[i];
-                        if (elem.api && elem.api.hover) {
+                        if (event.caller !== elem && elem.api && elem.api.hover) {
                             elem.api.hover(event);
                         }
                     }
@@ -166,8 +166,44 @@ export class ElementManager implements UIElementManager {
                 } else {
                     for (let i = 0; i < elems.length; ++i) {
                         let elem = elems[i];
-                        if (elem.api && elem.api.zoom) {
+                        if (event.caller !== elem && elem.api && elem.api.zoom) {
                             elem.api.zoom(event);
+                        }
+                    }
+                }
+            }
+        }
+        this._onCursorChangeCallback = function (event: IEvent): void {
+            if (!event.caller) {
+                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
+            }
+            let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
+            if (elems) {
+                if (self._cursorChangeCallback) {
+                    self._cursorChangeCallback(elems, event);
+                } else {
+                    for (let i = 0; i < elems.length; ++i) {
+                        let elem = elems[i];
+                        if (event.caller !== elem && elem.api && elem.api.cursorChange) {
+                            elem.api.cursorChange(event);
+                        }
+                    }
+                }
+            }
+        }
+        this._onBrushCallback = function (event: IEvent): void {
+            if (!event.caller) {
+                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
+            }
+            let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
+            if (elems) {
+                if (self._brushCallback) {
+                    self._brushCallback(elems, event);
+                } else {
+                    for (let i = 0; i < elems.length; ++i) {
+                        let elem = elems[i];
+                        if (event.caller !== elem && elem.api && elem.api.brush) {
+                            elem.api.brush(event);
                         }
                     }
                 }
@@ -193,42 +229,6 @@ export class ElementManager implements UIElementManager {
                     event.data.tooltip.setData(event.data.tooltip.getTitle(), ret);
                 }
                 return ret;
-            }
-        }
-        this._onCursorChangeCallback = function (event: IEvent): void {
-            if (!event.caller) {
-                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
-            }
-            let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
-            if (elems) {
-                if (self._cursorChangeCallback) {
-                    self._cursorChangeCallback(elems, event);
-                } else {
-                    for (let i = 0; i < elems.length; ++i) {
-                        let elem = elems[i];
-                        if (elem.api && elem.api.cursorChange) {
-                            elem.api.cursorChange(event);
-                        }
-                    }
-                }
-            }
-        }
-        this._onBrushCallback = function (event: IEvent): void {
-            if (!event.caller) {
-                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
-            }
-            let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
-            if (elems) {
-                if (self._brushCallback) {
-                    self._brushCallback(elems, event);
-                } else {
-                    for (let i = 0; i < elems.length; ++i) {
-                        let elem = elems[i];
-                        if (elem.api && elem.api.brush) {
-                            elem.api.brush(event);
-                        }
-                    }
-                }
             }
         }
         this._onUpdateCallback = function (caller: UIElement,

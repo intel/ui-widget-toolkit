@@ -419,15 +419,14 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             if (SVGRenderer.IS_RESIZING) {
                 return;
             }
-            let chart = self._element;
-            event.caller = self._element;
 
-            let hoverCallback = chart.onHover;
+            self.hover(event);
+
+            let hoverCallback = self._element.onHover;
             if (hoverCallback) {
                 hoverCallback(event);
-            } else {
-                self._renderer.hover(chart, event);
             }
+
             return true;
         }
 
@@ -436,14 +435,13 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 return;
             }
 
-            let chart = self._element;
+            self.cursorChange(event);
 
-            let cursorCallback = chart.onCursorChanged;
+            let cursorCallback = self._element.onCursorChanged;
             if (cursorCallback) {
                 cursorCallback(event);
-            } else {
-                self.cursorChange(event);
             }
+
             return true;
         }
 
@@ -595,12 +593,12 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
     }
 
     protected onZoomChanged(event: IEvent) {
+        this.zoom(event);
+
         let chart = this._element;
         let cb = chart.onZoom;
         if (cb) {
             cb(event);
-        } else {
-            this.zoom(event);
         }
     }
 
@@ -656,7 +654,14 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 // TODO this sets the d3 axis domain, likely we need to
                 // figure out how to set our domain values correctly?
                 this._scaleAxis.setDomain([this._xMin, this._xMax]);
-                this._scaleAxis.commitRange(this._graphRect.width);
+
+                // the axis has changed so now we need to rezoom to this location
+                // using the new scale
+                this.zoom({
+                    event: EventType.Zoom,
+                    xStart: this._options.xStart,
+                    xEnd: this._options.xEnd
+                })
             } else if (event.event === EventType.Zoom) {
                 if (this._options.disableZoomViewUpdate) {
                     // when showing zoom as overlay we just use the brush so move the
@@ -922,11 +927,11 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 }
             }
 
+            self.brush(options);
+
             let cb = chart.onBrush;
             if (cb) {
                 cb(options);
-            } else {
-                self.brush(options);
             }
             return coords !== null;
         }
@@ -2302,7 +2307,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         let self = this;
         let chart = self._element as ICartesianChart;
 
-        if (chart.axes.length === 0 && 
+        if (chart.axes.length === 0 &&
             ((chart.dataSets && chart.dataSets.length === 0) || this._seriesMap.size === 0)) {
             console.warn('Error no data in the chart');
             return;

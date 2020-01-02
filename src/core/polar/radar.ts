@@ -178,11 +178,11 @@ export class D3Radar extends D3Polar {
             if (SVGRenderer.IS_RESIZING) {
                 return;
             }
+            self.hover(event);
+
             let hoverCallback = radarChart.onHover;
             if (hoverCallback) {
                 hoverCallback(event);
-            } else {
-                self._renderer.hover(radarChart, event);
             }
             return true;
         }

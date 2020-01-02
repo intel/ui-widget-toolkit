@@ -4,6 +4,7 @@ export * from '../interface/ui-base';
 export * from '../core/element-manager';
 export * from '../core/color-manager';
 export * from '../core/utilities';
+export * from '../core/web-utilities';
 export * from '../core/renderer';
 export * from '../core/svg-helper';
 export * from '../core/connected-graph/force';

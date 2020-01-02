@@ -166,39 +166,43 @@ export class CustomPointXYDecimator implements IXYDecimator {
         if (right < inputValues.length()) {
             ++right;
         }
+
+        let lastX: number;
+        if (left < inputValues.length()) {
+            lastX = Math.floor(this._xValueToCoord(inputValues.get(left).x));
+            --lastX;
+        }
+
         let xStartCoord: number;
-        let xEndCoord: number;
         if (xStart) {
             xStartCoord = Math.floor(this._xValueToCoord(xStart));
         } else {
             xStartCoord = Math.floor(this._xValueToCoord(inputValues.get(left).x));
         }
 
-        let startIdx = left;
+        let lastIdx = left;
         let endIdx: number;
         for (let index = left; index < right; ++index) {
             let inputValue = inputValues.get(index);
             let xEndCoord = Math.floor(this._xValueToCoord(inputValue.x));
 
             endIdx = index;
-            if (xEndCoord !== xStartCoord &&
-                (xEnd === undefined || (inputValue.x < xEnd && inputValue.x > xStart))) {
-
+            if (xEndCoord !== lastX) {
                 this._decimatedValues = this._decimatedValues.concat(
-
-                    this._customFunc(inputValues, startIdx, endIdx,
+                    this._customFunc(inputValues, lastIdx, endIdx,
                         this._yValueToCoord, this._xValueToCoord,
                         this._xCoordToValue(xStartCoord), this._xCoordToValue(xEndCoord)));
 
                 xStartCoord = xEndCoord;
-                startIdx = endIdx;
+                lastX = xEndCoord;
+                lastIdx = endIdx;
             }
         }
-        if (startIdx !== inputValues.length()) {
+        if (lastIdx !== inputValues.length()) {
             this._decimatedValues = this._decimatedValues.concat(
-                this._customFunc(inputValues, startIdx, startIdx + 1,
+                this._customFunc(inputValues, lastIdx, endIdx + 1,
                     this._yValueToCoord, this._xValueToCoord,
-                    this._xCoordToValue(xStartCoord), this._xCoordToValue(xEndCoord)));
+                    this._xCoordToValue(xStartCoord), Number.MAX_VALUE));
         }
 
         return this._decimatedValues;

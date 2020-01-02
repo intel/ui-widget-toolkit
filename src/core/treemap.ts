@@ -105,11 +105,11 @@ export class TreeMap extends SVGRenderer {
             if (SVGRenderer.IS_RESIZING) {
                 return;
             }
+            self.hover(event);
+
             let hoverCallback = self._element.onHover;
             if (hoverCallback) {
                 hoverCallback(event);
-            } else {
-                self._renderer.hover(self._element, event);
             }
             return true;
         }
