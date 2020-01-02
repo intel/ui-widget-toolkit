@@ -74,11 +74,13 @@ export interface IXYSeries {
 
     /** a function that is run per X value to generate the output Y value*/
     functionMap?: IFunctionMap;
+
     /** the name for this series may be used by the
      * [[SelectionHelper]] and [[ColorManager]]
      *  */
     name?: string;
-    /** CSS for this rectangle */
+
+    /** CSS for this data */
     css?: ICss;
 
     /** EXPERIMENTAL: this flag enables text rendering for each XY scatter point*/
@@ -170,10 +172,15 @@ export interface IBaseLayer {
 export interface IXYLayer extends IBaseLayer {
     /** a set of list of XY to render */
     data: IXYSeries[];
+
     /** any transformation to do before rendering the data */
     decimator?: IXYDecimator | IXYStackedDecimator;
+
     /** tells the line graph how to render information between two points */
     interpolateType?: InterpolateType,
+
+    /** tells the scatter plot to use the IXYValue.value as the radius */
+    useValueWhenRendering?: boolean;
 
     /** populated by the renderer */
     getAbsolutePosition?: (value: IXYValue) => IXYValue;

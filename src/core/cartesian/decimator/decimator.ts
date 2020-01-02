@@ -185,6 +185,7 @@ export class CustomPointXYDecimator implements IXYDecimator {
                 (xEnd === undefined || (inputValue.x < xEnd && inputValue.x > xStart))) {
 
                 this._decimatedValues = this._decimatedValues.concat(
+
                     this._customFunc(inputValues, startIdx, endIdx,
                         this._yValueToCoord, this._xValueToCoord,
                         this._xCoordToValue(xStartCoord), this._xCoordToValue(xEndCoord)));
@@ -195,7 +196,7 @@ export class CustomPointXYDecimator implements IXYDecimator {
         }
         if (startIdx !== inputValues.length()) {
             this._decimatedValues = this._decimatedValues.concat(
-                this._customFunc(inputValues, startIdx, endIdx + 1,
+                this._customFunc(inputValues, startIdx, startIdx + 1,
                     this._yValueToCoord, this._xValueToCoord,
                     this._xCoordToValue(xStartCoord), this._xCoordToValue(xEndCoord)));
         }
@@ -1528,9 +1529,9 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
                 // now actually merge the rects
                 if (prevValue && prevValue.traceValue.key === value.traceValue.key &&
                     prevValue.traceValue.name === value.traceValue.name) {
-                    
+
                     lastTs = prevValue.traceValue.x + prevValue.traceValue.dx;
-                    
+
                     if (lastTs >= value.traceValue.x) {
                         prevValue.traceValue.dx = value.traceValue.x + value.traceValue.dx - prevValue.traceValue.x;
                         prevValue.decimatedValues.concat(value.decimatedValues);

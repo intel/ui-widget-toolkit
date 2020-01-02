@@ -61,7 +61,7 @@ export class SelectionHelper {
 
     public onSelect(event: IEvent) {
         if (!isNaN(Number(event.selection))) {
-            console.log('Warnging - chart unable to fire hover event using a number ' +
+            console.debug('Chart unable to fire hover event using a number ' +
                 'as the selection class due to CSS limitations');
             return;
         }

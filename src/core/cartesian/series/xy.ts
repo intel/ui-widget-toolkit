@@ -18,7 +18,7 @@ import {
 } from '../../utilities';
 
 import { getKeys, Arrow, animatePath } from '../../svg-helper';
-import { PIXIHelper } from '../../pixi-helper';
+import { PIXIHelper, GraphicsManager } from '../../pixi-helper';
 import { D3Axis } from '../axis';
 import {
     ID3Chart, D3Chart, createDecimatorWorker, getBoundedPixelValue
@@ -907,6 +907,9 @@ class D3SVGXYSeries extends XYSeries {
                         self._layer.onHover(event);
                         self._d3Chart.getTooltip().displayTooltip(0);
                     })
+                    .on('mousemove', function () {
+                        d3.event.stopPropagation();
+                    })
                     .on('mouseleave', function () {
                         let event = {
                             caller: self._d3Chart.getElement(),
@@ -1040,13 +1043,21 @@ class D3SVGXYSeries extends XYSeries {
                 .each(positionText);
         }
 
+        let computeRadius = function (d: any) {
+            if (self._layer.useValueWhenRendering) {
+                let data = self.getOutputData().get(d);
+                return d3.max([data.value, radius]);
+            }
+            return radius;
+        }
+
         let dataUpdate = self._d3svg.selectAll(self._selectionClasses).filter('circle').data(indices);
         dataUpdate.exit().remove();
         dataUpdate
             .enter()
             .append('circle')
             .classed(this._classes, true)
-            .attr('r', radius)
+            .attr('r', computeRadius)
             .attr('cx', self.xIndexMap)
             .attr('cy', self.yIndexMap)
             .attr('fill', getColor)
@@ -1057,6 +1068,7 @@ class D3SVGXYSeries extends XYSeries {
 
         dataUpdate
             .classed(this._classes, true)
+            .attr('r', computeRadius)
             .attr('cx', self.xIndexMap)
             .attr('cy', self.yIndexMap)
             .attr('fill', getColor)
@@ -1149,14 +1161,28 @@ class D3PIXIXYSeries extends XYSeries {
 
         self.configureItemInteraction(foreignObject);
 
-        let pixiCircle = new PIXI.Graphics();
-        pixiCircle.beginFill(0xFFFFFF);
-        pixiCircle.drawCircle(0, 0, radius); // drawCircle(x, y, radius)
-        pixiCircle.endFill();
-        let pixiTexture = this._pixi.generateTexture(pixiCircle);
+        let graphicsMgr = new GraphicsManager(this._pixi);
+
+        let computeRadius = function (d: any) {
+            if (self._layer.useValueWhenRendering) {
+                let data = self.getOutputData().get(d);
+                return d3.max([data.value, radius]);
+            }
+            return radius;
+        }
 
         indices.forEach(function (idx: number) {
-            let sprite = new PIXI.Sprite(pixiTexture);
+            let radius = computeRadius(idx);
+            let sprite = graphicsMgr.add(self.getName() + radius,
+                self.getName() + radius, PIXI.SCALE_MODES.LINEAR, 1,
+                function () {
+                    let pixiCircle = new PIXI.Graphics();
+                    pixiCircle.beginFill(0xFFFFFF);
+                    pixiCircle.drawCircle(0, 0, radius); // drawCircle(x, y, radius)
+                    pixiCircle.endFill();
+                    return pixiCircle;
+                });
+
             sprite.x = self.xIndexMap(idx) - radius;
             sprite.y = self.yIndexMap(idx) - radius;
             sprite.tint = parseInt(getColor(idx).substring(1), 16);
