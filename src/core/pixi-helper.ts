@@ -102,8 +102,8 @@ export class PIXIHelper {
 
         let chromeVersion = getChromeVersion();
         if (chromeVersion !== undefined && chromeVersion.major < 75) {
-            // this is a hack to fix the fact that transforms aren't working
-            // in chrome
+            // this is a workaround to fix the fact that transforms aren't working
+            // in chrome resulting in the canvas being mis positioned
             canvas.style.position = 'fixed';
             canvas.style.top = -window.scrollY + 'px';
 
@@ -114,7 +114,7 @@ export class PIXIHelper {
                 canvas.style.top = top + 'px';
                 oldY = window.scrollY;
             });
-            // end hack
+            // end workaround
         }
 
         this._renderer.resize(width, height);
@@ -218,18 +218,19 @@ export class PIXIHelper {
         }
 
         if (hoverStart) {
-            target.on('mouseover', function (e) {
-                if (e.target) {
-                    this.__data__ = value;
-                    hoverStart.call(this);
+            target
+                .on('mouseover', function (e) {
+                    if (e.target) {
+                        this.__data__ = value;
+                        hoverStart.call(this);
 
-                    if (tooltip) {
-                        self._tooltipTarget = e.target;
-                        tooltip.onMouseEnter(value);
-                        tooltip.onMouseMove(value, e.data.originalEvent);
+                        if (tooltip) {
+                            self._tooltipTarget = e.target;
+                            tooltip.onMouseEnter(value);
+                            tooltip.onMouseMove(value, e.data.originalEvent);
+                        }
                     }
-                }
-            });
+                })
         }
 
         if (hoverEnd) {

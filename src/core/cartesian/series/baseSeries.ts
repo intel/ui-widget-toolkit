@@ -245,9 +245,10 @@ export class BaseSeries {
                 self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
         } else {
             elem.attr('cursor', 'crosshair');
-            elem.on('contextmenu', function (event) {
-                showContextMenu(d3.event, undefined, self._contextMenuItems);
-            })
+            elem
+                .on('contextmenu', function (event) {
+                    showContextMenu(d3.event, undefined, self._contextMenuItems);
+                })
                 .on('mousedown touchstart', function (d: any) {
                     let caller = self._d3Chart.getElement();
                     if (value) {
@@ -290,15 +291,6 @@ export class BaseSeries {
                     d3.event.preventDefault();
                     d3.event.stopPropagation();
                 })
-                .on('touchmove touchend', function () {
-                    let brushOverlay = self._d3Chart.getGraphGroup().select('.overlay');
-                    let event: any = new MouseEvent(d3.event.type, d3.event);
-                    event['changedTouches'] = d3.event.changedTouches;
-                    event['touches'] = d3.event.touches;
-                    (brushOverlay.node() as any).dispatchEvent(event);
-                    d3.event.preventDefault();
-                    d3.event.stopPropagation();
-                });
         }
 
         function onClick(event: IEvent) {
@@ -349,9 +341,10 @@ export class BaseSeries {
                 self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
         } else {
             self._d3Chart.getGraphGroup().attr('cursor', 'crosshair');
-            elem.on('rightclick', function (event: any) {
-                showContextMenu(d3.event, undefined, self._contextMenuItems);
-            })
+            elem
+                .on('rightclick', function (event: any) {
+                    showContextMenu(d3.event, undefined, self._contextMenuItems);
+                })
                 .on('mousedown', function (e: any) {
                     let caller = self._d3Chart.getElement();
                     if (value) {
@@ -382,20 +375,7 @@ export class BaseSeries {
                             });
                         }
                     }
-
-                    let brush = self._d3Chart.getGraphGroup().select('.brush');
-                    let event = new MouseEvent('mousedown', e.data.originalEvent);
-                    let target = brush.select('.overlay').node();
-                    Object.defineProperty(event, 'target', { value: target, enumerable: true });
-                    target.dispatchEvent(event);
-                    event.stopPropagation();
                 })
-                .on('mouseupoutside', function (e: any) {
-                    let brushOverlay = self._d3Chart.getGraphGroup().select('.overlay');
-                    let event = new MouseEvent('mouseup', e.data.originalEvent);
-                    (brushOverlay.node() as any).dispatchEvent(event);
-                    event.stopPropagation();
-                });
         }
 
         function onClick(event: IEvent) {

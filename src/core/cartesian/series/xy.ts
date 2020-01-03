@@ -1081,6 +1081,7 @@ class D3SVGXYSeries extends XYSeries {
 class D3PIXIXYSeries extends XYSeries {
     public renderCirclePoints(indices: number[], color: string, radius: number) {
         let self = this;
+        let chart = this._d3Chart.getElement() as any;
 
         let getColor = function (d: any) {
             let xy = self._outputData.get(d);
@@ -1097,49 +1098,52 @@ class D3PIXIXYSeries extends XYSeries {
         // append webGL canvas
         let configureItemInteractionPIXI = function (elem: any, idx: any) {
             let xy = self._outputData.get(idx);
-            self.configureItemInteractionPIXI(elem, xy);
 
-            if (xy.info && xy.info.title) {
-                self._pixiHelper.addSelection(getSelectionName(xy.info.title), elem);
-            }
-
+            let selection = '';
             if (self._layer.onHover) {
-                let selection = '';
                 if (xy.info && xy.info.title) {
                     selection = xy.info.title;
                     self._pixiHelper.addSelection(
                         getSelectionName(xy.info.title), elem);
                 }
+            }
 
-                elem
-                    .on('mouseover', function () {
-                        let event = {
-                            caller: self._d3Chart.getElement(),
-                            selection: selection,
-                            event: EventType.HoverStart,
-                            data: {
-                                tooltip: self._d3Chart.getTooltip(),
-                                data: xy
-                            },
-                        }
-                        self._d3Chart.onHover(event);
-                        self._layer.onHover(event);
-                        self._d3Chart.getTooltip().displayTooltip(0);
-                    })
-                    .on('mouseout', function () {
-                        let event = {
-                            caller: self._d3Chart.getElement(),
-                            selection: selection,
-                            event: EventType.HoverEnd,
-                            data: {
-                                tooltip: self._d3Chart.getTooltip(),
-                                data: xy
-                            },
-                        }
-                        self._d3Chart.onHover(event);
-                        self._layer.onHover(event);
-                        self._d3Chart.getTooltip().hideTooltip();
-                    });
+            // note click is handled by the configureItemInteractionPIXI call after this
+            self._pixiHelper.addInteractionHelper(elem, undefined,
+                undefined, undefined,
+                self._layer.onHover ? () => {
+                    let event = {
+                        caller: self._d3Chart.getElement(),
+                        selection: selection,
+                        event: EventType.HoverStart,
+                        data: {
+                            tooltip: self._d3Chart.getTooltip(),
+                            data: xy
+                        },
+                    }
+                    self._d3Chart.onHover(event);
+                    self._layer.onHover(event);
+                    self._d3Chart.getTooltip().displayTooltip(0);
+                } : undefined,
+                self._layer.onHover ? () => {
+                    let event = {
+                        caller: self._d3Chart.getElement(),
+                        selection: selection,
+                        event: EventType.HoverEnd,
+                        data: {
+                            tooltip: self._d3Chart.getTooltip(),
+                            data: xy
+                        },
+                    }
+                    self._d3Chart.onHover(event);
+                    self._layer.onHover(event);
+                    self._d3Chart.getTooltip().hideTooltip();
+                } : undefined, undefined, chart, xy);
+
+            self.configureItemInteractionPIXI(elem, xy);
+
+            if (xy.info && xy.info.title) {
+                self._pixiHelper.addSelection(getSelectionName(xy.info.title), elem);
             }
         }
 

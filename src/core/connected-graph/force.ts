@@ -38,7 +38,7 @@ export class D3ForceGraph extends D3SimpleGraph {
             .force('center', d3.forceCenter(width / 2, height / 2));
 
         simulation
-            .nodes(graph.nodes)
+            .nodes(graph.nodes as any)
             .on('tick', ticked);
 
         let force = simulation.force('link');
