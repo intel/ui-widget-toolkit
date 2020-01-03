@@ -10,13 +10,11 @@ var ScatterTest;
     };
     function createView() {
         var leftAxis2 = {
-            type: UWT.UIType.Axis,
             scaleType: UWT.AxisType.Linear,
             label: 'Values2',
             scalingInfo: TestData.defaultScalingInfo
         };
         var rightAxis1 = {
-            type: UWT.UIType.Axis,
             scaleType: UWT.AxisType.Linear,
             label: 'Values5'
         };
@@ -34,7 +32,15 @@ var ScatterTest;
                             { name: TestData.scatterEvents[3], values: TestData.scatterData[3] },
                             { name: TestData.scatterEvents[4], values: TestData.scatterData[4] }
                         ],
-                        colors: { 'data-0': '#ff0000', 'data-1': '#00ff00', 'data-2': '#0000ff', def: '#ffff00', test: '#A020F0' }
+                        colors: { 'data-0': '#ff0000', 'data-1': '#00ff00', 'data-2': '#0000ff', def: '#ffff00', test: '#A020F0' },
+                        onClick: function (event) {
+                            console.log('scatter canvas click');
+                            console.log(event);
+                        },
+                        onHover: function (event) {
+                            console.log('scatter canvas hover');
+                            console.log(event);
+                        }
                     }],
                 legends: [{ alignment: UWT.Alignment.Right }],
                 axes: [{
@@ -200,6 +206,14 @@ var ScatterTest;
                                 ],
                                 showTitleText: true
                             }],
+                        onClick: function (event) {
+                            console.log('scatter svg click');
+                            console.log(event);
+                        },
+                        onHover: function (event) {
+                            console.log('scatter svg hover');
+                            console.log(event);
+                        }
                     }
                 ],
                 axes: [{
