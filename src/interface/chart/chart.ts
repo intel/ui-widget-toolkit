@@ -1,6 +1,6 @@
 import { Alignment, ICss, IEvent, IOptions, UIRenderer, UIElement, IBuffer, ILegend } from '../ui-base';
 import { IAxis, IScalingInfo } from './axis';
-import { IXYValue, IMinMaxValue, IXYRect, ISummaryValue, ITreeNode, ITraceValue, IFunctionMap } from './series-data';
+import { IXYValue, IMinMaxValue, IXYRect, ISummaryValue, ITreeNode, ITraceValue, IFunctionMap, IFlameChartValue } from './series-data';
 import {
     IFlameChartDecimator, ISunburstDecimator, IXYDecimator, IXYStackedDecimator,
     ITraceResidencyDecimator
@@ -207,9 +207,23 @@ export interface ITraceValueLayer extends IBaseLayer {
     /** any transformation to do before rendering the data */
     decimator?: IFlameChartDecimator | ITraceResidencyDecimator;
     /** turn on rendering of the background, useful when using the rect limit decimator */
-    enableBackground: boolean;
+    enableBackground?: boolean;
     /** disable automatic hover of all identically named items */
-    disableHover: boolean;
+    disableHover?: boolean;
+    /** tells the area graph how to render information between two points */
+    interpolateType?: InterpolateType,
+}
+
+/** a set of flame chart data */
+export interface IStackLayer extends IBaseLayer {
+    /** a list of trace values to render */
+    data: IFlameChartValue[];
+    /** any transformation to do before rendering the data */
+    decimator?: IFlameChartDecimator | ITraceResidencyDecimator;
+    /** turn on rendering of the background, useful when using the rect limit decimator */
+    enableBackground?: boolean;
+    /** disable automatic hover of all identically named items */
+    disableHover?: boolean;
     /** tells the area graph how to render information between two points */
     interpolateType?: InterpolateType,
 }
@@ -234,7 +248,7 @@ export interface IRectLayer extends IBaseLayer {
 }
 
 export type ILayer = IXYLayer | ISummaryLayer | IMinMaxValueLayer | ITraceValueLayer |
-    IRectLayer | IMarkerLayer;
+    IStackLayer | IRectLayer | IMarkerLayer;
 
 export interface ITooltipEvent extends IEvent {
     defaultTitle?: string;

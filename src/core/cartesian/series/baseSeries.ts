@@ -85,6 +85,13 @@ export class BaseSeries {
         }
     }
 
+    protected initializeContextMenuItems() {
+        // do this in place because it is used by reference in the context menu
+        this._contextMenuItems = this._layer.contextMenuItems ?
+            this._d3Chart.getContextMenuItems().concat(this._layer.contextMenuItems) :
+            this._d3Chart.getContextMenuItems();
+    }
+
     protected applyStyles(): void {
         if (this._layer.css) {
             let styles: { [index: string]: any } = this._layer.css.style;
@@ -240,8 +247,7 @@ export class BaseSeries {
         if (self._d3Chart.getOptions().disableBrush) {
             elem.attr('cursor', 'pointer');
             addClickHelper(elem, self._layer.onClick ? onClick : undefined,
-                self._layer.onDoubleClick ? onDoubleClick : undefined,
-                self._contextMenuItems,
+                self._layer.onDoubleClick ? onDoubleClick : undefined, self._contextMenuItems,
                 self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
         } else {
             elem.attr('cursor', 'crosshair');
@@ -336,15 +342,11 @@ export class BaseSeries {
         let wait: any;
         if (self._d3Chart.getOptions().disableBrush) {
             addClickHelper(elem, self._layer.onClick ? onClick : undefined,
-                self._layer.onDoubleClick ? onDoubleClick : undefined,
-                self._contextMenuItems,
+                self._layer.onDoubleClick ? onDoubleClick : undefined, self._contextMenuItems,
                 self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
         } else {
             self._d3Chart.getGraphGroup().attr('cursor', 'crosshair');
             elem
-                .on('rightclick', function (event: any) {
-                    showContextMenu(d3.event, undefined, self._contextMenuItems);
-                })
                 .on('mousedown', function (e: any) {
                     let caller = self._d3Chart.getElement();
                     if (value) {

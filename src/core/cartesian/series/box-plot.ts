@@ -109,12 +109,9 @@ export class BoxPlotSeries extends BaseSeries implements ICartesianSeriesPlugin 
                 self._d3Chart.cursorExit();
             });
 
-        let contextMenuItems = self._layer.contextMenuItems ?
-            self._d3Chart.getContextMenuItems().concat(self._layer.contextMenuItems) :
-            self._d3Chart.getContextMenuItems();
-
-        addClickHelper(elem, self._layer.onClick, self._layer.onDoubleClick, contextMenuItems,
-            self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
+        addClickHelper(elem, self._layer.onClick, self._layer.onDoubleClick,
+            self._contextMenuItems, self._d3Chart.getTooltip(),
+            self._d3Chart.getElement(), value);
     }
 
     public getTooltipMetrics(elem: UIElement, event: IEvent): ITooltipData[] {
@@ -159,6 +156,8 @@ export class BoxPlotSeries extends BaseSeries implements ICartesianSeriesPlugin 
             this._d3Elems[i].remove();
         }
         this._d3Elems = [];
+
+        this.initializeContextMenuItems();
 
         // If there's already data remove it
         let xScale = self._d3XAxis.getScale();

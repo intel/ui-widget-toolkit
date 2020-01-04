@@ -165,6 +165,8 @@ export class RectSeries extends BaseSeries implements ICartesianSeriesPlugin {
 
         self._d3Elems = [];
 
+        this.initializeContextMenuItems();
+
         // If there's already data remove it
         let xScale = self._d3XAxis.getScale();
         let yScale = self._d3YAxis.getScale();

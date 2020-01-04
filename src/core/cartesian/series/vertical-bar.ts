@@ -382,12 +382,10 @@ export class VerticalBarSeries extends BaseSeries implements ICartesianSeriesPlu
                 self._d3Chart.cursorExit();
             });
 
-        let contextMenuItems = self._layer.contextMenuItems ?
-            self._d3Chart.getContextMenuItems().concat(self._layer.contextMenuItems) :
-            self._d3Chart.getContextMenuItems();
+        this.initializeContextMenuItems();
 
-        addClickHelper(elem, self._layer.onClick, self._layer.onDoubleClick, contextMenuItems,
-            self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
+        addClickHelper(elem, self._layer.onClick, self._layer.onDoubleClick,
+            self._contextMenuItems, self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
     }
 
     /** render all of the data in the series
@@ -400,6 +398,7 @@ export class VerticalBarSeries extends BaseSeries implements ICartesianSeriesPlu
             self._d3Elems[i].remove();
         }
 
+        this.initializeContextMenuItems();
         self._d3Elems = [];
 
         let yScale = self._d3YAxis.getScale();

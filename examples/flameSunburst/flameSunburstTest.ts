@@ -199,5 +199,27 @@ module FlameSunburstTest {
             TestBase.addElement(chart, '', '', '', { forceWebGLRenderer: true });
             TestBase.elemManager.addToHighlightGroup(chart, 'trace');
         }
+        {
+            let chart = {
+                title: 'Direct Stack Load',
+                type: UWT.UIType.Cartesian,
+                dataSets: [{
+                    renderType: UWT.RenderType.FlameChart,
+                    data: trace3,
+                    contextMenuItems: [{
+                        title: 'FlameMenuItem',
+                        action(elem: any, data: any, index: any) {
+                            console.log('index: ' + index);
+                            console.log(data);
+                            console.log(elem);
+                        }
+                    }]
+                }],
+                isXContinuous: true
+            }
+
+            UWT.Chart.finalize(chart);
+            TestBase.addElement(chart, '', '', '', {});
+        }
     }
 }

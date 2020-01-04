@@ -1375,6 +1375,9 @@ export class FlameChartMergeRectDecimator implements IFlameChartDecimator {
         // compute merged rects
         for (let i = 0; i < values.length; ++i) {
             let perLevelData = values[i];
+            if (perLevelData === undefined) {
+                continue;
+            }
 
             let mergedLevelData: IFlameChartValue[] = [];
 

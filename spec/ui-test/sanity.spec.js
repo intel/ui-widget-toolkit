@@ -537,6 +537,17 @@ describe('sanity', function () {
                 })
             });
         });
+        driver.findElement(By.id('graphArea9')).then(function (graph) {
+            graph.findElements(By.tagName('canvas')).then(function (canvas) {
+                expect(canvas.length).toBe(1);
+            });
+            graph.findElement(By.className('background')).then(function (background) {
+                background.getAttribute('d').then(function (attr) {
+                    expect(attr).toBeDefined();
+                    done();
+                })
+            });
+        });
 
     }, 10000);
 

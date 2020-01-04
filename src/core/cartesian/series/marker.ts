@@ -217,6 +217,8 @@ export class MarkerSeries extends BaseSeries implements ICartesianSeriesPlugin {
         // If there's already data remove it
         let xScale = self._d3XAxis.getScale();
 
+        this.initializeContextMenuItems();
+
         // Build list of class names to apply
         let classes: string = this.getClassNames('chart-marker');
         if (this._layer.css) {

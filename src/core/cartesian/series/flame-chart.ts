@@ -5,7 +5,7 @@ import {
     IFlameChartValue, IMinMaxValue, ITraceValue
 } from '../../../interface/chart/series-data';
 import {
-    ILayer, ITraceValueLayer, RenderType, ICartesianChart
+    ILayer, IStackLayer, ITraceValueLayer, RenderType, ICartesianChart
 } from '../../../interface/chart/chart'
 import { IFlameChartDecimator } from '../../../interface/chart/decimator'
 import { FlameChartMergeRectDecimator } from '../decimator/decimator';
@@ -32,7 +32,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
         return layer.renderType === RenderType.FlameChart;
     }
 
-    protected _data: ITraceValue[];
+    protected _data: ITraceValue[] | IStackLayer[];
     protected _backgroundData: IMinMaxValue[];
     protected _decimator: IFlameChartDecimator;
     protected _layer: ITraceValueLayer;
@@ -205,7 +205,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
         super(chart, layer, xAxis, undefined, true, svg);
 
         let self = this;
-        this.setData(layer);
+        self.setData(layer);
 
         self.getDataKey = function (d: any): string {
             return d.key;
@@ -250,7 +250,18 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
     }
 
     public setData(layer: ILayer) {
-        if (layer.data != this._data) {
+        if (layer.data && layer.data.length > 0 &&
+            (layer.data[0] as IFlameChartValue).depth !== undefined) {
+            this._data = layer.data as IStackLayer[];
+            this._allRects = [];
+            for (let i = 0; i < layer.data.length; ++i) {
+                let value = layer.data[i] as IFlameChartValue;
+                if (!this._allRects[value.depth]) {
+                    this._allRects[value.depth] = [];
+                }
+                this._allRects[value.depth].push(value);
+            }
+        } else if (layer.data != this._data) {
             this._data = layer.data as ITraceValue[];
             this._allRects = this.generateRects(new SimpleBuffer(this._data));
         }
@@ -282,14 +293,16 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
     /** get x min max values for the object */
     public getXMinMax(): number[] {
         let self = this;
-        let xMinMax: number[] = [];
-        if (this._data.length > 0) {
-            xMinMax.push(self.getDataStart(this._data[0]));
-            xMinMax.push(d3.max(this._data,
-                function (value: ITraceValue, index: number,
-                    arr: ITraceValue[]): number {
-                    return self.getDataStart(value) + self.getDataDuration(value);
-                }));
+        let xMinMax: number[] = [Number.MAX_VALUE, -Number.MAX_VALUE];
+        if (this._allRects.length > 0) {
+            this._allRects.forEach((levelData) => {
+                xMinMax[0] = Math.min(self.getDataStart(levelData[0].traceValue), xMinMax[0]);
+                xMinMax[1] = d3.max(levelData,
+                    function (value: IFlameChartValue, index: number,
+                        arr: IFlameChartValue[]): number {
+                        return self.getDataStart(value.traceValue) + self.getDataDuration(value.traceValue);
+                    });
+            })
         }
         return xMinMax;
     }
@@ -379,17 +392,20 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
         if (this._allRects.length > 1) {
             let tooltipData: ITooltipData = { source: elem, group: 'Stack', metrics: {} };
 
-            for (let i = 0; i < this._data.length; ++i) {
-                let traceVal = this._data[i];
-                let start = this.getDataStart(traceVal);
-                if (event.xEnd > start) {
-                    if (event.xEnd <= start + this.getDataDuration(traceVal)) {
-                        tooltipData.metrics[this.getDataName(traceVal)] = '';
+            this._allRects.forEach((levelData) => {
+                for (let j = 0; j < levelData.length; ++j) {
+                    let traceVal = levelData[j].traceValue;
+                    let start = this.getDataStart(traceVal);
+                    if (event.xEnd > start) {
+                        if (event.xEnd <= start + this.getDataDuration(traceVal)) {
+                            tooltipData.metrics[this.getDataName(traceVal)] = '';
+                        }
+                    } else {
+                        break;
                     }
-                } else {
-                    break;
                 }
-            }
+            })
+
             ret.push(tooltipData);
         }
         return ret;
@@ -400,23 +416,12 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
         if (this._minHeight) {
             return this._minHeight;
         }
-        let len = this._data.length;
-        let stack = [];
-        let maxDepth = 1;
-        for (let i = 0; i < len; i++) {
-            let value = this._data[i];
-            let parent = stack[stack.length - 1];
 
-            // pop stuff off the stack
-            while (stack.length && this.getDataStart(value) >=
-                this.getDataStart(parent) + this.getDataDuration(parent)) {
-                --stack.length;
-                parent = stack[stack.length - 1];
-            }
-
-            stack.push(value);
-            maxDepth = Math.max(maxDepth, stack.length);
+        let maxDepth = 0;
+        for (let depth in this._allRects) {
+            maxDepth = Math.max(maxDepth, Number(depth));
         }
+
         this._minHeight = maxDepth * this._stackHeight;
         return this._minHeight;
     }
@@ -431,6 +436,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
                     self._selection = value.traceValue;
                     if (value) {
                         self._d3Chart.onHover({
+                            caller: self._d3Chart.getElement(),
                             event: EventType.HoverStart,
                             selection: getSelectionName(self.getDataName(value.traceValue))
                         });
@@ -439,6 +445,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
                 .on('mouseleave', function () {
                     if (value) {
                         self._d3Chart.onHover({
+                            caller: self._d3Chart.getElement(),
                             event: EventType.HoverEnd,
                             selection: getSelectionName(self.getDataName(value.traceValue))
                         });
@@ -492,6 +499,8 @@ class D3SVGFlameChart extends FlameChartSeries {
     public render(): void {
         let self = this;
         this.renderBackground();
+
+        this.initializeContextMenuItems();
 
         let xScale = self._d3XAxis.getScale();
 
@@ -597,6 +606,9 @@ class D3PIXIFlameChart extends FlameChartSeries {
         if (!this._textMap) {
             this._textMap = {}
         }
+
+        this.initializeContextMenuItems();
+
         this.renderBackground();
 
         let segmentGroup = this._d3svg.select('.segments');
@@ -661,11 +673,12 @@ class D3PIXIFlameChart extends FlameChartSeries {
 
             // note click is handled by the configureItemInteractionPIXI call after this
             this._pixiHelper.addInteractionHelper(selection, undefined,
-                undefined, undefined,
+                undefined, this._contextMenuItems,
                 this._layer.disableHover ? undefined : () => {
                     this._selection = value;
                     if (value) {
                         this._d3Chart.onHover({
+                            caller: chart,
                             event: EventType.HoverStart,
                             selection: getSelectionName(name)
                         });
@@ -674,6 +687,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
                 this._layer.disableHover ? undefined : () => {
                     if (value) {
                         this._d3Chart.onHover({
+                            caller: chart,
                             event: EventType.HoverEnd,
                             selection: getSelectionName(name)
                         });

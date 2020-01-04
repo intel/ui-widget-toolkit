@@ -122,6 +122,8 @@ export class BaseHeatMap extends BaseSeries implements ICartesianSeriesPlugin {
 
         this._d3Elems = [];
 
+        this.initializeContextMenuItems();
+
         // If there's already data remove it
         if (!this.isXContinuousSeries()) {
             self._d3XAxis.getScale().padding(0);
@@ -273,11 +275,12 @@ export class BaseHeatMap extends BaseSeries implements ICartesianSeriesPlugin {
                 // this._pixiHelper.addSelection(getSelectionName(value.y), selection);
 
                 this._pixiHelper.addInteractionHelper(selection, this._layer.onClick,
-                    this._layer.onDoubleClick, this._layer.contextMenuItems,
+                    this._layer.onDoubleClick, self._contextMenuItems,
                     () => {
                         this._selection = value;
                         if (value) {
                             this._d3Chart.onHover({
+                                caller: chart,
                                 event: EventType.HoverStart,
                                 selection: getSelectionName(value.y)
                             });
@@ -286,6 +289,7 @@ export class BaseHeatMap extends BaseSeries implements ICartesianSeriesPlugin {
                     () => {
                         if (value) {
                             this._d3Chart.onHover({
+                                caller: chart,
                                 event: EventType.HoverEnd,
                                 selection: getSelectionName(value.y)
                             });

@@ -920,12 +920,24 @@ export class MetricListTooltip extends BaseTooltip {
         tr.appendChild(td);
 
         // now get text from any associated graphs
+
+        // check if there are multiple chart sources involved
+        let multipleSources = false;
+        if (ttList.length > 0) {
+            let firstSource = ttList[0].source;
+            for (let i = 1; i < ttList.length; ++i) {
+                if (ttList[i].source !== firstSource) {
+                    multipleSources = true;
+                }
+            }
+        }
+
         for (let i = 0; i < ttList.length; ++i) {
             let data = ttList[i];
 
             if (Object.keys(data.metrics).length > 0) {
                 let sourceChart: any = data.source;
-                if (sourceChart && sourceChart.title && ttList.length !== 1) {
+                if (sourceChart && sourceChart.title && multipleSources) {
                     let tr = document.createElement('tr');
                     table.appendChild(tr);
 

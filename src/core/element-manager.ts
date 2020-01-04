@@ -8,6 +8,7 @@ const enum GroupType {
     Tooltip,
     Highlight,
     Render,
+    Focus,
     None
 }
 
@@ -141,7 +142,7 @@ export class ElementManager implements UIElementManager {
             if (!event.caller) {
                 console.warn('Warning no caller specified for this event, cannot propoate changes', event);
             }
-            let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
+            let elems = self._groupInfo[GroupType.Focus]._objectMap.get(event.caller);
             if (elems) {
                 if (self._hoverCallback) {
                     self._hoverCallback(elems, event);
@@ -440,7 +441,48 @@ export class ElementManager implements UIElementManager {
     }
 
     /**
-     * set the group to select this elem with
+    * set the group to sync this elem with
+    *
+    * @param elem - the elem that should should be "ganged"
+    * @param groupName - Name of the group that this elem should be "ganged"
+    *   with.
+    *
+    * @return - The elem manager instance.
+    */
+    public addToFocusGroup(elem: UIElement, groupName: string): ElementManager {
+        addHoverCallback(elem);
+        this.removeFromFocusGroup(elem);
+
+        let self = this;
+        if (elem.onHover) {
+            let func = elem.onHover;
+            elem.onHover = function (event: IEvent) {
+                self._onHoverCallback(event);
+                func(event);
+            }
+        } else {
+            elem.onHover = self._onHoverCallback;
+        }
+
+        this.addToGroup(elem, groupName, GroupType.Focus);
+
+        return this;
+    }
+
+    /**
+     * remove the elem from the zoom group it is in
+     *
+     * @param elem - the elem that should should be "unganged"
+     *
+     * @return - The elem manager instance.
+     */
+    public removeFromFocusGroup(elem: UIElement): ElementManager {
+        this.removeFromGroup(elem, GroupType.Focus);
+        return this;
+    }
+
+    /**
+     * set the group to sync this elem with
      *
      * @param elem - the elem that should should be "ganged"
      * @param groupName - Name of the group that this elem should be "ganged"
@@ -452,6 +494,8 @@ export class ElementManager implements UIElementManager {
         addHoverCallback(elem);
         this.removeFromHighlightGroup(elem);
 
+        this.addToFocusGroup(elem, groupName);
+
         let self = this;
         if (elem.onBrush) {
             let func = elem.onBrush;
@@ -461,16 +505,6 @@ export class ElementManager implements UIElementManager {
             }
         } else {
             elem.onBrush = self._onBrushCallback;
-        }
-
-        if (elem.onHover) {
-            let func = elem.onHover;
-            elem.onHover = function (event: IEvent) {
-                self._onHoverCallback(event);
-                func(event);
-            }
-        } else {
-            elem.onHover = self._onHoverCallback;
         }
 
         if (elem.onCursorChanged) {
@@ -519,6 +553,7 @@ export class ElementManager implements UIElementManager {
      * @return - The elem manager instance.
      */
     public removeFromHighlightGroup(elem: UIElement): ElementManager {
+        this.removeFromFocusGroup(elem);
         this.removeFromGroup(elem, GroupType.Highlight);
         return this;
     }

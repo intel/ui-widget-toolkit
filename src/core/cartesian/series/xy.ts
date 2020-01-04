@@ -815,15 +815,7 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
         }
 
         // do this in place because it is used by reference in the context menu
-        this._contextMenuItems.length = 0;
-        for (let i = 0; i < self._d3Chart.getContextMenuItems().length; ++i) {
-            this._contextMenuItems.push(self._d3Chart.getContextMenuItems()[i]);
-        }
-        if (self._layer.contextMenuItems) {
-            for (let i = 0; i < self._layer.contextMenuItems.length; ++i) {
-                this._contextMenuItems.push(self._layer.contextMenuItems[i]);
-            }
-        }
+        this.initializeContextMenuItems();
 
         // now actually made the d3 calls to render the dat
         if (self._layer.renderType & RenderType.Line) {
@@ -1110,7 +1102,7 @@ class D3PIXIXYSeries extends XYSeries {
 
             // note click is handled by the configureItemInteractionPIXI call after this
             self._pixiHelper.addInteractionHelper(elem, undefined,
-                undefined, undefined,
+                undefined, self._contextMenuItems,
                 self._layer.onHover ? () => {
                     let event = {
                         caller: self._d3Chart.getElement(),
