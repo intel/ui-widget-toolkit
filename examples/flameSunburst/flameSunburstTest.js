@@ -187,6 +187,27 @@ var FlameSunburstTest;
             TestBase.addElement(chart, '', '', '', { forceWebGLRenderer: true });
             TestBase.elemManager.addToHighlightGroup(chart, 'trace');
         }
+        {
+            var chart = {
+                title: 'Direct Stack Load',
+                type: UWT.UIType.Cartesian,
+                dataSets: [{
+                        renderType: UWT.RenderType.FlameChart,
+                        data: trace3,
+                        contextMenuItems: [{
+                                title: 'FlameMenuItem',
+                                action: function (elem, data, index) {
+                                    console.log('index: ' + index);
+                                    console.log(data);
+                                    console.log(elem);
+                                }
+                            }]
+                    }],
+                isXContinuous: true
+            };
+            UWT.Chart.finalize(chart);
+            TestBase.addElement(chart, '', '', '', {});
+        }
     }
     FlameSunburstTest.createWebGLView = createWebGLView;
 })(FlameSunburstTest || (FlameSunburstTest = {}));
