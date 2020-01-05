@@ -19,6 +19,14 @@ let common = {
         {
             'ui-widget-toolkit': 'ui-widget-toolkit',
             d3: 'd3',
+            'd3-sankey': {
+                root: 'Sankey',
+                commonjs2: 'd3-sankey',
+                amd: 'd3-sankey',
+                commonjs: 'd3-sankey'
+            },
+            dagre: 'dagre',
+            'es6-promise': 'es6-promise',
             'pixi.js': {
                 root: 'PIXI',
                 commonjs2: 'pixi.js',
@@ -52,7 +60,7 @@ let common = {
                 loader: 'babel-loader',
                 exclude: /node_modules/,
                 options: {
-                    presets: ['react']
+                    presets: ['@babel/preset-react']
                 }
             },
             {
@@ -141,6 +149,11 @@ module.exports = [
                 { from: './bower.json', to: '.' },
                 { from: './third-party-programs.txt', to: '.' }
             ])
-        ]
+        ],
+        resolve: {
+            alias: {
+                'ui-widget-toolkit': path.resolve(__dirname, 'dist/js'),
+            }
+        }
     })
 ]

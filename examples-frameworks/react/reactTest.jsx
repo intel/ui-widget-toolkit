@@ -1,7 +1,7 @@
 import * as UWT from '../../dist';
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
 import {
     UWTAxis, UWTChart, UWTPieChart, UWTGrid, UWTFlowDiagram, UWTGraph,
@@ -1012,17 +1012,17 @@ let radar1 = {
             { key: 'Administration', data: 90 }
         ]
     }],
-    onClick: function (event: UWT.IEvent) {
+    onClick: function (event) {
         console.log('on click');
         console.log(event);
     },
-    onDoubleClick: function (event: UWT.IEvent) {
+    onDoubleClick: function (event) {
         console.log('on double click');
         console.log(event);
     },
     contextMenuItems: [{
         title: 'RadarMenuItem',
-        action(elem: any, data: any, index: any) {
+        action(elem, data, index) {
             console.log('index: ' + index);
             console.log(data);
             console.log(elem);

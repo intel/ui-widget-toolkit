@@ -38,7 +38,7 @@ export class BaseHeatMap extends BaseSeries implements ICartesianSeriesPlugin {
     protected _decimator: any;
     protected _selection: any;
 
-    protected _pixi: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+    protected _pixi: PIXI.Renderer;
     protected _pixiHelper: PIXIHelper;
     protected _rectTexture: PIXI.Texture;
 
@@ -227,14 +227,14 @@ export class BaseHeatMap extends BaseSeries implements ICartesianSeriesPlugin {
         if (requiresRender) {
             if (!this._pixiHelper) {
                 // this creates new helpers
-                this._pixiHelper = new PIXIHelper(!this._d3Chart.getOptions().forceCanvasRenderer);
+                this._pixiHelper = new PIXIHelper();
                 this._pixi = this._pixiHelper.getRenderer();
 
                 let rectGraphic = new PIXI.Graphics();
                 rectGraphic.beginFill(0xFFFFFF);
                 rectGraphic.drawRect(0, 0, 1, 1); // draw rect)
                 rectGraphic.endFill();
-                this._rectTexture = this._pixi.generateTexture(rectGraphic, PIXI.SCALE_MODES.LINEAR, 128);
+                this._rectTexture = this._pixi.generateTexture(rectGraphic, PIXI.SCALE_MODES.LINEAR, 8);
             }
 
             // TODO

@@ -136,11 +136,11 @@ export class D3Polar extends SVGRenderer {
             if (SVGRenderer.IS_RESIZING) {
                 return;
             }
+            self._renderer.hover(chart, event);
+
             let hoverCallback = chart.onHover;
             if (hoverCallback) {
                 hoverCallback(event);
-            } else {
-                self._renderer.hover(chart, event);
             }
             return true;
         }

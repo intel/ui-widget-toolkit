@@ -74,7 +74,7 @@ export class UWTChart implements OnChanges {
     @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
-    @ViewChild('chart') chartElem: any;
+    @ViewChild('chart', { static: true }) chartElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
@@ -109,7 +109,7 @@ export class UWTSwimlaneChart {
     @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
-    @ViewChild('chart') chartElem: any;
+    @ViewChild('chart', { static: true }) chartElem: any;
 
     private chartOptions: UWT.IOptions[] = [];
     getChartOptions = function (index: number) {
@@ -155,7 +155,7 @@ export class UWTPieChart implements OnChanges {
     @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
-    @ViewChild('chart') chartElem: any;
+    @ViewChild('chart', { static: true }) chartElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
@@ -204,7 +204,7 @@ export class UWTRadarChart implements OnChanges {
     @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
-    @ViewChild('chart') chartElem: any;
+    @ViewChild('chart', { static: true }) chartElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
@@ -244,7 +244,7 @@ export class UWTGrid implements OnChanges {
     @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
-    @ViewChild('grid') gridElem: any;
+    @ViewChild('grid', { static: true }) gridElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
@@ -298,7 +298,7 @@ export class UWTFlowDiagram implements OnChanges {
     @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
-    @ViewChild('diagram') diagramElem: any;
+    @ViewChild('diagram', { static: true }) diagramElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
@@ -345,7 +345,7 @@ export class UWTGraph implements OnChanges {
     @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
-    @ViewChild('graph') graphElem: any;
+    @ViewChild('graph', { static: true }) graphElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
@@ -393,7 +393,7 @@ export class UWTHierarchyGraph implements OnChanges {
     @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
-    @ViewChild('graph') graphElem: any;
+    @ViewChild('graph', { static: true }) graphElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
@@ -445,7 +445,7 @@ export class UWTSunburstChart implements OnChanges {
     @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
-    @ViewChild('chart') chartElem: any;
+    @ViewChild('chart', { static: true }) chartElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {
@@ -515,7 +515,7 @@ export class UWTAxis implements OnChanges {
     @Input() renderer: UWT.UIRenderer;
     @Input() onRender: () => void;
 
-    @ViewChild('axis') axisElem: any;
+    @ViewChild('axis', { static: true }) axisElem: any;
 
     ngOnChanges(changes: any) {
         if (!this.renderer) {

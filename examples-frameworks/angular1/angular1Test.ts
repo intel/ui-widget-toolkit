@@ -1,8 +1,8 @@
 /// <reference path='../../dist/index.d.ts' />
-/// <reference path='../../dist/framework/angular1/index.js' />
 /// <reference path='../../examples/testBase.ts' />
 /// <reference path='../../examples/testData.ts' />
 
+declare var UWTAngularJS: any;
 UWTAngularJS.initializeAngular1(angular);
 
 module AngularTest {

@@ -20,10 +20,10 @@ function getChromeVersion() {
 }
 
 export class GraphicsManager {
-    protected _renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+    protected _renderer: PIXI.Renderer;
     protected _graphicsMap: { [index: string]: any } = {}
 
-    constructor(renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer) {
+    constructor(renderer: PIXI.Renderer) {
         this._renderer = renderer;
     }
 
@@ -48,21 +48,16 @@ export class GraphicsManager {
 
 export class PIXIHelper {
     protected _stage: PIXI.Container;
-    protected _renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+    protected _renderer: PIXI.Renderer;
     protected _rectTexture: PIXI.Texture;
     protected _selectionItems: { [index: string]: any } = {};
     protected _useWebGLRenderer: boolean;
 
-    constructor(useWebGLRenderer = false) {
+    constructor() {
         PIXI.utils.skipHello();
-        this._useWebGLRenderer = useWebGLRenderer;
-        if (useWebGLRenderer) {
-            this._renderer = new PIXI.WebGLRenderer(
-                { transparent: true, antialias: true });
-        } else {
-            this._renderer = new PIXI.CanvasRenderer(
-                { transparent: true, antialias: true });
-        }
+
+        this._renderer = new PIXI.Renderer(
+            { transparent: true, antialias: true });
 
         let rect = new PIXI.Graphics();
         rect.beginFill(0xFFFFFF);

@@ -3,67 +3,68 @@
 <html lang='en'>
 
 <head>
-	<meta charset='utf-8' />
-	<title>Angular Graph Test</title>''
+    <meta charset='utf-8' />
+    <title>Angular Graph Test</title>''
 
-	<link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css' , type='text/css' />
-	<link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css' ,
-		type='text/css' />
-	<script src='https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js'></script>
-	<script src='https://d3js.org/d3.v5.js'></script>
-	<script src='https://pixijs.download/v4.8.6/pixi.min.js'></script>
-	<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js'></script>
+    <link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css' , type='text/css' />
+    <link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css' ,
+        type='text/css' />
+    <script src='https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js'></script>
+    <script src='https://d3js.org/d3.v5.js'></script>
+    <script src='https://unpkg.com/d3-sankey@0.4.2/build/d3-sankey.js'></script>
+    <script src='https://pixijs.download/v5.2.0/pixi.min.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.7.7/angular.min.js'></script>
 
 
-	<link rel='stylesheet' , href='../../dist/css/ui-widget-toolkit.css' , type='text/css' />
-	<script src='../../dist/js/ui-widget-toolkit.js'></script>
-	<script src='../../dist/framework/angular1/index.js'></script>
-	<script src='../../examples/testBase.js'></script>
-	<script src='../../examples/testData.js'></script>
-	<script src='./angular1Test.js'></script>
+    <link rel='stylesheet' , href='../../dist/css/ui-widget-toolkit.css' , type='text/css' />
+    <script src='../../dist/js/ui-widget-toolkit.js'></script>
+    <script src='../../dist/framework/angular1/index.js'></script>
+    <script src='../../examples/testBase.js'></script>
+    <script src='../../examples/testData.js'></script>
+    <script src='./angular1Test.js'></script>
 </head>
 
 <body ng-app='test' ng-controller='TestCtrl'>
-	<p>
-		Angular Graph Test
-		<p></p>
-		<p>
-			<button id='zoomReset' type='button'>Reset Zoom</button>
-		</p>
+    <p>
+        Angular Graph Test
+        <p></p>
+        <p>
+            <button id='zoomReset' type='button'>Reset Zoom</button>
+        </p>
 
-		<p>
-			Add Selection: <input type='text' id='addInput' />
-			<button id='addSelection' type='button'>Go!</button>
-		</p>
-		<p>
-			Remove Selection: <input type='text' id='removeInput' />
-			<button id='removeSelection' type='button'>Go!</button>
-		</p>
-		<p>
-			Clear Selection
-			<button id='clearSelection' type='button'>Go!</button>
-		</p>
-	</p>
+        <p>
+            Add Selection: <input type='text' id='addInput' />
+            <button id='addSelection' type='button'>Go!</button>
+        </p>
+        <p>
+            Remove Selection: <input type='text' id='removeInput' />
+            <button id='removeSelection' type='button'>Go!</button>
+        </p>
+        <p>
+            Clear Selection
+            <button id='clearSelection' type='button'>Go!</button>
+        </p>
+    </p>
 
-	<uwt-swimlane-chart id='swimlane' chart-title='swimTitle' chart-defs='swimDef' render-options='swimlaneOptions'
-		color-manager='colorManager'></uwt-swimlane-chart>
-	<uwt-chart id='chart1' chart-title='title' chart-def='chartDef' render-options='renderOptions'
-		color-manager='colorManager'></uwt-chart>
-	<uwt-chart id='chart2' chart-title='barTitle' chart-def='barDef' color-manager='colorManager'></uwt-chart>
-	<uwt-pie-chart id='piechart1' chart-title='pieTitle' chart-def='pieDef' color-manager='colorManager'>
-	</uwt-pie-chart>
-	<uwt-grid id='grid1' grid-title='gridTitle' grid-def='gridDef' grid-style='gridStyle' grid-class='gridClass'
-		color-manager='colorManager'></uwt-grid>
-	<uwt-flow-diagram id='flow1' diagram-title='flowTitle' diagram-def='diagramDef' color-manager='colorManager'>
-	</uwt-flow-diagram>
-	<uwt-graph id='graph1' graph-title='graphTitle' graph-def='graphDef' color-manager='colorManager'>
-	</uwt-graph>
-	<uwt-chart id='chart3' chart-title='flameTitle' chart-def='flameChart' color-manager='colorManager'
-		render-options='flameRenderOptions'></uwt-chart>
-	<uwt-sunburst-chart id='chart4' chart-title='sunTitle' chart-def='sunChart' color-manager='colorManager'>
-	</uwt-sunburst-chart>
-	<uwt-axis axis-def='axis'></uwt-axis>
-	<uwt-radar-chart chart-title='radarTitle' chart-def='radarChart'></uwt-radar-chart>
+    <uwt-swimlane-chart id='swimlane' chart-title='swimTitle' chart-defs='swimDef' render-options='swimlaneOptions'
+        color-manager='colorManager'></uwt-swimlane-chart>
+    <uwt-chart id='chart1' chart-title='title' chart-def='chartDef' render-options='renderOptions'
+        color-manager='colorManager'></uwt-chart>
+    <uwt-chart id='chart2' chart-title='barTitle' chart-def='barDef' color-manager='colorManager'></uwt-chart>
+    <uwt-pie-chart id='piechart1' chart-title='pieTitle' chart-def='pieDef' color-manager='colorManager'>
+    </uwt-pie-chart>
+    <uwt-grid id='grid1' grid-title='gridTitle' grid-def='gridDef' grid-style='gridStyle' grid-class='gridClass'
+        color-manager='colorManager'></uwt-grid>
+    <uwt-flow-diagram id='flow1' diagram-title='flowTitle' diagram-def='diagramDef' color-manager='colorManager'>
+    </uwt-flow-diagram>
+    <uwt-graph id='graph1' graph-title='graphTitle' graph-def='graphDef' color-manager='colorManager'>
+    </uwt-graph>
+    <uwt-chart id='chart3' chart-title='flameTitle' chart-def='flameChart' color-manager='colorManager'
+        render-options='flameRenderOptions'></uwt-chart>
+    <uwt-sunburst-chart id='chart4' chart-title='sunTitle' chart-def='sunChart' color-manager='colorManager'>
+    </uwt-sunburst-chart>
+    <uwt-axis axis-def='axis'></uwt-axis>
+    <uwt-radar-chart chart-title='radarTitle' chart-def='radarChart'></uwt-radar-chart>
 </body>
 
 </html>

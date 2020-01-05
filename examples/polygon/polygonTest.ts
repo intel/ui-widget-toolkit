@@ -11,16 +11,16 @@ module PolygonTest {
 
     export function createView() {
         // lines
-        let xAxis: UWT.IAxisDescription = {
-            scaleType: UWT.AxisType.Linear,
+        let xAxis: UWT.IAxis = {
             axisDesc: {
+                scaleType: UWT.AxisType.Linear,
                 range: { min: 0, max: 100 }
             },
             alignment: UWT.Alignment.Bottom
         };
-        let yAxis: UWT.IAxisDescription = {
-            scaleType: UWT.AxisType.Linear,
+        let yAxis: UWT.IAxis = {
             axisDesc: {
+                scaleType: UWT.AxisType.Linear,
                 range: { min: 0, max: 100 }
             },
             alignment: UWT.Alignment.Left

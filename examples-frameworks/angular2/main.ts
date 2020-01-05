@@ -1,5 +1,5 @@
 import 'zone.js';
-import 'core-js/es7/reflect';
+import 'core-js/proposals/reflect-metadata';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { TestModule } from './testModule';

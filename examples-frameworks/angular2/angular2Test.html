@@ -3,49 +3,50 @@
 <html lang='en'>
 
 <head>
-	<meta charset='utf-8' />
-	<title>Angular2 Graph Test</title>
+    <meta charset='utf-8' />
+    <title>Angular2 Graph Test</title>
 
-	<link href="../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css" rel="stylesheet">
-	<link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css' , type='text/css' />
-	<link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css' ,
-		type='text/css' />
-	<script src='https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js'></script>
+    <link href="../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css" rel="stylesheet">
+    <link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css' , type='text/css' />
+    <link rel='stylesheet' href='https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css' ,
+        type='text/css' />
+    <script src='https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js'></script>
 
-	<script src='https://d3js.org/d3.v5.js'></script>
+    <script src='https://d3js.org/d3.v5.js'></script>
+    <script src='https://unpkg.com/d3-sankey@0.4.2/build/d3-sankey.js'></script>
 
-	<link rel='stylesheet' , href='../../dist/css/ui-widget-toolkit.css' , type='text/css' />
-	<script src='../../dist/js/ui-widget-toolkit.js'></script>
-	<script src='../../examples/testBase.js'></script>
-	<script src='../../examples/testData.js'></script>
+    <link rel='stylesheet' , href='../../dist/css/ui-widget-toolkit.css' , type='text/css' />
+    <script src='../../dist/js/ui-widget-toolkit.js'></script>
+    <script src='../../examples/testBase.js'></script>
+    <script src='../../examples/testData.js'></script>
 </head>
 
 <body>
-	<p>
-		Angular2 Graph Test
-		<p></p>
-		<p>
-			<button id='zoomReset' type='button'>Reset Zoom</button>
-		</p>
+    <p>
+        Angular2 Graph Test
+        <p></p>
+        <p>
+            <button id='zoomReset' type='button'>Reset Zoom</button>
+        </p>
 
-		<p>
-			Add Selection:
-			<input type='text' id='addInput' />
-			<button id='addSelection' type='button'>Go!</button>
-		</p>
-		<p>
-			Remove Selection:
-			<input type='text' id='removeInput' />
-			<button id='removeSelection' type='button'>Go!</button>
-		</p>
-		<p>
-			Clear Selection
-			<button id='clearSelection' type='button'>Go!</button>
-		</p>
-	</p>
+        <p>
+            Add Selection:
+            <input type='text' id='addInput' />
+            <button id='addSelection' type='button'>Go!</button>
+        </p>
+        <p>
+            Remove Selection:
+            <input type='text' id='removeInput' />
+            <button id='removeSelection' type='button'>Go!</button>
+        </p>
+        <p>
+            Clear Selection
+            <button id='clearSelection' type='button'>Go!</button>
+        </p>
+    </p>
 
-	<test-app>Loading test app</test-app>
-	<script src='./angular2Test.js'></script>
+    <test-app>Loading test app</test-app>
+    <script src='./angular2Test.js'></script>
 </body>
 
 </html>

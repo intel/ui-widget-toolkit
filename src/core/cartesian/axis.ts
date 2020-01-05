@@ -968,10 +968,6 @@ class D3AxisWrapper extends D3Chart {
         this.configureZoomHelper(this._svg);
     }
 
-    protected updateZoom(xStart: number, xEnd: number, yStart: number, yEnd: number) {
-        this.updateZoomHelper(this._svg, xStart, xEnd, yStart, yEnd);
-    }
-
     protected configureContextMenu(): void {
         this._svg.on('contextmenu', this.contextMenu(this._contextMenuItems,
             this._dataTooltip ? this._dataTooltip.onMouseLeave : undefined));

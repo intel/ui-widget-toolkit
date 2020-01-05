@@ -1,19 +1,14 @@
 {
     "compilerOptions": {
+        "experimentalDecorators": true,
         "module": "commonjs",
         "target": "es2016",
         "lib": [
             "es2017",
             "dom"
         ],
-        "experimentalDecorators": true,
-        "noImplicitAny": true,
         "preserveConstEnums": true,
-        "sourceMap": true
-    },
-    "exclude": [
-        "angular2",
-        "react",
-        "vue"
-    ]
+        "sourceMap": true,
+        "jsx": "react"
+    }
 }

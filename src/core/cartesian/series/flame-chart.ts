@@ -38,7 +38,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
     protected _layer: ITraceValueLayer;
     protected _worker: Worker;
 
-    protected _pixi: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+    protected _pixi: PIXI.Renderer;
     protected _pixiHelper: PIXIHelper;
 
     // store data by stack level for faster searching
@@ -625,15 +625,18 @@ class D3PIXIFlameChart extends FlameChartSeries {
         }
 
         if (!this._pixiHelper) {
-            this._pixiHelper = new PIXIHelper(!this._d3Chart.getOptions().forceCanvasRenderer);
+            this._pixiHelper = new PIXIHelper();
             this._pixi = this._pixiHelper.getRenderer();
         }
 
-        this._pixiHelper.addPixiSvg(segmentGroup,
+        let foreignObject = this._pixiHelper.addPixiSvg(segmentGroup,
             classes, this._d3XAxis.getRangePixels(),
             this.getRequiredHeight());
 
         this._pixiHelper.clearSelections();
+
+        this._d3Elems.push(foreignObject); // this is just for legends
+        this.configureItemInteraction(foreignObject);
 
         let xScale = this._d3XAxis.getScale();
         let stage = new PIXI.Container();
@@ -707,7 +710,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
 
                 let textWidth = text.width;
                 if (textWidth < rect.width) {
-                    let tSprite = new PIXI.Sprite(this._pixi.generateTexture(text));
+                    let tSprite = new PIXI.Sprite(this._pixi.generateTexture(text, PIXI.SCALE_MODES.LINEAR, 1));
                     tSprite.x = (rect.width - text.width) * .5;
                     tSprite.y = this._stackHeight * .5 - text.height * .5;
                     rect.addChild(tSprite);

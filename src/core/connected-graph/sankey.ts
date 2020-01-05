@@ -134,8 +134,13 @@ export class D3SankeyDiagram extends D3ConnectedGraphSVG {
         let height = this._options.height;
 
         // Set the sankey diagram properties
-        self._sankey = sankey()
-            .size([width, height]);
+        if ((d3 as any).sankey !== undefined) {
+            self._sankey = (d3 as any).sankey()
+                .size([width, height]);
+        } else {
+            self._sankey = sankey()
+                .size([width, height]);
+        }
 
         var path = self._sankey.link();
 

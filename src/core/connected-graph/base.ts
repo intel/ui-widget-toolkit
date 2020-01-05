@@ -972,7 +972,7 @@ export class D3ConnectedGraphPixi extends UIElementRenderer {
 
     protected _selectionHelper: SelectionHelper;
 
-    protected _pixi: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+    protected _pixi: PIXI.Renderer;
     protected _pixiHelper: PIXIHelper;
     protected _stage: PIXI.Container;
 
@@ -1116,7 +1116,7 @@ export class D3ConnectedGraphPixi extends UIElementRenderer {
 
         let first = this._pixiHelper === undefined;
         if (first) {
-            this._pixiHelper = new PIXIHelper(!this.getOptions().forceCanvasRenderer);
+            this._pixiHelper = new PIXIHelper();
             this._pixi = this._pixiHelper.getRenderer();
             (this._parent.node() as any).appendChild(this._pixi.view);
 

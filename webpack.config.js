@@ -15,7 +15,16 @@ let common = {
         umdNamedDefine: true
     },
     externals: {
+        '@angular': '@angular',
         d3: 'd3',
+        'd3-sankey': {
+            root: 'Sankey',
+            commonjs2: 'd3-sankey',
+            amd: 'd3-sankey',
+            commonjs: 'd3-sankey'
+        },
+        dagre: 'dagre',
+        'es6-promise': 'es6-promise',
         'pixi.js': {
             root: 'PIXI',
             commonjs2: 'pixi.js',

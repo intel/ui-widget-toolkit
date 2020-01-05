@@ -61,8 +61,14 @@ export class SelectionHelper {
 
     public onSelect(event: IEvent) {
         if (!isNaN(Number(event.selection))) {
-            console.debug('Chart unable to fire hover event using a number ' +
-                'as the selection class due to CSS limitations');
+            if (event.selection === undefined) {
+                console.debug('Chart unable to fire hover event with undefined selection');
+            } else if (event.selection.length === 0) {
+                console.debug('Chart unable to fire hover event with an empty string selection');
+            } else {
+                console.debug('Chart unable to fire hover event using a number ' +
+                    'as the selection class due to CSS limitations');
+            }
             return;
         }
         let selection = getSelectionName(event.selection);
