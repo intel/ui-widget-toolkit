@@ -2892,7 +2892,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
         protected _decimator: IFlameChartDecimator;
         protected _layer: ITraceValueLayer;
         protected _worker: Worker;
-        protected _pixi: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+        protected _pixi: PIXI.Renderer;
         protected _pixiHelper: PIXIHelper;
         protected _allRects: IFlameChartValue[][];
         protected getDataKey: (d: any) => number | string;
@@ -2940,7 +2940,7 @@ export class BaseHeatMap extends BaseSeries implements ICartesianSeriesPlugin {
         protected _worker: Worker;
         protected _decimator: any;
         protected _selection: any;
-        protected _pixi: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+        protected _pixi: PIXI.Renderer;
         protected _pixiHelper: PIXIHelper;
         protected _rectTexture: PIXI.Texture;
         getXMinMax(): number[];
@@ -3253,7 +3253,7 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
         protected _selectionClasses: string;
         protected _layer: IXYLayer;
         protected _worker: Worker;
-        protected _pixi: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+        protected _pixi: PIXI.Renderer;
         protected _pixiHelper: PIXIHelper;
         constructor(chart: ID3Chart, layer: ILayer, svg: d3.Selection<d3.BaseType, {}, d3.BaseType, any>, xAxis: D3Axis, yAxis: D3Axis, isXContinuous: boolean);
         protected initializeClasses(): void;
@@ -4391,23 +4391,23 @@ export class BaseSeries {
 }
 
 export class GraphicsManager {
-    protected _renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+    protected _renderer: PIXI.Renderer;
     protected _graphicsMap: {
         [index: string]: any;
     };
-    constructor(renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer);
+    constructor(renderer: PIXI.Renderer);
     add(mainKey: string, altKey: string, scaleMode: any, resolution: number, create: () => PIXI.DisplayObject): any;
 }
 export class PIXIHelper {
     protected _stage: PIXI.Container;
-    protected _renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+    protected _renderer: PIXI.Renderer;
     protected _rectTexture: PIXI.Texture;
     protected _selectionItems: {
         [index: string]: any;
     };
     protected _useWebGLRenderer: boolean;
-    constructor(useWebGLRenderer?: boolean);
-    getRenderer(): PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+    constructor();
+    getRenderer(): PIXI.Renderer;
     createGraphicsManager(): GraphicsManager;
     addPixiSvg(svg: d3.Selection<any, any, any, any>, classes: string, width: number, height: number): d3.Selection<any, any, any, any>;
     createRectangleContainer(x: number, y: number, width: number, height: number, backgroundColor: number): PIXI.Container;
@@ -4562,7 +4562,7 @@ export class D3ConnectedGraphPixi extends UIElementRenderer {
             * Renderer specific code
             */
         protected _selectionHelper: SelectionHelper;
-        protected _pixi: PIXI.WebGLRenderer | PIXI.CanvasRenderer;
+        protected _pixi: PIXI.Renderer;
         protected _pixiHelper: PIXIHelper;
         protected _stage: PIXI.Container;
         protected _pixiLinks: PIXI.Graphics;

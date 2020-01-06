@@ -3,17 +3,17 @@
 /// <reference path='../testData.ts' />
 var CounterAreaGraphTest;
 (function (CounterAreaGraphTest) {
-    var leftAxis = {
+    let leftAxis = {
         scaleType: UWT.AxisType.Linear
     };
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
         {
-            var lane1 = {
+            let lane1 = {
                 title: 'Summed Counter Values',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{

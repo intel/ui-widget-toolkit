@@ -3,14 +3,14 @@
 /// <reference path='../testData.ts' />
 var RadarTest;
 (function (RadarTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
         {
-            var radar1 = {
+            let radar1 = {
                 title: 'Product1',
                 type: UWT.UIType.Radar,
                 data: [{
@@ -41,7 +41,7 @@ var RadarTest;
                 },
                 contextMenuItems: [{
                         title: 'RadarMenuItem',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log('index: ' + index);
                             console.log(data);
                             console.log(elem);
@@ -54,7 +54,7 @@ var RadarTest;
             });
         }
         {
-            var radar1 = {
+            let radar1 = {
                 title: 'Product2',
                 type: UWT.UIType.Radar,
                 data: [{
@@ -88,7 +88,7 @@ var RadarTest;
                 },
                 contextMenuItems: [{
                         title: 'RadarMenuItem',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log('index: ' + index);
                             console.log(data);
                             console.log(elem);
@@ -101,7 +101,7 @@ var RadarTest;
             });
         }
         {
-            var radar1 = {
+            let radar1 = {
                 title: 'Product2',
                 type: UWT.UIType.Radar,
                 data: [{
@@ -135,7 +135,7 @@ var RadarTest;
                 },
                 contextMenuItems: [{
                         title: 'RadarMenuItem',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log('index: ' + index);
                             console.log(data);
                             console.log(elem);

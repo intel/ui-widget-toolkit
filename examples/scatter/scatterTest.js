@@ -3,23 +3,23 @@
 /// <reference path='../testData.ts' />
 var ScatterTest;
 (function (ScatterTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
-        var leftAxis2 = {
+        let leftAxis2 = {
             scaleType: UWT.AxisType.Linear,
             label: 'Values2',
             scalingInfo: TestData.defaultScalingInfo
         };
-        var rightAxis1 = {
+        let rightAxis1 = {
             scaleType: UWT.AxisType.Linear,
             label: 'Values5'
         };
         {
-            var lane = {
+            let lane = {
                 title: 'Ordinal Y',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -53,7 +53,7 @@ var ScatterTest;
             TestBase.addElement(lane, 'group2', 'group2', 'redrawGroup2');
         }
         {
-            var lane = {
+            let lane = {
                 title: 'Scatter+Line',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -87,7 +87,7 @@ var ScatterTest;
             TestBase.addElement(lane, 'group2', 'group2', 'redrawGroup2');
         }
         {
-            var lane = {
+            let lane = {
                 title: 'Same Scatter/Line',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -111,7 +111,7 @@ var ScatterTest;
             TestBase.addElement(lane, 'group2', 'group2', 'redrawGroup2');
         }
         {
-            var lane = {
+            let lane = {
                 title: 'One Data, Many Decimators',
                 type: UWT.UIType.Cartesian,
                 dataSets: [
@@ -151,7 +151,7 @@ var ScatterTest;
             TestBase.addElement(lane);
         }
         {
-            var plot = {
+            let plot = {
                 title: 'Overlapping Text',
                 type: UWT.UIType.Cartesian,
                 dataSets: [
@@ -188,7 +188,7 @@ var ScatterTest;
             TestBase.addElement(plot, '', '', '', { forceSvgRenderer: true });
         }
         {
-            var plot = {
+            let plot = {
                 title: 'Overlapping Text2',
                 type: UWT.UIType.Cartesian,
                 dataSets: [

@@ -3,23 +3,23 @@
 /// <reference path='../testData.ts' />
 var GradientLegendTest;
 (function (GradientLegendTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
-        var discreteXAxis = {
+        let discreteXAxis = {
             scaleType: UWT.AxisType.Ordinal,
             label: 'test data',
             keys: ['data-0', 'data-1', 'data-2']
         };
-        var leftAxis = {
+        let leftAxis = {
             scaleType: UWT.AxisType.Linear,
             label: 'Misc'
         };
         {
-            var chart = {
+            let chart = {
                 title: '',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{

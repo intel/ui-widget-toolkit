@@ -3,7 +3,7 @@
 /// <reference path='../testData.ts' />
 var LineTest;
 (function (LineTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
@@ -11,17 +11,17 @@ var LineTest;
     function createView() {
         {
             // lines
-            var xAxis = {
+            let xAxis = {
                 scaleType: UWT.AxisType.Linear,
                 label: 'Time',
                 scalingInfo: TestData.secScalingInfo
             };
-            var left = {
+            let left = {
                 scaleType: UWT.AxisType.Linear,
                 label: 'Time',
                 scalingInfo: TestData.secScalingInfo
             };
-            var chart = {
+            let chart = {
                 title: 'Step Graph',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -48,7 +48,7 @@ var LineTest;
             TestBase.addElement(chart);
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Sync Data',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -67,7 +67,7 @@ var LineTest;
             TestBase.addElement(chart);
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Stacked Line',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -77,7 +77,7 @@ var LineTest;
                 legends: [{ alignment: UWT.Alignment.Top }, { alignment: UWT.Alignment.Right }],
                 isXContinuous: true
             };
-            for (var i = 0; i < TestData.xyDataSets.length; ++i) {
+            for (let i = 0; i < TestData.xyDataSets.length; ++i) {
                 chart.dataSets[0].data.push({ name: 'data-' + i, values: TestData.xyDataSets[i] });
             }
             UWT.Chart.finalize(chart);
@@ -85,7 +85,7 @@ var LineTest;
         }
         {
             // lines
-            var chart = {
+            let chart = {
                 title: 'Logarithmic Y',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -110,7 +110,7 @@ var LineTest;
         }
         {
             // lines
-            var chart = {
+            let chart = {
                 title: 'Y',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -143,7 +143,7 @@ var LineTest;
         }
         {
             // lines
-            var chart = {
+            let chart = {
                 title: 'Ordinal X',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -172,7 +172,7 @@ var LineTest;
             TestBase.addElement(chart, 'group1', 'group1');
         }
         {
-            var chart1 = {
+            let chart1 = {
                 title: 'Text',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -199,37 +199,37 @@ var LineTest;
                         title: 'Test',
                         submenu: [{
                                 title: 'Test4',
-                                action: function (elem, data, index) {
+                                action(elem, data, index) {
                                     console.log(data);
                                 }
                             }, {
                                 title: 'Test5',
-                                action: function (elem, data, index) {
+                                action(elem, data, index) {
                                     console.log(data);
                                 }
                             }]
                     }, {
                         title: 'Test2',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log(data);
                         }
                     }
                 ],
                 brushContextMenuItems: [{
                         title: 'Test',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log(data);
                         }
                     }, {
                         title: 'Test2',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log(data);
                         }
                     }],
                 isXContinuous: true
             };
             UWT.Chart.finalize(chart1);
-            var chart2 = {
+            let chart2 = {
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                         renderType: UWT.RenderType.Line,
@@ -255,11 +255,11 @@ var LineTest;
                 isXContinuous: true
             };
             UWT.Chart.finalize(chart2);
-            var merged = UWT.Chart.mergeCharts('testCategory', 'merged', chart1, chart2);
+            let merged = UWT.Chart.mergeCharts('testCategory', 'merged', chart1, chart2);
             TestBase.addElement(chart1);
             TestBase.addElement(chart2);
             TestBase.addElement(merged);
-            var chart3 = {
+            let chart3 = {
                 title: 'Function Graph',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -289,7 +289,7 @@ var LineTest;
             };
             UWT.Chart.finalize(chart3);
             TestBase.addElement(chart3);
-            var chart4 = {
+            let chart4 = {
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                         renderType: UWT.RenderType.Line,
@@ -327,7 +327,7 @@ var LineTest;
             };
             UWT.Chart.finalize(chart4);
             TestBase.addElement(chart4);
-            var chart5 = {
+            let chart5 = {
                 title: 'Multiple Axes',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -415,7 +415,7 @@ var LineTest;
             TestBase.addElement(chart5);
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Logarithmic X',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -444,7 +444,7 @@ var LineTest;
             TestBase.addElement(chart);
         }
         {
-            var chart3_1 = {
+            let chart3 = {
                 title: 'Function Graph',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -472,23 +472,23 @@ var LineTest;
                     }],
                 isXContinuous: true,
                 onRender: function () {
-                    chart3_1.api.rangeUpdate({
+                    chart3.api.rangeUpdate({
                         event: UWT.EventType.RangeUpdate,
                         xStart: 3,
                         xEnd: 7
                     });
-                    chart3_1.api.zoom({
+                    chart3.api.zoom({
                         event: UWT.EventType.Zoom,
                         xStart: 4,
                         xEnd: 6
                     });
                 }
             };
-            UWT.Chart.finalize(chart3_1);
-            TestBase.addElement(chart3_1);
+            UWT.Chart.finalize(chart3);
+            TestBase.addElement(chart3);
         }
         {
-            var chart3_2 = {
+            let chart3 = {
                 title: 'Function Graph 2',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -516,21 +516,21 @@ var LineTest;
                     }],
                 isXContinuous: true,
                 onRender: function () {
-                    chart3_2.api.rangeUpdate({
+                    chart3.api.rangeUpdate({
                         event: UWT.EventType.RangeUpdate,
                         xStart: 3,
                         xEnd: 7
                     });
-                    chart3_2.api.zoom({
+                    chart3.api.zoom({
                         event: UWT.EventType.Zoom,
                         xStart: 4,
                         xEnd: 6
                     });
-                    chart3_2.api.rangeReset();
+                    chart3.api.rangeReset();
                 }
             };
-            UWT.Chart.finalize(chart3_2);
-            TestBase.addElement(chart3_2);
+            UWT.Chart.finalize(chart3);
+            TestBase.addElement(chart3);
         }
     }
     LineTest.createView = createView;

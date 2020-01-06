@@ -2,12 +2,12 @@
 /// <reference path='../testBase.ts' />
 var TreeMapTest;
 (function (TreeMapTest) {
-    window.onload = function () {
+    window.onload = () => {
         createView();
         TestBase.render();
     };
     function createView() {
-        var treeMap = {
+        let treeMap = {
             type: UWT.UIType.TreeMap,
             root: {
                 id: 'key1',
@@ -51,7 +51,7 @@ var TreeMapTest;
             },
             contextMenuItems: [{
                     title: 'Edit me to do something!',
-                    action: function (elem, data, index) {
+                    action(elem, data, index) {
                         console.log('index: ' + index);
                         console.log(data);
                         console.log(elem);
@@ -59,7 +59,7 @@ var TreeMapTest;
                 }]
         };
         TestBase.addElement(treeMap, '', 'group2');
-        var treeMap2 = {
+        let treeMap2 = {
             type: UWT.UIType.TreeMap,
             showChildrenOnHover: true,
             root: {
@@ -104,7 +104,7 @@ var TreeMapTest;
             },
             contextMenuItems: [{
                     title: 'Edit me to do something!',
-                    action: function (elem, data, index) {
+                    action(elem, data, index) {
                         console.log('index: ' + index);
                         console.log(data);
                         console.log(elem);

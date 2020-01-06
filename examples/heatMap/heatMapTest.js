@@ -3,21 +3,21 @@
 /// <reference path='../testBase.ts' />
 var HeatMapTest;
 (function (HeatMapTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createBasicTest();
         createView();
         TestBase.render();
     };
     function createBasicTest() {
-        var gradient = [{ key: 0, color: '#FF0000' },
+        let gradient = [{ key: 0, color: '#FF0000' },
             { key: 20, color: '#FFA500' },
             { key: 40, color: '#FFFF00' },
             { key: 60, color: '#00FF00' },
             { key: 80, color: '#0000FF' },
             { key: 100, color: '#7F00FF' }];
         {
-            var chart = {
+            let chart = {
                 title: 'Test 1',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -44,7 +44,7 @@ var HeatMapTest;
             TestBase.addElement(chart, undefined, 'group1');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Test 2',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -79,17 +79,17 @@ var HeatMapTest;
     }
     HeatMapTest.createBasicTest = createBasicTest;
     function createView() {
-        var data = [];
-        var rows = 256;
-        var columns = 256;
-        var scalar = 1 / (rows * columns) * 100;
-        for (var i = 0; i < rows; ++i) {
-            for (var j = 0; j < columns; ++j) {
+        let data = [];
+        let rows = 256;
+        let columns = 256;
+        let scalar = 1 / (rows * columns) * 100;
+        for (let i = 0; i < rows; ++i) {
+            for (let j = 0; j < columns; ++j) {
                 data.push({ x: i, y: j, value: i * j * scalar });
             }
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Test 3',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{

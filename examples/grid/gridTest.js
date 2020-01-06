@@ -2,14 +2,14 @@
 /// <reference path='../testBase.ts' />
 var GridTest;
 (function (GridTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
         {
-            var grid = {
+            let grid = {
                 type: UWT.UIType.Grid,
                 gridOptions: {
                     columnDefs: [
@@ -36,7 +36,7 @@ var GridTest;
             TestBase.addElement(grid, 'group2', 'group2');
         }
         {
-            var grid_1 = {
+            let grid = {
                 type: UWT.UIType.Grid,
                 gridOptions: {
                     columnDefs: [
@@ -62,7 +62,7 @@ var GridTest;
                         { make: 'Nissan', model: 'GT-R', price: 105000 }
                     ],
                     onGridReady: function () {
-                        grid_1.gridOptions.api.sizeColumnsToFit();
+                        grid.gridOptions.api.sizeColumnsToFit();
                     },
                     onRowClicked: function (row) {
                         console.log(row);
@@ -81,7 +81,7 @@ var GridTest;
                     ]
                 }
             };
-            TestBase.addElement(grid_1, 'group2', 'group2');
+            TestBase.addElement(grid, 'group2', 'group2');
             var columnDefs2 = [
                 { headerName: "Make", field: "make" },
                 { headerName: "Model", field: "model" },
@@ -103,7 +103,7 @@ var GridTest;
                 animateRows: true,
                 enableSingleKeyboardSelection: true
             };
-            var gridDef2 = {
+            let gridDef2 = {
                 type: UWT.UIType.Grid,
                 gridOptions: gridOptions2
             };

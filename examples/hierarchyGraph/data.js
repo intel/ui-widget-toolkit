@@ -1,4 +1,4 @@
-var hRoot = {
+let hRoot = {
     key: 'hRoot',
     hideBorder: true,
     top: [{
@@ -507,7 +507,7 @@ var hRoot = {
         }
     ]
 };
-var hLinks = [
+let hLinks = [
     {
         from: 'Socket 0',
         to: 'Socket 1',
@@ -683,7 +683,7 @@ var hLinks = [
         type: ['memchannel']
     }
 ];
-var hRoot2 = {
+let hRoot2 = {
     key: 'hRoot',
     hideBorder: true,
     top: [{
@@ -755,7 +755,7 @@ var hRoot2 = {
         }
     ]
 };
-var hRoot3 = {
+let hRoot3 = {
     key: 'hRoot',
     top: [
         {

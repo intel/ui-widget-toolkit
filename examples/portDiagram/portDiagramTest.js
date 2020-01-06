@@ -3,13 +3,13 @@
 /// <reference path='../testBase.ts' />
 var PortDiagramTest;
 (function (PortDiagramTest) {
-    window.onload = function () {
+    window.onload = () => {
         createView();
         createWebGLView();
         TestBase.render();
     };
     function createView() {
-        var svg = {
+        let svg = {
             type: UWT.UIType.PortDiagram,
             nodes: pNodes,
             links: pLinks,
@@ -23,7 +23,7 @@ var PortDiagramTest;
             },
             contextMenuItems: [{
                     title: 'Edit me to do something!',
-                    action: function (elem, data, index) {
+                    action(elem, data, index) {
                         console.log('index: ' + index);
                         console.log(data);
                         console.log(elem);
@@ -35,7 +35,7 @@ var PortDiagramTest;
             height: 400, forceSvgRenderer: true, enableXYZoom: true
         });
         {
-            var svgRectNodes = {
+            let svgRectNodes = {
                 type: UWT.UIType.PortDiagram,
                 nodes: rectNodes,
                 links: pLinks,
@@ -49,7 +49,7 @@ var PortDiagramTest;
                 },
                 contextMenuItems: [{
                         title: 'Edit me to do something!',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log('index: ' + index);
                             console.log(data);
                             console.log(elem);
@@ -65,7 +65,7 @@ var PortDiagramTest;
             });
         }
         {
-            var dynamicLayout = {
+            let dynamicLayout = {
                 type: UWT.UIType.PortDiagram,
                 nodes: blankNodes,
                 links: pLinks,
@@ -79,7 +79,7 @@ var PortDiagramTest;
                 },
                 contextMenuItems: [{
                         title: 'Edit me to do something!',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log('index: ' + index);
                             console.log(data);
                             console.log(elem);
@@ -97,7 +97,7 @@ var PortDiagramTest;
     }
     PortDiagramTest.createView = createView;
     function createWebGLView() {
-        var webgl = {
+        let webgl = {
             type: UWT.UIType.PortDiagram,
             nodes: pNodes,
             links: pLinks,
@@ -111,7 +111,7 @@ var PortDiagramTest;
             },
             contextMenuItems: [{
                     title: 'Edit me to do something!',
-                    action: function (elem, data, index) {
+                    action(elem, data, index) {
                         console.log('index: ' + index);
                         console.log(data);
                         console.log(elem);
@@ -124,7 +124,7 @@ var PortDiagramTest;
             enableXYZoom: true
         });
         {
-            var webGlRectNodes = {
+            let webGlRectNodes = {
                 type: UWT.UIType.PortDiagram,
                 nodes: rectNodes,
                 links: pLinks,
@@ -138,7 +138,7 @@ var PortDiagramTest;
                 },
                 contextMenuItems: [{
                         title: 'Edit me to do something!',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log('index: ' + index);
                             console.log(data);
                             console.log(elem);
@@ -154,7 +154,7 @@ var PortDiagramTest;
             });
         }
         {
-            var wideGraph = {
+            let wideGraph = {
                 type: UWT.UIType.PortDiagram,
                 nodeRenderType: UWT.NodeType.NodeRectangle,
                 nodes: funcNodes,
@@ -169,7 +169,7 @@ var PortDiagramTest;
                 },
                 contextMenuItems: [{
                         title: 'Edit me to do something!',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log('index: ' + index);
                             console.log(data);
                             console.log(elem);

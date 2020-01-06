@@ -1,6 +1,6 @@
 var UITest;
 (function (UITest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         LineTest.createView();
         AreaTest.createView();

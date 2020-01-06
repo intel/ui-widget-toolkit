@@ -3,7 +3,7 @@
 /// <reference path='../testBase.ts' />
 var FlameSunburstTest;
 (function (FlameSunburstTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         createWebGLView();
@@ -11,9 +11,9 @@ var FlameSunburstTest;
     };
     function createView() {
         {
-            var rectLimitDecimator = new UWT.FlameChartRectLimitDecimator();
+            let rectLimitDecimator = new UWT.FlameChartRectLimitDecimator();
             rectLimitDecimator.setRectLimit(10);
-            var chart = {
+            let chart = {
                 title: 'Flame Chart',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -25,13 +25,13 @@ var FlameSunburstTest;
                             console.log('flame chart click');
                             console.log(event);
                         },
-                        onDoubleClick: function (event) {
+                        onDoubleClick: (event) => {
                             console.log('flame chart double click');
                             console.log(event);
                         },
                         contextMenuItems: [{
                                 title: 'FlameMenuItem',
-                                action: function (elem, data, index) {
+                                action(elem, data, index) {
                                     console.log('index: ' + index);
                                     console.log(data);
                                     console.log(elem);
@@ -45,7 +45,7 @@ var FlameSunburstTest;
             TestBase.elemManager.addToHighlightGroup(chart, 'trace');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Sample Data',
                 type: UWT.UIType.Sunburst,
                 data: UWT.convertTraceToTrees(calltrace),
@@ -58,7 +58,7 @@ var FlameSunburstTest;
             TestBase.elemManager.addToHighlightGroup(chart, 'trace');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Trace Data',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -70,7 +70,7 @@ var FlameSunburstTest;
                         },
                         contextMenuItems: [{
                                 title: 'Trace Menu Item',
-                                action: function (elem, data, index) {
+                                action(elem, data, index) {
                                     console.log('index: ' + index);
                                     console.log(data);
                                     console.log(elem);
@@ -83,7 +83,7 @@ var FlameSunburstTest;
             TestBase.addElement(chart, '', 'group', '', { forceSvgRenderer: true });
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Trace Residency',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -97,7 +97,7 @@ var FlameSunburstTest;
             TestBase.addElement(chart, '', 'group');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Trace State',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -110,16 +110,16 @@ var FlameSunburstTest;
             TestBase.addElement(chart, '', 'group');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Trace Sparse',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
                         renderType: UWT.RenderType.FlameChart,
                         data: trace2,
-                        onClick: function (event) {
+                        onClick: (event) => {
                             console.log(event);
                         },
-                        onDoubleClick: function (event) {
+                        onDoubleClick: (event) => {
                             console.log(event);
                         }
                     }],
@@ -129,7 +129,7 @@ var FlameSunburstTest;
             TestBase.addElement(chart, '', 'trace2');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Trace Sparse Line',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -142,7 +142,7 @@ var FlameSunburstTest;
             TestBase.addElement(chart, '', 'trace2');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Trace Sparse Area',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -158,7 +158,7 @@ var FlameSunburstTest;
     FlameSunburstTest.createView = createView;
     function createWebGLView() {
         {
-            var chart = {
+            let chart = {
                 title: 'Flame Chart',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -168,13 +168,13 @@ var FlameSunburstTest;
                             console.log('flame chart click');
                             console.log(event);
                         },
-                        onDoubleClick: function (event) {
+                        onDoubleClick: (event) => {
                             console.log('flame chart double click');
                             console.log(event);
                         },
                         contextMenuItems: [{
                                 title: 'FlameMenuItem',
-                                action: function (elem, data, index) {
+                                action(elem, data, index) {
                                     console.log('index: ' + index);
                                     console.log(data);
                                     console.log(elem);
@@ -188,7 +188,7 @@ var FlameSunburstTest;
             TestBase.elemManager.addToHighlightGroup(chart, 'trace');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Direct Stack Load',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -196,7 +196,7 @@ var FlameSunburstTest;
                         data: trace3,
                         contextMenuItems: [{
                                 title: 'FlameMenuItem',
-                                action: function (elem, data, index) {
+                                action(elem, data, index) {
                                     console.log('index: ' + index);
                                     console.log(data);
                                     console.log(elem);

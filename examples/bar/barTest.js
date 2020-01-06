@@ -3,24 +3,24 @@
 /// <reference path='../testData.ts' />
 var BarTest;
 (function (BarTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
-        var discreteXAxis = {
+        let discreteXAxis = {
             scaleType: UWT.AxisType.Ordinal,
             label: 'test data',
             keys: ['data-0', 'data-1', 'data-2']
         };
-        var leftAxis = {
+        let leftAxis = {
             scaleType: UWT.AxisType.Linear,
             label: 'Misc',
             scalingInfo: TestData.defaultScalingInfo
         };
         {
-            var chart = {
+            let chart = {
                 title: 'Basic Bar',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -35,7 +35,7 @@ var BarTest;
                         },
                         contextMenuItems: [{
                                 title: 'BarMenuItem',
-                                action: function (elem, data, index) {
+                                action(elem, data, index) {
                                     console.log('index: ' + index);
                                     console.log(data);
                                     console.log(elem);
@@ -66,7 +66,7 @@ var BarTest;
             TestBase.addElement(chart, 'group1', 'group1');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Multi Bar',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -84,7 +84,7 @@ var BarTest;
                         },
                         contextMenuItems: [{
                                 title: 'BarMenuItem',
-                                action: function (elem, data, index) {
+                                action(elem, data, index) {
                                     console.log('index: ' + index);
                                     console.log(data);
                                     console.log(elem);
@@ -115,7 +115,7 @@ var BarTest;
             TestBase.addElement(chart, 'group1', 'group1');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Stacked Bar',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -133,7 +133,7 @@ var BarTest;
                         },
                         contextMenuItems: [{
                                 title: 'BarMenuItem',
-                                action: function (elem, data, index) {
+                                action(elem, data, index) {
                                     console.log('index: ' + index);
                                     console.log(data);
                                     console.log(elem);
@@ -165,7 +165,7 @@ var BarTest;
         }
         {
             // invert this data to get below
-            var data = [
+            let data = [
                 {
                     key: 'QRW',
                     data: [{
@@ -223,7 +223,7 @@ var BarTest;
                         }]
                 }
             ];
-            var chart7 = {
+            let chart7 = {
                 title: 'Multi X Axis',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -256,7 +256,7 @@ var BarTest;
             };
             UWT.Chart.finalize(chart7);
             TestBase.addElement(chart7);
-            var chart8 = {
+            let chart8 = {
                 title: 'Rotated X Axis',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -270,7 +270,7 @@ var BarTest;
                         },
                         contextMenuItems: [{
                                 title: 'BarMenuItem',
-                                action: function (elem, data, index) {
+                                action(elem, data, index) {
                                     console.log('index: ' + index);
                                     console.log(data);
                                     console.log(elem);
@@ -418,7 +418,7 @@ var BarTest;
             TestBase.addElement(chart8);
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Negative 2Values',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -444,7 +444,7 @@ var BarTest;
             TestBase.addElement(chart, 'group1', 'group1');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Negative Multi Group',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -462,7 +462,7 @@ var BarTest;
                         },
                         contextMenuItems: [{
                                 title: 'BarMenuItem',
-                                action: function (elem, data, index) {
+                                action(elem, data, index) {
                                     console.log('index: ' + index);
                                     console.log(data);
                                     console.log(elem);
@@ -486,7 +486,7 @@ var BarTest;
             TestBase.addElement(chart, 'group1', 'group1');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Single Bar',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{

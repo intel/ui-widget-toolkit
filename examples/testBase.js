@@ -3,9 +3,8 @@ var TestBase;
 (function (TestBase) {
     TestBase.elemManager = new UWT.ElementManager();
     TestBase.colorManager = new UWT.ColorManager();
-    var elements = [];
-    function addElement(element, tooltipGroup, hoverGroup, renderGroup, options) {
-        if (options === void 0) { options = {}; }
+    let elements = [];
+    function addElement(element, tooltipGroup, hoverGroup, renderGroup, options = {}) {
         TestBase.elemManager.addElement(element, tooltipGroup, hoverGroup, renderGroup);
         elements.push({ elem: element, options: options });
     }
@@ -13,13 +12,13 @@ var TestBase;
     function render() {
         var elems = TestBase.elemManager.getElements();
         for (var i = 0; i < elements.length; ++i) {
-            var elem = elements[i].elem;
+            let elem = elements[i].elem;
             if (elem.type === UWT.UIType.Grid) {
-                var r = new UWT.AgGridRenderer('div#graphArea' + i);
+                let r = new UWT.AgGridRenderer('div#graphArea' + i);
                 r.invalidate(elem, elements[i].options);
             }
             else {
-                var r = new UWT.D3Renderer('div#graphArea' + i, TestBase.colorManager);
+                let r = new UWT.D3Renderer('div#graphArea' + i, TestBase.colorManager);
                 r.invalidate(elem, elements[i].options);
             }
         }
@@ -37,7 +36,7 @@ var TestBase;
     function zoomReset() {
         var charts = TestBase.elemManager.getElements();
         for (var i = 0; i < charts.length; ++i) {
-            var ts = Date.now();
+            let ts = Date.now();
             if (charts[i].api.zoom) {
                 charts[i].api.zoom({
                     event: UWT.EventType.Zoom,
@@ -53,7 +52,7 @@ var TestBase;
         var charts = TestBase.elemManager.getElements();
         event.selection = UWT.getSelectionName(event.selection);
         for (var i = 0; i < charts.length; ++i) {
-            var renderElements = charts[i].getElements();
+            let renderElements = charts[i].getElements();
             for (var j = 0; j < renderElements.length; ++j) {
                 renderElements[j].api.hover(event);
             }
@@ -67,7 +66,7 @@ var TestBase;
     }
     TestBase.clearSelection = clearSelection;
     function removeSelection() {
-        var selection = document.getElementById('removeInput').value;
+        let selection = document.getElementById('removeInput').value;
         doSelectionEvent({
             event: UWT.EventType.HoverEnd,
             selection: selection
@@ -75,7 +74,7 @@ var TestBase;
     }
     TestBase.removeSelection = removeSelection;
     function addSelection() {
-        var selection = document.getElementById('addInput').value;
+        let selection = document.getElementById('addInput').value;
         doSelectionEvent({
             event: UWT.EventType.HoverStart,
             selection: selection

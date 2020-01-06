@@ -2,13 +2,13 @@
 /// <reference path='../testBase.ts' />
 var RectTest;
 (function (RectTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
-        var chart = {
+        let chart = {
             type: UWT.UIType.Cartesian,
             dataSets: [{
                     renderType: UWT.RenderType.Area,
@@ -23,7 +23,7 @@ var RectTest;
         };
         UWT.Chart.finalize(chart);
         TestBase.addElement(chart);
-        var chart2 = {
+        let chart2 = {
             type: UWT.UIType.Cartesian,
             dataSets: [{
                     renderType: UWT.RenderType.Line,
@@ -38,7 +38,7 @@ var RectTest;
         };
         UWT.Chart.finalize(chart2);
         TestBase.addElement(chart2);
-        var chart3 = {
+        let chart3 = {
             type: UWT.UIType.Cartesian,
             dataSets: [{
                     renderType: UWT.RenderType.Line,
@@ -77,7 +77,7 @@ var RectTest;
         };
         UWT.Chart.finalize(chart3);
         TestBase.addElement(chart3);
-        var chart4 = {
+        let chart4 = {
             type: UWT.UIType.Cartesian,
             dataSets: [{
                     renderType: UWT.RenderType.Line,

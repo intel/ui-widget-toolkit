@@ -1,5 +1,5 @@
 /// <reference path='../../dist/index.d.ts' />
-var pLinks = [{
+let pLinks = [{
         from: 'key6', to: 'key5', value: 2037.673340,
         fromPort: 'output0', toPort: 'input0',
         linkType: UWT.LinkType.Linear | UWT.LinkType.Directional
@@ -44,7 +44,7 @@ var pLinks = [{
         fromPort: 'output0', toPort: 'input0',
         linkType: UWT.LinkType.Linear | UWT.LinkType.Directional
     }];
-var pNodes = [
+let pNodes = [
     {
         key: 'key0', type: ['join_node'], x: 864, y: 200,
         ports: {
@@ -105,7 +105,7 @@ var pNodes = [
         }
     }
 ];
-var rectNodes = [
+let rectNodes = [
     {
         key: 'key0', type: ['join_node'], x: 864, y: 200,
         ports: {
@@ -173,7 +173,7 @@ var rectNodes = [
         renderType: UWT.NodeType.NodeRectangle
     }
 ];
-var blankNodes = [
+let blankNodes = [
     {
         key: 'key0',
         type: ['join_node'],
@@ -249,7 +249,7 @@ var blankNodes = [
         renderType: UWT.NodeType.NodeRectangle
     }
 ];
-var funcLayout = [
+let funcLayout = [
     {
         "nodes": [
             {
@@ -1386,9 +1386,9 @@ var funcLayout = [
         ]
     }
 ];
-var funcNodes = [];
-var funcLinks = [];
-funcLayout.forEach(function (graph) {
+let funcNodes = [];
+let funcLinks = [];
+funcLayout.forEach(graph => {
     funcNodes = funcNodes.concat(graph.nodes);
     funcLinks = funcLinks.concat(graph.links);
 });

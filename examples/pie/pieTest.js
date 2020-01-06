@@ -3,14 +3,14 @@
 /// <reference path='../testData.ts' />
 var PieTest;
 (function (PieTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
         {
-            var pie1 = {
+            let pie1 = {
                 title: 'Summary',
                 type: UWT.UIType.Pie,
                 data: { 'data@-0': 10, 'data-\%1': 7, 'data-2': 17 },
@@ -24,7 +24,7 @@ var PieTest;
                 },
                 contextMenuItems: [{
                         title: 'PieMenuItem',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log('index: ' + index);
                             console.log(data);
                             console.log(elem);
@@ -35,7 +35,7 @@ var PieTest;
             TestBase.addElement(pie1, 'group2', 'group2');
         }
         {
-            var pie1 = {
+            let pie1 = {
                 title: 'Summary',
                 type: UWT.UIType.Pie,
                 data: { 'data@-0': 10, 'data-\%1': 7, 'data-2': 17 },
@@ -49,7 +49,7 @@ var PieTest;
                 },
                 contextMenuItems: [{
                         title: 'PieMenuItem',
-                        action: function (elem, data, index) {
+                        action(elem, data, index) {
                             console.log('index: ' + index);
                             console.log(data);
                             console.log(elem);

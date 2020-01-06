@@ -2,7 +2,7 @@
 /// <reference path='../../dist/index.d.ts' />
 var HierarchyGraphTest;
 (function (HierarchyGraphTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.colorManager.setColor('pcie', 'red');
         TestBase.colorManager.setColor('socket-interconnect', 'purple');
         TestBase.colorManager.setColor('memchannel', 'green');
@@ -10,14 +10,14 @@ var HierarchyGraphTest;
         TestBase.colorManager.setColor('Node1', 'rgb(192, 0, 192)');
         TestBase.colorManager.setColor('Node2', 'rgb(0, 192, 192)');
         TestBase.colorManager.setColor('Node3', 'rgb(192,192, 0)');
-        var graph = {
+        let graph = {
             links: hLinks,
             nodes: hRoot,
             type: UWT.UIType.HierarchyGraph,
             onClick: function (event) {
                 console.log('hierarchy click');
                 console.log(event.data);
-                var isNode = event.data.key != undefined;
+                let isNode = event.data.key != undefined;
                 if (isNode && event.data !== hRoot) {
                     graph.nodes = event.data;
                     graph.renderer.render(graph);
@@ -29,15 +29,15 @@ var HierarchyGraphTest;
             },
             contextMenuItems: [{
                     title: 'GraphMenuItem',
-                    action: function (elem, data, index) {
+                    action(elem, data, index) {
                         console.log('index: ' + index);
                         console.log(data);
                         console.log(elem);
                     }
                 }],
             onTooltip: function (event) {
-                var tooltip = event.data.tooltip;
-                var data = event.data.data;
+                let tooltip = event.data.tooltip;
+                let data = event.data.data;
                 tooltip.clearTooltip();
                 if (data.key) {
                     tooltip.getTooltipDiv().append(data.key);
@@ -47,14 +47,14 @@ var HierarchyGraphTest;
                 }
             }
         };
-        var graph2 = {
+        let graph2 = {
             links: hLinks,
             nodes: hRoot,
             type: UWT.UIType.HierarchyGraph,
             onClick: function (event) {
                 console.log('hierarchy click');
                 console.log(event.data && event.data.key);
-                var isNode = event.data.key != undefined;
+                let isNode = event.data.key != undefined;
                 if (isNode && event.data !== hRoot2) {
                     graph2.nodes = event.data;
                     graph2.renderer.render(graph2);
@@ -62,8 +62,8 @@ var HierarchyGraphTest;
             },
             decimator: {
                 isVisible: function (node) {
-                    var depth = 0;
-                    var parent = node;
+                    let depth = 0;
+                    let parent = node;
                     while (parent) {
                         parent = parent.parent;
                         ++depth;
@@ -72,8 +72,8 @@ var HierarchyGraphTest;
                 }
             },
             onTooltip: function (event) {
-                var tooltip = event.data.tooltip;
-                var data = event.data.data;
+                let tooltip = event.data.tooltip;
+                let data = event.data.data;
                 //using the MetricListTooltip setData call
                 tooltip.setData('My Title', [{
                         source: undefined, group: 'foo',
@@ -84,14 +84,14 @@ var HierarchyGraphTest;
                     }]);
             }
         };
-        var graph3 = {
+        let graph3 = {
             links: hLinks,
             nodes: hRoot,
             type: UWT.UIType.HierarchyGraph,
             onClick: function (event) {
                 console.log('hierarchy click');
                 console.log(event.data);
-                var isNode = event.data.key != undefined;
+                let isNode = event.data.key != undefined;
                 if (isNode && event.data !== hRoot) {
                     graph3.nodes = event.data;
                     graph3.renderer.render(graph3);
@@ -99,8 +99,8 @@ var HierarchyGraphTest;
             },
             decimator: {
                 isVisible: function (node) {
-                    var depth = 0;
-                    var parent = node;
+                    let depth = 0;
+                    let parent = node;
                     while (parent) {
                         parent = parent.parent;
                         ++depth;
@@ -109,35 +109,35 @@ var HierarchyGraphTest;
                 }
             }
         };
-        var graph4 = {
+        let graph4 = {
             links: hLinks,
             nodes: hRoot2,
             type: UWT.UIType.HierarchyGraph,
             onClick: function (event) {
                 console.log('hierarchy click');
                 console.log(event.data);
-                var isNode = event.data.key != undefined;
+                let isNode = event.data.key != undefined;
                 if (isNode && event.data !== hRoot2) {
                     graph4.nodes = event.data;
                     graph4.renderer.render(graph4);
                 }
             }
         };
-        var graph5 = {
+        let graph5 = {
             links: hLinks,
             nodes: hRoot3,
             type: UWT.UIType.HierarchyGraph,
             onClick: function (event) {
                 console.log('hierarchy click');
                 console.log(event.data);
-                var isNode = event.data.key != undefined;
+                let isNode = event.data.key != undefined;
                 if (isNode && event.data !== hRoot3) {
                     graph5.nodes = event.data;
                     graph5.renderer.render(graph5);
                 }
             }
         };
-        var graph6 = {
+        let graph6 = {
             links: [],
             nodes: {
                 "key": "Socket 0Core 0",

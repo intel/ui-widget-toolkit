@@ -1,40 +1,41 @@
 /// <reference path='../../dist/index.d.ts' />
 var AxisTest;
 (function (AxisTest) {
-    var xAxis = {
-        type: UWT.UIType.Axis,
+    let xAxis = {
         scaleType: UWT.AxisType.Linear,
         label: 'Time',
         scalingInfo: TestData.secScalingInfo,
         range: { min: 0, max: 10000 }
     };
-    var xAxis2 = {
-        type: UWT.UIType.Axis,
+    let xAxis2 = {
         scaleType: UWT.AxisType.Linear,
         scalingInfo: TestData.secScalingInfo,
         range: { min: 0, max: 10000 }
     };
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
-        TestBase.addElement({
+        let axis1 = {
             type: UWT.UIType.Axis,
             axisDesc: xAxis2,
             alignment: UWT.Alignment.Top
-        }, '', 'axis1', 'axis1');
-        TestBase.addElement({
+        };
+        let axis2 = {
             type: UWT.UIType.Axis,
             axisDesc: xAxis,
             alignment: UWT.Alignment.Bottom
-        }, '', 'axis1', 'axis1');
-        TestBase.addElement({
+        };
+        let axis3 = {
             type: UWT.UIType.Axis,
             axisDesc: xAxis2,
             alignment: UWT.Alignment.Top
-        });
+        };
+        TestBase.addElement(axis1, '', 'axis1', 'axis1');
+        TestBase.addElement(axis2, '', 'axis1', 'axis1');
+        TestBase.addElement(axis3);
     }
     AxisTest.createView = createView;
 })(AxisTest || (AxisTest = {}));

@@ -2,12 +2,12 @@
 /// <reference path='../testBase.ts' />
 var ConnectedGraphTest;
 (function (ConnectedGraphTest) {
-    window.onload = function () {
+    window.onload = () => {
         createView();
         TestBase.render();
     };
     function createView() {
-        var flow = {
+        let flow = {
             type: UWT.UIType.FlowDiagram,
             nodes: [
                 { key: 'data-0', type: ['group1'] },
@@ -32,7 +32,7 @@ var ConnectedGraphTest;
             },
             contextMenuItems: [{
                     title: 'GraphMenuItem',
-                    action: function (elem, data, index) {
+                    action(elem, data, index) {
                         console.log('index: ' + index);
                         console.log(data);
                         console.log(elem);
@@ -41,7 +41,7 @@ var ConnectedGraphTest;
             legend: { alignment: UWT.Alignment.Top }
         };
         TestBase.addElement(flow, 'group', 'group2');
-        var forceGraph = {
+        let forceGraph = {
             type: UWT.UIType.ForceDirectedGraph,
             links: [
                 { from: 'data-0', to: 'data-2', value: 1 },
@@ -63,7 +63,7 @@ var ConnectedGraphTest;
             legend: { alignment: UWT.Alignment.Right }
         };
         TestBase.addElement(forceGraph, 'group2', 'group2');
-        var nodes = [
+        let nodes = [
             { key: 'data-0', type: ['group1'], x: 10, y: 10 },
             { key: 'data-1', type: ['group1'], x: 20, y: 20 },
             { key: 'data-2', type: ['group2'], x: 564, y: 43 },
@@ -71,7 +71,7 @@ var ConnectedGraphTest;
             { key: 'data-4', type: ['group2'], x: 87, y: 241 },
             { key: 'data-5', type: ['group2'], x: 65, y: 61 }
         ];
-        var preproc = {
+        let preproc = {
             type: UWT.UIType.SimpleGraph,
             nodes: nodes,
             links: [
@@ -93,7 +93,7 @@ var ConnectedGraphTest;
             },
             contextMenuItems: [{
                     title: 'Edit me to do something!',
-                    action: function (elem, data, index) {
+                    action(elem, data, index) {
                         console.log('index: ' + index);
                         console.log(data);
                         console.log(elem);
@@ -102,7 +102,7 @@ var ConnectedGraphTest;
             legend: { alignment: UWT.Alignment.Top }
         };
         TestBase.addElement(preproc, '', 'group2');
-        var preproc2 = {
+        let preproc2 = {
             type: UWT.UIType.SimpleGraph,
             nodes: nodes,
             links: [
@@ -132,7 +132,7 @@ var ConnectedGraphTest;
             },
             brushContextMenuItems: [{
                     title: 'I did a brush',
-                    action: function (elem, data, index) {
+                    action(elem, data, index) {
                         console.log('index: ' + index);
                         console.log(data);
                         console.log(elem);
@@ -140,7 +140,7 @@ var ConnectedGraphTest;
                 }],
             contextMenuItems: [{
                     title: 'Edit me to do something!',
-                    action: function (elem, data, index) {
+                    action(elem, data, index) {
                         console.log('index: ' + index);
                         console.log(data);
                         console.log(elem);

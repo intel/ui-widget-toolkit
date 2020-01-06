@@ -3,9 +3,9 @@
 /// <reference path='../testData.ts' />
 var MarkerTest;
 (function (MarkerTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
-        var chart1 = {
+        let chart1 = {
             type: UWT.UIType.Cartesian,
             dataSets: [{
                     renderType: UWT.RenderType.Marker,

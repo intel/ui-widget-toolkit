@@ -3,23 +3,23 @@
 /// <reference path='../testData.ts' />
 var BoxPlotTest;
 (function (BoxPlotTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
-        var discreteXAxis = {
+        let discreteXAxis = {
             scaleType: UWT.AxisType.Ordinal,
             label: 'test data',
             keys: ['data-0', 'data-1', 'data-2']
         };
-        var leftAxis = {
+        let leftAxis = {
             scaleType: UWT.AxisType.Linear,
             label: 'Misc'
         };
         {
-            var chart = {
+            let chart = {
                 title: 'Box Values',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -42,7 +42,7 @@ var BoxPlotTest;
             TestBase.addElement(chart, undefined, 'group1');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Mixed Values',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -65,7 +65,7 @@ var BoxPlotTest;
             TestBase.addElement(chart, undefined, 'group1');
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Negative Values',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{

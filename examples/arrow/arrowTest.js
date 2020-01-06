@@ -2,13 +2,13 @@
 /// <reference path='../testBase.ts' />
 var ArrowTest;
 (function (ArrowTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
-        var chart = {
+        let chart = {
             type: UWT.UIType.Cartesian,
             dataSets: [{
                     renderType: UWT.RenderType.DirectionalArrow,
@@ -24,7 +24,7 @@ var ArrowTest;
         };
         UWT.Chart.finalize(chart);
         TestBase.addElement(chart);
-        var chart2 = {
+        let chart2 = {
             type: UWT.UIType.Cartesian,
             dataSets: [{
                     renderType: UWT.RenderType.DirectionalArrow,

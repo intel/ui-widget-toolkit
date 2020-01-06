@@ -3,18 +3,18 @@
 /// <reference path='../testData.ts' />
 var AreaTest;
 (function (AreaTest) {
-    var leftAxis = {
+    let leftAxis = {
         scaleType: UWT.AxisType.Linear,
         label: 'Values1',
         scalingInfo: TestData.defaultScalingInfo
     };
-    var leftAxis2 = {
+    let leftAxis2 = {
         scaleType: UWT.AxisType.Linear,
         label: 'Values2',
         scalingInfo: TestData.MBRateScalingInfo,
         range: { min: 0, max: 10000 }
     };
-    var percentAxis = {
+    let percentAxis = {
         scaleType: UWT.AxisType.Linear,
         label: '',
         scalingInfo: {
@@ -22,14 +22,14 @@ var AreaTest;
         },
         range: { min: 0, max: 100 }
     };
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
         {
-            var lane1 = {
+            let lane1 = {
                 title: 'Alpha Area',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -46,7 +46,7 @@ var AreaTest;
                 ],
                 isXContinuous: true
             };
-            var lane2 = {
+            let lane2 = {
                 title: 'Stacked Area',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -62,7 +62,7 @@ var AreaTest;
                 ],
                 isXContinuous: true
             };
-            var lane3 = {
+            let lane3 = {
                 title: 'Computed Residency',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -80,7 +80,7 @@ var AreaTest;
                 ],
                 isXContinuous: true
             };
-            var lane4 = {
+            let lane4 = {
                 title: 'Stacked Summation',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -98,7 +98,7 @@ var AreaTest;
                 legends: [{ alignment: UWT.Alignment.Right }],
                 isXContinuous: true
             };
-            for (var i = 0; i < TestData.xyDataSets.length; ++i) {
+            for (let i = 0; i < TestData.xyDataSets.length; ++i) {
                 lane1.dataSets[0].data.push({ name: 'data-' + i, values: TestData.xyDataSets[i] });
                 lane2.dataSets[0].data.push({ name: 'data-' + i, values: TestData.xyDataSets[i] });
                 lane3.dataSets[0].data.push({ name: 'data-' + i, values: TestData.xyDataSets[i] });

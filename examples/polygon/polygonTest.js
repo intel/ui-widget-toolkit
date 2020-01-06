@@ -3,29 +3,29 @@
 /// <reference path='../testData.ts' />
 var PolygonTest;
 (function (PolygonTest) {
-    window.onload = function () {
+    window.onload = () => {
         TestBase.configureButtons();
         createView();
         TestBase.render();
     };
     function createView() {
         // lines
-        var xAxis = {
-            scaleType: UWT.AxisType.Linear,
+        let xAxis = {
             axisDesc: {
+                scaleType: UWT.AxisType.Linear,
                 range: { min: 0, max: 100 }
             },
             alignment: UWT.Alignment.Bottom
         };
-        var yAxis = {
-            scaleType: UWT.AxisType.Linear,
+        let yAxis = {
             axisDesc: {
+                scaleType: UWT.AxisType.Linear,
                 range: { min: 0, max: 100 }
             },
             alignment: UWT.Alignment.Left
         };
         {
-            var chart = {
+            let chart = {
                 title: 'Triangle',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -46,7 +46,7 @@ var PolygonTest;
             TestBase.addElement(chart);
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Kite',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
@@ -81,7 +81,7 @@ var PolygonTest;
             TestBase.addElement(chart);
         }
         {
-            var chart = {
+            let chart = {
                 title: 'Star',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
