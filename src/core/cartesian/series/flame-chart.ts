@@ -422,7 +422,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
             maxDepth = Math.max(maxDepth, Number(depth));
         }
 
-        this._minHeight = maxDepth * this._stackHeight;
+        this._minHeight = (maxDepth + 1) * this._stackHeight;
         return this._minHeight;
     }
 
