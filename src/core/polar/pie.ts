@@ -127,6 +127,10 @@ export class D3Pie extends D3Polar {
                     d.endAngle = end(t);
                     return self.arc(d);
                 }
+            })
+            .each(function (d: any) {
+                self.configureItemInteraction(d3.select(this),
+                    d.rawData, d.rawData ? d.rawData.key : d.rawData)
             });
 
         pieUpdate
@@ -148,7 +152,6 @@ export class D3Pie extends D3Polar {
         if (!this._options.disableTooltip) {
             this.configureTooltip(arcs);
         }
-        this.configureItemHover(arcs);
     }
 };
 D3Renderer.register(UIType.Pie, D3Pie);

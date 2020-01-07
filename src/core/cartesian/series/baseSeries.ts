@@ -4,7 +4,7 @@ import {
 import { IScalingInfo } from '../../../interface/chart/axis';
 import { ILayer } from '../../../interface/chart/chart';
 import { getSelectionName, SimpleBuffer } from '../../utilities';
-import { addHover, removeHover, addClickHelper } from '../../svg-helper';
+import { focus, unfocus, select, unselect, addClickHelper, onSelectHelper } from '../../svg-helper';
 
 import { showContextMenu } from '../../context-menu';
 import { D3Axis } from '../axis';
@@ -50,6 +50,9 @@ export class BaseSeries {
     protected _strokeColors = new WeakMap<Object, string>();
 
     protected _contextMenuItems: IContextMenuItem[];
+
+    /** amount of time to wait before delcaring a double click */
+    private _dblClickWait: number;
 
     /**
      * Create an series
@@ -165,47 +168,78 @@ export class BaseSeries {
         return this.getClassNames(type).replace(/\s+/g, '.');
     }
 
-    /** handle on select events if we want to */
-    public addHover(selection: string): void {
+    /** handle on focus events if we want to */
+    public focus(selection: string): void {
         let self = this;
         if (this._d3Elems) {
             let selectionName = getSelectionName(selection);
             for (let i = 0; i < self._d3Elems.length; ++i) {
                 let elem = self._d3Elems[i];
                 if (elem.classed && elem.classed(selectionName)) {
-                    let hoverRadiusDelta = self._d3Chart.getOptions().hoverRadiusDelta;
+                    /** to be deprecated in 2.x */
+                    let focusRadiusDelta = self._d3Chart.getOptions().focusRadiusDelta ?
+                        self._d3Chart.getOptions().focusRadiusDelta : self._d3Chart.getOptions().hoverRadiusDelta;
 
                     let radius = elem.attr('r');
-                    if (radius !== undefined && hoverRadiusDelta !== undefined) {
-                        let delta = hoverRadiusDelta ? hoverRadiusDelta : 0;
+                    if (radius !== undefined && focusRadiusDelta !== undefined) {
+                        let delta = focusRadiusDelta ? focusRadiusDelta : 0;
                         elem.attr('r', parseInt(radius) + delta);
                         return;
                     }
 
-                    addHover(elem, self._fillColors, self._strokeColors);
+                    focus(elem, self._fillColors, self._strokeColors);
                 }
             }
         }
     }
 
     /** handle on deselect events if we want to */
-    public removeHover(selection: string): void {
+    public unfocus(selection: string): void {
         let self = this;
         if (this._d3svg) {
             let selectionName = getSelectionName(selection);
             for (let i = 0; i < self._d3Elems.length; ++i) {
                 let elem = self._d3Elems[i];
                 if (elem.classed && elem.classed(selectionName)) {
-                    let hoverRadiusDelta = self._d3Chart.getOptions().hoverRadiusDelta;
+                    let focusRadiusDelta = self._d3Chart.getOptions().focusRadiusDelta ?
+                        self._d3Chart.getOptions().focusRadiusDelta : self._d3Chart.getOptions().hoverRadiusDelta;
 
                     let radius = elem.attr('r');
-                    if (radius !== undefined && hoverRadiusDelta !== undefined) {
-                        let delta = hoverRadiusDelta ? hoverRadiusDelta : 0;
+                    if (radius !== undefined && focusRadiusDelta !== undefined) {
+                        let delta = focusRadiusDelta ? focusRadiusDelta : 0;
                         elem.attr('r', parseInt(radius) - delta);
                         return;
                     }
 
-                    removeHover(elem, self._fillColors, self._strokeColors);
+                    unfocus(elem, self._fillColors, self._strokeColors);
+                }
+            }
+        }
+    }
+
+    /** handle on select events if we want to */
+    public select(selection: string): void {
+        let self = this;
+        if (this._d3Elems && selection) {
+            let selectionName = getSelectionName(selection);
+            for (let i = 0; i < self._d3Elems.length; ++i) {
+                let elem = self._d3Elems[i];
+                if (elem.classed && elem.classed(selectionName)) {
+                    select(elem, self._fillColors, self._strokeColors);
+                }
+            }
+        }
+    }
+
+    /** handle on deselect events if we want to */
+    public unselect(selection: string): void {
+        let self = this;
+        if (this._d3svg && selection) {
+            let selectionName = getSelectionName(selection);
+            for (let i = 0; i < self._d3Elems.length; ++i) {
+                let elem = self._d3Elems[i];
+                if (elem.classed && elem.classed(selectionName)) {
+                    unselect(elem, self._fillColors, self._strokeColors);
                 }
             }
         }
@@ -234,57 +268,101 @@ export class BaseSeries {
         return 0;
     }
 
-    /** this adds some logic since the brush is behind the elements we need to
-     * handle mouse/touch events properly to bring the brush to the front and
-     * do the brush selection correctly.
+    /** lambda function to wrap shared click callback flows */
+    protected clickCallback(value: any, callback: (event: IEvent) => void) {
+        let self = this;
+        return function (event: IEvent) {
+            if (callback) {
+                let passthruEvent: IEvent = {
+                    caller: self._d3Chart.getElement(),
+                    event: event.event
+                };
+                if (value) {
+                    passthruEvent.data = value;
+                } else if (event.data !== undefined) {
+                    if (isNaN(event.data)) {
+                        passthruEvent.data = event.data;
+                    } else {
+                        passthruEvent.data = self.getOutputData().get(event.data);
+                    }
+                }
+
+                callback(passthruEvent);
+            }
+        }
+    }
+
+    protected onClick(value: any) {
+        return this.clickCallback(value, this._layer.onClick);
+    }
+
+
+    protected onDoubleClick(value: any) {
+        return this.clickCallback(value, this._layer.onDoubleClick);
+    }
+
+    /** lambda function to wrap shared click execution flows */
+    protected clickExecute(value: any, selectionValue: string) {
+        let self = this;
+        if (value) {
+            let caller = this._d3Chart.getElement();
+            if (this._layer.onDoubleClick) {
+                if (this._dblClickWait) {
+                    window.clearTimeout(this._dblClickWait);
+                    this._dblClickWait = null;
+                    let onDoubleClick = this.clickCallback(value, this._layer.onDoubleClick);
+                    onDoubleClick({
+                        caller: caller, event: EventType.DoubleClick, data: value
+                    });
+                    return;
+                } else {
+                    this._dblClickWait = setTimeout(() => {
+                        if (this._dblClickWait) {
+                            if (!self._d3Chart.getOptions().disableSelection) {
+                                onSelectHelper(caller, value, selectionValue);
+                            }
+                            let onClick = this.clickCallback(value, this._layer.onClick);
+                            onClick({
+                                caller: caller, event: EventType.Click, data: value
+                            });
+                            this._dblClickWait = null;
+                        }
+                    }, 300);
+                }
+            } else {
+                if (!self._d3Chart.getOptions().disableSelection) {
+                    onSelectHelper(caller, value, selectionValue);
+                }
+                let onClick = this.clickCallback(value, this._layer.onClick);
+                onClick({
+                    caller: caller, event: EventType.Click, data: value
+                });
+            }
+        }
+    }
+
+    /** this adds some logic since the brush is behind rendered elements so
+     * we need to handle mouse/touch events properly to bring the brush to
+     * the front and do the brush selection correctly.
      */
     protected configureItemInteraction(elem: d3.Selection<d3.BaseType, {}, d3.BaseType, any>,
-        value?: any) {
+        value: any, selectionValue: string) {
         let self = this;
-
-        let wait: any;
 
         if (self._d3Chart.getOptions().disableBrush) {
             elem.attr('cursor', 'pointer');
-            addClickHelper(elem, self._layer.onClick ? onClick : undefined,
-                self._layer.onDoubleClick ? onDoubleClick : undefined, self._contextMenuItems,
-                self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
+            addClickHelper(elem, self._d3Chart.getOptions(), self._layer.onClick ? this.onClick(value) : undefined,
+                self._layer.onDoubleClick ? this.onDoubleClick(value) : undefined, self._contextMenuItems,
+                self._d3Chart.getTooltip(), self._d3Chart.getElement(), value, selectionValue);
         } else {
             elem.attr('cursor', 'crosshair');
             elem
                 .on('contextmenu', function (event) {
-                    showContextMenu(d3.event, undefined, self._contextMenuItems);
+                    showContextMenu(d3.event, value, self._contextMenuItems);
                 })
                 .on('mousedown touchstart', function (d: any) {
-                    let caller = self._d3Chart.getElement();
-                    if (value) {
-                        if (self._layer.onDoubleClick) {
-                            if (wait) {
-                                window.clearTimeout(wait);
-                                wait = null;
-                                onDoubleClick({
-                                    caller: caller,
-                                    event: EventType.DoubleClick,
-                                    data: value
-                                });
-                                return;
-                            } else {
-                                wait = setTimeout(function () {
-                                    if (wait) {
-                                        onClick({
-                                            caller: caller, event: EventType.Click,
-                                            data: value
-                                        });
-                                        wait = null;
-                                    }
-                                }, 300);
-                            }
-                        } else {
-                            onClick({
-                                caller: caller, event: EventType.Click, data: value
-                            });
-                        }
-                    }
+                    self.clickExecute(value, selectionValue);
+
                     let brush = self._d3Chart.getGraphGroup().select('.brush');
                     let brushStart: any = brush.on('mousedown.brush');
                     let event: any = new MouseEvent('mousedown touchstart', d3.event);
@@ -298,117 +376,44 @@ export class BaseSeries {
                     d3.event.stopPropagation();
                 })
         }
+    }
 
-        function onClick(event: IEvent) {
-            if (self._layer.onClick) {
-                let passthruEvent: IEvent = { event: EventType.Click };
-                if (value) {
-                    passthruEvent.data = value;
-                } else if (event.data !== undefined) {
-                    if (isNaN(event.data)) {
-                        passthruEvent.data = event.data;
-                    } else {
-                        passthruEvent.data = self.getOutputData().get(event.data);
-                    }
-                }
-                self._layer.onClick(passthruEvent);
-            }
-        }
-        function onDoubleClick(event: IEvent) {
-            if (self._layer.onDoubleClick) {
-                let passthruEvent: IEvent = { event: EventType.DoubleClick };
-                if (value) {
-                    passthruEvent.data = value;
-                } else if (event.data !== undefined) {
-                    if (isNaN(event.data)) {
-                        passthruEvent.data = event.data;
-                    } else {
-                        passthruEvent.data = self.getOutputData().get(event.data);
-                    }
-                }
-                self._layer.onDoubleClick(passthruEvent);
-            }
-        }
+    protected configureBandedItemInteration(elem: d3.Selection<d3.BaseType, {}, d3.BaseType, any>,
+        value: any, selectionValue: string) {
+        let self = this;
+        (elem.node() as any)['__data__'] = value;
+        elem
+            .on('mouseenter', function () {
+                self._d3Chart.cursorEnter();
+            })
+            .on('mouseleave', function () {
+                self._d3Chart.cursorExit();
+            });
+
+        addClickHelper(elem, self._d3Chart.getOptions(), self._layer.onClick, self._layer.onDoubleClick,
+            self._contextMenuItems, self._d3Chart.getTooltip(),
+            self._d3Chart.getElement(), value, selectionValue);
     }
 
     /** this adds some logic since the brush is behind the elements we need to
      * handle mouse/touch events properly to bring the brush to the front and
      * do the brush selection correctly.
      */
-    protected configureItemInteractionPIXI(elem: any, value: any) {
+    protected configureItemInteractionPIXI(elem: any, value: any, selectionValue: string) {
 
         let self = this;
         elem.interactive = true;
-        let wait: any;
+
         if (self._d3Chart.getOptions().disableBrush) {
-            addClickHelper(elem, self._layer.onClick ? onClick : undefined,
-                self._layer.onDoubleClick ? onDoubleClick : undefined, self._contextMenuItems,
+            addClickHelper(elem, self._d3Chart.getOptions(), self._layer.onClick ? this.onClick(value) : undefined,
+                self._layer.onDoubleClick ? this.onDoubleClick(value) : undefined, self._contextMenuItems,
                 self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
         } else {
             self._d3Chart.getGraphGroup().attr('cursor', 'crosshair');
             elem
                 .on('mousedown', function (e: any) {
-                    let caller = self._d3Chart.getElement();
-                    if (value) {
-                        if (self._layer.onDoubleClick) {
-                            if (wait) {
-                                window.clearTimeout(wait);
-                                wait = null;
-                                onDoubleClick({
-                                    caller: caller,
-                                    event: EventType.DoubleClick,
-                                    data: value
-                                });
-                                return;
-                            } else {
-                                wait = setTimeout(function () {
-                                    if (wait) {
-                                        onClick({
-                                            caller: caller, event: EventType.Click,
-                                            data: value
-                                        });
-                                        wait = null;
-                                    }
-                                }, 300);
-                            }
-                        } else {
-                            onClick({
-                                caller: caller, event: EventType.Click, data: value
-                            });
-                        }
-                    }
+                    self.clickExecute(value, selectionValue);
                 })
-        }
-
-        function onClick(event: IEvent) {
-            if (self._layer.onClick) {
-                let passthruEvent: IEvent = { event: EventType.Click };
-                if (value) {
-                    passthruEvent.data = value;
-                } else if (event.data !== undefined) {
-                    if (isNaN(event.data)) {
-                        passthruEvent.data = event.data;
-                    } else {
-                        passthruEvent.data = self.getOutputData().get(event.data);
-                    }
-                }
-                self._layer.onClick(passthruEvent);
-            }
-        }
-        function onDoubleClick(event: IEvent) {
-            if (self._layer.onDoubleClick) {
-                let passthruEvent: IEvent = { event: EventType.DoubleClick };
-                if (value) {
-                    passthruEvent.data = value;
-                } else if (event.data !== undefined) {
-                    if (isNaN(event.data)) {
-                        passthruEvent.data = event.data;
-                    } else {
-                        passthruEvent.data = self.getOutputData().get(event.data);
-                    }
-                }
-                self._layer.onDoubleClick(passthruEvent);
-            }
         }
     }
 

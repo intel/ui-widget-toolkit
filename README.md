@@ -1,6 +1,6 @@
 
 ui-widget-toolkit
-===============
+=================
 
 The ui-widget-toolkit is a library designed with goal of helping tool developers quickly create useful tools.  It provides views commonly required for tools like various trace views, line charts, area charts, scatter plots, grid views, flame chart views and connected graph views.  The simplified interface helps users focus on pushing data and managing what happens when the user interacts with the views instead of worrying about how to render the data.
 
@@ -147,6 +147,9 @@ if the polymer serve command runs on port 8081.
 
 	- npm run build-test
 	- npm run test
+
+## Upgraded from version 1.x to version 2.x
+Please see the notes on what has changed between 1.x and 2.x [here](https://github.com/intel/ui-widget-toolkit/blob/master/v1tov2.md)
 
 # Reference
 [API Documentation](https://intel.github.io/ui-widget-toolkit)

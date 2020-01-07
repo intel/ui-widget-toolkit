@@ -36,6 +36,7 @@ export interface IOptions {
      */
     fitToWindow?: boolean,
     /** blink assocaited data when a selection is done */
+    disableSelection?: boolean,
     selectionBlink?: boolean,
     disableBackground?: boolean,
     /** tell a widget to ignore the hover events */
@@ -43,7 +44,10 @@ export interface IOptions {
     disableAutoResizeWidth?: boolean,
     disableAutoResizeHeight?: boolean,
     hideRowTitle?: boolean,
+
+    /** @deprecated deprecated for focusRadiusDelta */
     hoverRadiusDelta?: number,
+    focusRadiusDelta?: number,
 
     // save rendered views as image if possible
     enableSaveAsImage?: boolean,
@@ -122,6 +126,12 @@ export enum EventType {
     HoverStart,
     HoverEnd,
     HoverClear,
+    FocusStart = HoverStart,
+    FocusEnd = HoverEnd,
+    FocusClear = HoverClear,
+    SelectStart,
+    SelectEnd,
+    SelectClear,
     Zoom,
     Click,
     DoubleClick,
@@ -147,8 +157,10 @@ export enum UIType {
 export interface IContextMenuItem {
     /** add a clickable item title */
     title?: string,
+
     /** add a clickable item callback */
     action?: (elem: any, data: any, index: any) => void;
+
     /** disable this clickable item */
     disabled?: boolean;
 
@@ -229,25 +241,7 @@ export interface UIRenderer {
     onRender?: (caller: UIElement, options: IOptions) => void;
 
     /**
-     * Get the css actually rendered. This is useful for legend swatches
-     * and the like.
-     *
-     * @param the element to get the rendered CSS information for
-     *
-     * @return The css rendered, or undefined if called before the chart is
-     *   rendered
-     */
-    getRenderedCss?(element: UIElement): Css;
-
-    /**
-     * tooltip the element.
-     *
-     * @param renderer an IRenderer object that has the tooltip
-     * @param event any event to pass to the renderer
-     */
-    getTooltipData?(element: UIElement, event: IEvent): ITooltipData[];
-
-    /**
+     * @deprecated ('Deprecated since 1.14.0 in favor of focus.  Will be removed in 2.x')
      * hover event
      *
      * @param element to fire the hover event on
@@ -256,12 +250,20 @@ export interface UIRenderer {
     hover?(element: UIElement, event: IEvent): void;
 
     /**
-     * click event
+     * focus event
+     *
+     * @param element to fire the focus event on
+     * @param event any event to pass to the renderer
+     */
+    focus?(element: UIElement, event: IEvent): void;
+
+    /**
+     * select event
      *
      * @param element to fire the click event on
      * @param event any event to pass to the renderer
      */
-    click?(element: UIElement, event: IEvent): void;
+    select?(element: UIElement, event: IEvent): void;
 
     /**
      * zoom event
@@ -304,6 +306,25 @@ export interface UIRenderer {
     invalidate(element: UIElement, options?: IOptions): void;
 
     /**
+     * Get the css actually rendered. This is useful for legend swatches
+     * and the like.
+     *
+     * @param the element to get the rendered CSS information for
+     *
+     * @return The css rendered, or undefined if called before the chart is
+     *   rendered
+     */
+    getRenderedCss?(element: UIElement): Css;
+
+    /**
+     * tooltip the element.
+     *
+     * @param renderer an IRenderer object that has the tooltip
+     * @param event any event to pass to the renderer
+     */
+    getTooltipData?(element: UIElement, event: IEvent): ITooltipData[];
+
+    /**
      * get the options the renderer is using for the given element
      *
      * @param the element to invalidate
@@ -326,11 +347,19 @@ export interface UIElement {
 
     api?: {
         /**
+         * @deprecated ('Deprecated since 1.14.0 in favor of focus.  Will be removed in 2.x')
          * fire a hover event for this element
          *
          * @param event any event to pass to the renderer
          */
         hover?: (event?: IEvent) => void;
+
+        /**
+         * fire a focus event for this element
+         *
+         * @param event any event to pass to the renderer
+         */
+        focus?: (event?: IEvent) => void;
 
         /**
          * fire a select event for this element
@@ -398,6 +427,14 @@ export interface UIElement {
      * @param event the event related to this callback
      */
     onHover?: (event: IEvent) => void;
+
+    /** callback when user clicks on an item */
+    onClick?: (event: IEvent) => void;
+
+    /** the callback when an item in this data is double clicked
+     * @param event contains the data for the item that was clicked
+     */
+    onDoubleClick?: (event: IEvent) => void;
 
     /**
      * callback when a zoom action occurs in this element

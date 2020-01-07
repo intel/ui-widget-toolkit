@@ -16,6 +16,9 @@ module HierarchyGraphTest {
             nodes: hRoot,
             type: UWT.UIType.HierarchyGraph,
             onClick: function (event: UWT.IEvent) {
+                if (!event.data || !event.data.key) {
+                    return;
+                }
                 console.log('hierarchy click');
                 console.log(event.data);
                 let isNode = event.data.key != undefined;
@@ -55,6 +58,9 @@ module HierarchyGraphTest {
             nodes: hRoot,
             type: UWT.UIType.HierarchyGraph,
             onClick: function (event: UWT.IEvent) {
+                if (!event.data || !event.data.key) {
+                    return;
+                }
                 console.log('hierarchy click');
                 console.log(event.data && event.data.key);
                 let isNode = event.data.key != undefined;
@@ -94,6 +100,9 @@ module HierarchyGraphTest {
             nodes: hRoot,
             type: UWT.UIType.HierarchyGraph,
             onClick: function (event: UWT.IEvent) {
+                if (!event.data || !event.data.key) {
+                    return;
+                }
                 console.log('hierarchy click');
                 console.log(event.data);
                 let isNode = event.data.key != undefined;
@@ -136,6 +145,9 @@ module HierarchyGraphTest {
             nodes: hRoot3,
             type: UWT.UIType.HierarchyGraph,
             onClick: function (event: UWT.IEvent) {
+                if (!event.data || !event.data.key) {
+                    return;
+                }
                 console.log('hierarchy click');
                 console.log(event.data);
                 let isNode = event.data.key != undefined;

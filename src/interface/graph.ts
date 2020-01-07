@@ -32,10 +32,6 @@ export interface IConnectedGraph extends IGraph {
     nodes?: IGraphNode[];
     /** add a legend definition to render */
     legend?: ILegend;
-    /** Callback that happens on node/link click */
-    onClick?: (event: IEvent) => void;
-    /** Callback that happens on node/link double click */
-    onDoubleClick?: (event: IEvent) => void;
     /** the context menu definitions for when the user right clicks */
     contextMenuItems?: IContextMenuItem[];
     /** the context menu definitions for when the user finishes a brush action */
@@ -80,10 +76,8 @@ export interface IHierarchyNode extends IGraphNode {
     imageHeight?: number;
     /** specifies an image associated with this node */
     imageWidth?: number;
-
     /** Label for this node, use if label is duplicated */
     label?: string;
-
     /** any center aligned nodes */
     center?: IHierarchyNode[];
     /** specifies top aligned nodes */
@@ -101,7 +95,7 @@ export interface IHierarchyNode extends IGraphNode {
     /** whether to show the image and label of this element or not */
     hideImageLabel?: boolean;
 
-    /** disable hover highlighting */
+    /** disable hover events */
     disableHover?: boolean;
 
     /** this data may be added by the rendering algorithm */
@@ -125,10 +119,6 @@ export interface IHierarchyGraph extends IGraph {
 
     /** add a legend definition to render */
     legend?: ILegend;
-    /** Callback that happens on node/link click */
-    onClick?: (event: IEvent) => void;
-    /** Callback that happens on node/link double click */
-    onDoubleClick?: (event: IEvent) => void;
     /** the context menu definitions for when the user right clicks */
     contextMenuItems?: IContextMenuItem[];
     /** a decimator used to control graph node visibility */

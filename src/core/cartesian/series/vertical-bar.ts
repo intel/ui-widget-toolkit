@@ -7,7 +7,6 @@ import { RenderType, ILayer } from '../../../interface/chart/chart'
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 import { getSelectionName } from '../../utilities';
 
-import { addClickHelper } from '../../svg-helper';
 import { D3Axis, MAX_DISCRETE_WIDTH } from '../axis';
 import { ID3Chart, D3Chart } from '../chart';
 import { BaseSeries } from './baseSeries';
@@ -370,24 +369,6 @@ export class VerticalBarSeries extends BaseSeries implements ICartesianSeriesPlu
         return legendItems;
     }
 
-    private configureHover(elem: d3.Selection<d3.BaseType, {}, d3.BaseType, any>,
-        value: any) {
-        let self = this;
-        (elem.node() as any)['__data__'] = value;
-        elem
-            .on('mouseenter', function () {
-                self._d3Chart.cursorEnter();
-            })
-            .on('mouseleave', function () {
-                self._d3Chart.cursorExit();
-            });
-
-        this.initializeContextMenuItems();
-
-        addClickHelper(elem, self._layer.onClick, self._layer.onDoubleClick,
-            self._contextMenuItems, self._d3Chart.getTooltip(), self._d3Chart.getElement(), value);
-    }
-
     /** render all of the data in the series
      * @param svg the svg to draw the data in
      */
@@ -432,10 +413,10 @@ export class VerticalBarSeries extends BaseSeries implements ICartesianSeriesPlu
         }
 
         // now render the data
+        let xAxis = self._d3XAxis.getAxis();
         let animateDuration = self._d3Chart.getAnimateDuration();
         let seriesData = self._data;
         if (seriesData.length > 0) {
-            let data: any;
             let elemWidth = Math.min(
                 scales[0].bandwidth(),
                 MAX_DISCRETE_WIDTH);
@@ -450,8 +431,17 @@ export class VerticalBarSeries extends BaseSeries implements ICartesianSeriesPlu
                 yStart = yScale(0);
             }
 
+            let onBarAdded = function (elem: any, value: any,
+                selectionValue: string) {
+                if (xAxis.options && xAxis.options.enableOrdinalBrushSelection) {
+                    self.configureItemInteraction(elem, value, selectionValue);
+                } else {
+                    self.configureBandedItemInteration(elem, value, selectionValue);
+                }
+                self._d3Elems.push(elem);
+            }
+
             // in this case we have multiple data bars per domain
-            let graphHeight = yScale.range()[0];
             if (isStacked) {
                 for (let i = 0; i < this._stackData.length; ++i) {
                     let dataPerKey = this._stackData[i];
@@ -496,8 +486,7 @@ export class VerticalBarSeries extends BaseSeries implements ICartesianSeriesPlu
                                 .attr('y', yMax)
                                 .attr('height', yMin - yMax);
 
-                            self.configureHover(elem, leafData.data);
-                            self._d3Elems.push(elem);
+                            onBarAdded(elem, leafData.data, parentKeys.trim());
                         }
                     }
                 }
@@ -555,9 +544,7 @@ export class VerticalBarSeries extends BaseSeries implements ICartesianSeriesPlu
                                 .attr('height', 0);
 
                             renderBar(elem, (leafData.data as { [index: string]: number })[key]);
-
-                            self.configureHover(elem, leafData);
-                            self._d3Elems.push(elem);
+                            onBarAdded(elem, leafData, leafData.key);
                         }
                     }
                 } else {
@@ -580,24 +567,17 @@ export class VerticalBarSeries extends BaseSeries implements ICartesianSeriesPlu
                                 .attr('y', yStart)
                                 .attr('height', 0);
 
-                            renderBar(elem, summary[key]);
-
                             let data: { [index: string]: number } = {};
                             data[key] = summary[key];
-                            self.configureHover(elem, data);
-                            self._d3Elems.push(elem);
+
+                            renderBar(elem, summary[key]);
+                            onBarAdded(elem, data, key);
                         }
                     }
                 }
             }
         }
 
-        let xAxis = self._d3XAxis.getAxis();
-        if (xAxis.options && xAxis.options.enableOrdinalBrushSelection) {
-            for (let i = 0; i < self._d3Elems.length; ++i) {
-                self.configureItemInteraction(self._d3Elems[i]);
-            }
-        }
         self.applyStyles();
     }
 }

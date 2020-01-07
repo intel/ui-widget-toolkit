@@ -30,7 +30,11 @@ module TestData {
     export var scatterEvents: string[] = ['data-0', 'data-1', 'data-2', 'def', 'test'];
     export var scatterData: UWT.IXYValue[][] = [new Array(), new Array(), new Array(), new Array(), new Array()];
     for (let i = 0; i < pointsPerSeries; ++i) {
-        scatterData[i % scatterEvents.length].push({ x: i, y: scatterEvents[i % scatterEvents.length] });
+        scatterData[i % scatterEvents.length].push({
+            x: i,
+            y: scatterEvents[i % scatterEvents.length],
+            info: { title: 'name' + i }
+        });
     }
 
     // Define the area and graphs.

@@ -33,7 +33,7 @@ export interface ICartesianSeriesPlugin {
     /** decimate the data for the series or series group */
     decimateData: (xStart: number, xEnd: number, xAxis: IRenderedAxis, yAxis: IRenderedAxis) => Promise<any>;
 
-    /** get the x scaling info for this series */
+    /** get the x scaling info cfor this series */
     getXScalingInfo: () => IScalingInfo;
 
     /** get the y scaling info for this series */
@@ -45,11 +45,17 @@ export interface ICartesianSeriesPlugin {
     /** get information for the legend to render */
     getLegendInfo: () => ILegendItem[];
 
-    /** handle on select events if we want to */
-    addHover: (selection: string) => void;
+    /** handle on focus events if we want to */
+    focus: (selection: string) => void;
 
-    /** handle on deselect events if we want to */
-    removeHover: (selection: string) => void;
+    /** handle on unfocus events if we want to */
+    unfocus: (selection: string) => void;
+
+    /** handle on focus events if we want to */
+    select: (selection: string) => void;
+
+    /** handle on unfocus events if we want to */
+    unselect: (selection: string) => void;
 
     /** set update data for the given plugin */
     setData: (layer: ILayer) => void;

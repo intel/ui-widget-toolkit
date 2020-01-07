@@ -4,8 +4,8 @@ import { ITooltipData, UIType, IEvent, EventType } from '../../interface/ui-base
 import { ISummaryValue } from '../../interface/chart/series-data';
 import { D3Polar } from './base';
 import { D3Renderer } from '../renderer';
-import { addClickHelper, SVGRenderer } from '../svg-helper';
-import { copy, getSelectionName } from '../utilities';
+import { SVGRenderer } from '../svg-helper';
+import { copy } from '../utilities';
 import { CustomDivTooltip } from '../tooltip';
 
 import * as d3 from 'd3';
@@ -27,15 +27,25 @@ let dotRadius = 4;
 // based on code from http://bl.ocks.org/nbremer/21746a9668ffdf6d8242
 export class D3Radar extends D3Polar {
     /**
+     * @deprecated ('Deprecated since 1.14.0 in favor of focus.  Will be removed in 2.x')
      * hover event
      *
      * @param event the event to pass to the renderer
      */
     public hover(event: IEvent): void {
+        this.focus(event);
+    }
+
+    /**
+     * bring an item into focus
+     *
+     * @param event the event to focus on
+     */
+    public focus(event: IEvent): void {
         let areaSelection = this._svg.selectAll('.radar-area.' + event.selection);
         let circleSelection = this._svg.selectAll('.radar-circle.' + event.selection);
         switch (event.event) {
-            case EventType.HoverStart:
+            case EventType.FocusStart:
                 this._svg.selectAll('.radar-circle')
                     .transition().duration(200)
                     .attr('fill-opacity', opacityBackground);
@@ -51,7 +61,7 @@ export class D3Radar extends D3Polar {
                     .transition().duration(200)
                     .attr('fill-opacity', opacityAreaSelected)
                 break;
-            case EventType.HoverEnd:
+            case EventType.FocusEnd:
                 this._svg.selectAll('.radar-circle')
                     .transition().duration(200)
                     .attr('fill-opacity', opacityCircles);
@@ -107,17 +117,15 @@ export class D3Radar extends D3Polar {
             if (SVGRenderer.IS_RESIZING) {
                 return;
             }
-            let polarChart = self._element as IRadarChart;
+            let chart = self._element as IRadarChart;
 
-
-            let cb = polarChart.onTooltip;
-            if (cb) {
+            if (chart.onTooltip) {
                 let data: any = {
                     tooltip: self._dataTooltip
                 }
 
-                self._dataTooltip.setData(polarChart.title + ' for ' + value.key, []);
-                cb({ caller: polarChart, selection: value.key, data: data });
+                self._dataTooltip.setData(chart.title + ' for ' + value.key, []);
+                chart.onTooltip({ caller: chart, selection: value.key, data: data });
             } else {
                 let data = value.data as ISummaryValue[];
                 let tooltipMetrics: { [index: string]: string } = {};
@@ -131,90 +139,15 @@ export class D3Radar extends D3Polar {
                     }
                 })
 
-                let ttList: ITooltipData[] = [{ source: polarChart, group: '', metrics: tooltipMetrics }];
-                if (polarChart.title) {
-                    self._dataTooltip.setData(polarChart.title + ' for ' + value.key, ttList);
+                let ttList: ITooltipData[] = [{ source: chart, group: '', metrics: tooltipMetrics }];
+                if (chart.title) {
+                    self._dataTooltip.setData(chart.title + ' for ' + value.key, ttList);
                 } else {
                     self._dataTooltip.setData('', ttList);
                 }
             }   // _onMouseMove
             return true;
         }
-    }
-
-    /** configures segment hover and stores the current hovered
-     * item for others to use in the _selection variable
-     **/
-    protected configureItemHover(target: d3.Selection<d3.BaseType, any, d3.BaseType, any>,
-        value?: any): void {
-        let self = this;
-
-        target.on('mouseenter', hoverStart)
-            .on('mouseleave', hoverEnd);
-
-        let radarChart = self._element as IRadarChart;
-        let contextMenuItems = radarChart.contextMenuItems;
-        if (self._options.enableSaveAsImage) {
-            let saveImageItem = {
-                title: 'Save As Image',
-                action: function (elem: any, data: any, index: number) {
-                    self.saveImage();
-                },
-                disabled: false // optional, defaults to false
-            };
-
-            contextMenuItems = radarChart.contextMenuItems ?
-                radarChart.contextMenuItems.slice(0) : [];
-            contextMenuItems.push(saveImageItem);
-        }
-
-        addClickHelper(target, radarChart.onClick, radarChart.onDoubleClick,
-            contextMenuItems, self._dataTooltip, radarChart);
-
-        // All further processing occurs in the callbacks
-        return;
-
-        function onHoverChanged(event?: IEvent) {
-            if (SVGRenderer.IS_RESIZING) {
-                return;
-            }
-            self.hover(event);
-
-            let hoverCallback = radarChart.onHover;
-            if (hoverCallback) {
-                hoverCallback(event);
-            }
-            return true;
-        }
-
-        function hoverStart(): boolean {
-            let data = value ? value : this.__data__;
-            let selection = getSelectionName(self.getDataName(data));
-            self._hoverItem = data;
-            if (self._hoverItem) {
-                return onHoverChanged({
-                    caller: self._element,
-                    event: EventType.HoverStart,
-                    selection: selection
-                });
-            }
-            return false;
-        }    // onHoverEnter
-
-
-        function hoverEnd(): boolean {
-            if (self._hoverItem) {
-                let ret = onHoverChanged({
-                    caller: self._element,
-                    event: EventType.HoverEnd,
-                    selection: getSelectionName(self.getDataName(self._hoverItem))
-                });
-
-                self._hoverItem = undefined;
-                return ret;
-            }
-            return false;
-        }   // onHoverLeave
     }
 
     protected getLegendData(): any[] {
@@ -344,7 +277,7 @@ export class D3Radar extends D3Polar {
                         .attr('fill', color)
                         .attr('fill-opacity', opacityArea);
 
-                this.configureItemHover(radarArea, blob);
+                this.configureItemInteraction(radarArea, blob, blob.key);
                 this.configureTooltip(radarArea, blob);
             }
             //Create the outlines
@@ -357,7 +290,7 @@ export class D3Radar extends D3Polar {
                 .attr('fill', 'none')
                 .attr('filter', 'url(#glow)');
 
-            this.configureItemHover(radarBounds, blob);
+            this.configureItemInteraction(radarBounds, blob, blob.key);
             this.configureTooltip(radarBounds, blob);
 
             //Append the circles
@@ -376,11 +309,12 @@ export class D3Radar extends D3Polar {
                 .attr('r', dotRadius)
                 .attr('cx', function (d, i) { return computeRadius(d) * Math.cos(angleSlice * i - Math.PI / 2); })
                 .attr('cy', function (d, i) { return computeRadius(d) * Math.sin(angleSlice * i - Math.PI / 2); })
+                .attr('stroke', color)
                 .attr('fill', color)
                 .attr('fill-opacity', 0.8)
                 .classed(this.getDataKey(blob).toString(), true)
 
-            this.configureItemHover(circles, blob);
+            this.configureItemInteraction(circles, blob, blob.key);
             this.configureTooltip(circles, blob);
         })
 

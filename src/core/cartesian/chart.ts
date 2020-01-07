@@ -250,6 +250,8 @@ export interface ID3Chart {
     cursorEnter: () => boolean;
     cursorMove: () => boolean;
     cursorExit: () => boolean;
+
+    select: (event: IEvent) => void;
 }
 
 class D3Title {
@@ -364,6 +366,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
 
     private _zoom: d3.ZoomBehavior<Element, {}>;
 
+    private _zoomMenuItem: IContextMenuItem;
+
     /** this is used to prevent stack overflow from zoom behavior change in 5.10.x on */
     protected _ignoreZoomHack = false;
 
@@ -403,6 +407,11 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         this._xMin = Number.MAX_VALUE;
         this._xMax = -Number.MAX_VALUE;
 
+        this._zoomMenuItem = {
+            title: 'Zoom',
+            submenu: []
+        }
+
         this.initialize(element, renderer, parent);
 
         this._requiresRelayout = true;
@@ -420,11 +429,10 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 return;
             }
 
-            self.hover(event);
+            self.focus(event);
 
-            let hoverCallback = self._element.onHover;
-            if (hoverCallback) {
-                hoverCallback(event);
+            if (self._element.onHover) {
+                self._element.onHover(event);
             }
 
             return true;
@@ -437,9 +445,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
 
             self.cursorChange(event);
 
-            let cursorCallback = self._element.onCursorChanged;
-            if (cursorCallback) {
-                cursorCallback(event);
+            if (self._element.onCursorChanged) {
+                self._element.onCursorChanged(event);
             }
 
             return true;
@@ -596,9 +603,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         this.zoom(event);
 
         let chart = this._element;
-        let cb = chart.onZoom;
-        if (cb) {
-            cb(event);
+        if (chart.onZoom) {
+            chart.onZoom(event);
         }
     }
 
@@ -835,8 +841,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             ttList = this.getTooltipData({ xEnd: x });
         }
 
-        let cb = chart.onTooltip;
-        if (cb) {
+        if (chart.onTooltip) {
             let data: any = {
                 tooltip: this._dataTooltip,
                 defaultData: ttList
@@ -845,12 +850,12 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             this._dataTooltip.setData(title, []);
 
             if (this._scaleAxis.isBanded()) {
-                cb({
+                chart.onTooltip({
                     caller: this._element, selection: x, data: data,
                     defaultTitle: title, defaultClass: this
                 });
             } else {
-                cb({
+                chart.onTooltip({
                     caller: this._element, xStart: xPrev, xEnd: x, yStart: yStart,
                     yEnd: yEnd, data: data,
                     defaultTitle: title, defaultClass: this
@@ -929,9 +934,8 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
 
             self.brush(options);
 
-            let cb = chart.onBrush;
-            if (cb) {
-                cb(options);
+            if (chart.onBrush) {
+                chart.onBrush(options);
             }
             return coords !== null;
         }
@@ -1159,18 +1163,34 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
     }   // tooltipRequested
 
     /** add a selection from all of the elements */
-    public addHover(selection: any) {
+    public _focus(selection: any) {
         if (selection) {
             this._seriesMap.forEach(function (d3Series: ICartesianSeriesPlugin) {
-                d3Series.addHover(selection);
+                d3Series.focus(selection);
             });
         }
     }
 
     /** remove a selection from all of the elements */
-    public removeHover(selection: any) {
+    public _unfocus(selection: any) {
         this._seriesMap.forEach(function (d3Series: ICartesianSeriesPlugin) {
-            d3Series.removeHover(selection);
+            d3Series.unfocus(selection);
+        });
+    }
+
+    /** add a selection from all of the elements */
+    public _select(selection: any) {
+        if (selection) {
+            this._seriesMap.forEach(function (d3Series: ICartesianSeriesPlugin) {
+                d3Series.select(selection);
+            });
+        }
+    }
+
+    /** remove a selection from all of the elements */
+    public _unselect(selection: any) {
+        this._seriesMap.forEach(function (d3Series: ICartesianSeriesPlugin) {
+            d3Series.unselect(selection);
         });
     }
 
@@ -1472,9 +1492,10 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
 
                 let xAxisRange = xD3Axis.getDomain();
                 if (xAxisRange) {
-                    xD3Axis.setDomain([
-                        Math.min(xAxisRange[0], xMinMax[0] ? xMinMax[0] : Number.MAX_VALUE),
-                        Math.max(xAxisRange[1], xMinMax[1] ? xMinMax[1] : -Number.MAX_VALUE)]);
+                    xAxisRange[0] = Math.min(xAxisRange[0], xMinMax[0] ? xMinMax[0] : Number.MAX_VALUE);
+                    xAxisRange[1] = Math.max(xAxisRange[1], xMinMax[1] ? xMinMax[1] : -Number.MAX_VALUE);
+                    xD3Axis.setDomain(xAxisRange);
+
                     self._xMin = Math.min(xAxisRange[0], self._xMin);
                     self._xMax = Math.max(xAxisRange[1], self._xMax);
                 } else {
@@ -2130,8 +2151,6 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
     }
 
     private addZoomContextMenuItem(title: string, func: () => void) {
-        let self = this;
-
         let zoomMenuItem = {
             title: title,
             action: function (elem: any, data: any, index: number) {
@@ -2140,7 +2159,10 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             disabled: false // optional, defaults to false
         };
 
-        self._contextMenuItems.push(zoomMenuItem);
+        if (this._contextMenuItems.indexOf(this._zoomMenuItem)) {
+            this._contextMenuItems.push(this._zoomMenuItem);
+        }
+        this._zoomMenuItem.submenu.push(zoomMenuItem)
     }
 
     private updateZoomFunctions() {
@@ -2223,20 +2245,18 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             element.api = {}
         }
 
+        this._zoomMenuItem.submenu = [];
+
         let canZoomOut = !(self._options.xStart === undefined && self._options.xEnd === undefined) &&
             ((self._options.xStart && self._options.xStart !== self._xMin) ||
                 (self._options.xEnd && self._options.xEnd !== self._xMax));
-        if (canZoomOut) {
-            self.addZoomContextMenuItem('Reset Zoom', element.api.zoomReset);
+        if (!self._options.disableZoomViewUpdate) {
+            self.addZoomContextMenuItem('Zoom In', element.api.zoomIn);
         }
-
         if (canZoomOut) {
             // range only exists if we are already zoomed in
             self.addZoomContextMenuItem('Zoom Out', element.api.zoomOut);
-        }
-
-        if (!self._options.disableZoomViewUpdate) {
-            self.addZoomContextMenuItem('Zoom In', element.api.zoomIn);
+            self.addZoomContextMenuItem('Reset', element.api.zoomReset);
         }
     }
 
@@ -2488,6 +2508,9 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                     d3Legend.render();
                 }
             }
+
+            // restore any previous selection
+            self._interactionState.onRedraw();
 
             if (self._options.forceBrushToFront) {
                 self._brush.moveToFront();

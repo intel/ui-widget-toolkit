@@ -355,14 +355,6 @@ export interface ICartesianChart extends IChart {
     legends?: ILegend[];
     /** brush selectoin results in the following context menu */
     brushContextMenuItems?: IContextMenuItem[];
-
-    /** callback when user clicks on an item */
-    onClick?: (event: IEvent) => void;
-
-    /** the callback when an item in this data is double clicked
-     * @param event contains the data for the item that was clicked
-     */
-    onDoubleClick?: (event: IEvent) => void;
 }
 
 export interface IPolarChart extends IChart {

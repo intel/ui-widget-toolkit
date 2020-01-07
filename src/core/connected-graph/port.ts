@@ -4,7 +4,7 @@ import {
     Alignment, IEvent, UIElement, IOptions, UIType, UIRenderer, Rect, IRect
 } from '../../interface/ui-base';
 import {
-    IConnectedGraph, IPortDiagram, IPortDiagramLink, IPortDiagramNode, NodeType
+    IPortDiagram, IPortDiagramLink, IPortDiagramNode, NodeType
 } from '../../interface/graph';
 import { UIElementRenderer, D3Renderer } from '../renderer';
 import { addClickHelper, getTextRect } from '../svg-helper';
@@ -106,9 +106,45 @@ class PIXINode {
         // put port relatively in the right place for the container
         portGraphic.x = port.x - PORT_RADIUS;
         portGraphic.y = port.y - PORT_RADIUS;
+        portGraphic.renderer = this;
 
         this._nodeContainer.addChild(portGraphic);
         return portGraphic;
+    }
+
+    private _selectTempItems = {};
+    public select(selection: string, elem: PIXI.Sprite, index: number,
+        graphicsMgr: GraphicsManager) {
+        let createSelectionBorder = function (circle: PIXI.Sprite) {
+            let circleRadius = circle.width / 2;
+            let radius = circleRadius + STROKE_WIDTH;
+            let border = graphicsMgr.add(selection + radius,
+                selection + radius, PIXI.SCALE_MODES.LINEAR, 1,
+                function () {
+                    let pixiCircle = new PIXI.Graphics();
+                    pixiCircle.beginFill(0xFFFFFF);
+                    pixiCircle.drawCircle(0, 0, radius); // drawCircle(x, y, radius)
+                    pixiCircle.endFill();
+                    return pixiCircle;
+                });
+
+            border.x = circle.x + circleRadius - radius;
+            border.y = circle.y + circleRadius - radius;
+            border.tint = SELECTION_COLOR;
+            border.__data__ = (circle as any).__data__;
+
+            return border;
+        }
+
+        let border = createSelectionBorder(elem);
+        this._selectTempItems[`${selection}Select${index}`] = border;
+        elem.parent.addChildAt(border, 0);
+    }
+
+    public unselect(selection: string, elem: PIXI.Sprite, index: number) {
+        let border = this._selectTempItems[`${selection}Select${index}`];
+        border.parent.removeChild(border);
+        delete this._selectTempItems[`${selection}Select`];
     }
 }
 
@@ -117,10 +153,13 @@ class PIXINode {
  *********************************************/
 let RADIUS = 25;
 let PORT_RADIUS = 3;
+let STROKE_WIDTH = 3;
+let SELECTION_COLOR = 15921737;
 let PADDING = 3;
 let simplePortArea = { x: -RADIUS, y: -RADIUS, height: RADIUS * 2, width: RADIUS * 2 };
 class SimpleNode implements IPortDiagramNodeRenderer {
     public def: IPortDiagramNode;
+    protected _selectTempItems = {}
 
     constructor(node: IPortDiagramNode) {
         this.def = node;
@@ -263,6 +302,43 @@ class PIXISimpleNode extends SimpleNode implements INodeRenderer {
         }
         return node;
     }
+
+
+    public select(selection: string, elem: PIXI.Sprite, index: number,
+        graphicsMgr: GraphicsManager) {
+        console.log('need node select')
+
+        let createSelectionBorder = function (circle: PIXI.Sprite) {
+            let circleRadius = circle.width / 2;
+            let radius = circleRadius + STROKE_WIDTH;
+            let border = graphicsMgr.add(selection + radius,
+                selection + radius, PIXI.SCALE_MODES.LINEAR, 1,
+                function () {
+                    let pixiCircle = new PIXI.Graphics();
+                    pixiCircle.beginFill(0xFFFFFF);
+                    pixiCircle.drawCircle(0, 0, radius); // drawCircle(x, y, radius)
+                    pixiCircle.endFill();
+                    return pixiCircle;
+                });
+
+            border.x = circle.x + circleRadius - radius;
+            border.y = circle.y + circleRadius - radius;
+            border.tint = SELECTION_COLOR;
+            border.__data__ = (circle as any).__data__;
+
+            return border;
+        }
+
+        let border = createSelectionBorder(elem);
+        this._selectTempItems[`${selection}Select${index}`] = border;
+        elem.parent.addChildAt(border, 0);
+    }
+
+    public unselect(selection: string, elem: PIXI.Sprite, index: number) {
+        let border = this._selectTempItems[`${selection}Select${index}`];
+        border.parent.removeChild(border);
+        delete this._selectTempItems[`${selection}Select${index}`];
+    }
 }
 
 class SVGRectangleNode extends RectangleNode implements INodeRenderer {
@@ -344,6 +420,7 @@ class PIXIRectangleNode extends RectangleNode implements INodeRenderer {
     private _nodeContainer: PIXI.Container;
     private _pixiHelper: PIXIHelper;
     private _titleText: PIXI.Text;
+    private _selectTempItems = {}
 
     public updatePosition: (pos: { dx: number, dy: number }) => void;
     public renderPort: (portDef: any, options?: any) => PIXI.Container;
@@ -412,6 +489,29 @@ class PIXIRectangleNode extends RectangleNode implements INodeRenderer {
         }
         return node;
     }
+
+    public select(selection: string, elem: PIXI.Sprite, index: number,
+        graphicsMgr: GraphicsManager) {
+        // outline node
+        let border = new PIXI.Graphics();
+        border.lineStyle(STROKE_WIDTH * 2, SELECTION_COLOR);
+        border.drawRoundedRect(0, 0, this._portRect.width,
+            this.def.height, 3);
+
+        let nodeOffset = this.getXYOffset();
+        border.x = nodeOffset.x;
+        border.y = nodeOffset.y;
+
+        this._nodeContainer.addChildAt(border, 0);
+        this._selectTempItems[`${selection}Select${index}`] = border;
+        elem.parent.addChildAt(border, 0);
+    }
+
+    public unselect(selection: string, elem: PIXI.Sprite, index: number) {
+        let border = this._selectTempItems[`${selection}Select${index}`];
+        border.parent.removeChild(border);
+        delete this._selectTempItems[`${selection}Select${index}`];
+    }
 }
 
 export class D3PortDiagram extends UIElementRenderer {
@@ -470,12 +570,31 @@ export class D3PortDiagram extends UIElementRenderer {
     }
 
     /**
+     * @deprecated ('Deprecated since 1.14.0 in favor of focus.  Will be removed in 2.x')
      * hover event
      *
      * @param event the event to pass to the renderer
      */
     public hover(event: IEvent): void {
-        this._renderer.hover(event);
+        this.focus(event);
+    }
+
+    /**
+     * bring an item into focus
+     *
+     * @param event the event to focus on
+     */
+    public focus(event: IEvent): void {
+        this._renderer.focus(event);
+    }
+
+    /**
+     * select an item
+     *
+     * @param event the event to focus on
+     */
+    public select(event: IEvent): void {
+        this._renderer.select(event);
     }
 
     public cursorChange(event: IEvent): void {
@@ -731,8 +850,9 @@ export class D3PortDiagramSVG extends D3ConnectedGraphSVG {
                     .on('drag', dragMove));
 
             (renderedNode as any).node()['__data__'] = node.def;
-            addClickHelper(renderedNode, graph.onClick, graph.onDoubleClick, graph.contextMenuItems,
-                self._dataTooltip, graph, node);
+            addClickHelper(renderedNode, self.getOptions(), graph.onClick,
+                graph.onDoubleClick, graph.contextMenuItems,
+                self._dataTooltip, graph, node.def, node.def.key);
             self._dataTooltip.setTarget(renderedNode);
 
             // we do this here instead of using the renderPorts helper
@@ -746,7 +866,8 @@ export class D3PortDiagramSVG extends D3ConnectedGraphSVG {
                     let renderedPort = node.renderPort(port);
 
                     (renderedPort.node() as any)['__data__'] = port;
-                    addClickHelper(renderedPort, graph.onClick, graph.onDoubleClick, graph.contextMenuItems,
+                    addClickHelper(renderedPort, self.getOptions(), graph.onClick,
+                        graph.onDoubleClick, graph.contextMenuItems,
                         this._dataTooltip, graph, port);
                     this._dataTooltip.setTarget(renderedPort);
                 }
@@ -815,13 +936,15 @@ export class D3PortDiagramPixi extends D3ConnectedGraphPixi {
             });
 
             (nodeGraphic as any).__data__ = node;
+            (nodeGraphic as any).renderer = nodeRenderer;
 
             // add item lets us do selection
             self._pixiHelper.addSelection(node.key, nodeGraphic);
 
-            self._pixiHelper.addInteractionHelper(nodeGraphic, graph.onClick, graph.onDoubleClick,
-                graph.contextMenuItems, self.nodeHoverStart, self.hoverEnd,
-                self._dataTooltip, graph, node);
+            self._pixiHelper.addInteractionHelper(nodeGraphic, self.getOptions(),
+                graph.onClick, graph.onDoubleClick, graph.contextMenuItems,
+                self.nodeHoverStart, self.hoverEnd,
+                self._dataTooltip, graph, node, node.key);
 
             // RENDER THE PORTS
             if (!(self._element as IPortDiagram).disablePortRendering) {
@@ -838,9 +961,10 @@ export class D3PortDiagramPixi extends D3ConnectedGraphPixi {
                     self._pixiHelper.addSelection(node.key, portGraphic);
                     self._pixiHelper.addSelection(node.key + port.key, portGraphic);
 
-                    self._pixiHelper.addInteractionHelper(portGraphic, graph.onClick, graph.onDoubleClick,
-                        graph.contextMenuItems, self.nodeHoverStart, self.hoverEnd,
-                        self._dataTooltip, graph, { def: port });
+                    self._pixiHelper.addInteractionHelper(portGraphic, self.getOptions(),
+                        graph.onClick, graph.onDoubleClick, graph.contextMenuItems,
+                        self.nodeHoverStart, self.hoverEnd,
+                        self._dataTooltip, graph, { def: port }, node.key);
                 }
             }
 
@@ -906,6 +1030,34 @@ export class D3PortDiagramPixi extends D3ConnectedGraphPixi {
             stage.addChild(nodeContainer);
         });
         return nodeRenderers;
+    }
+
+    public _select(selection: string) {
+        if (selection) {
+            let items = this._pixiHelper.getSelection(selection);
+            if (items) {
+                let self = this;
+                items.forEach(function (elem: any, index: number) {
+                    // assigned this renderer when rendering the node so we
+                    // could find it later easily
+                    elem.renderer.select(selection, elem, index, self._nodeGraphics);
+                });
+            }
+            this._pixiHelper.render();
+        }
+    }
+
+    public _unselect(selection: string) {
+
+        let items = this._pixiHelper.getSelection(selection);
+        if (items) {
+            items.forEach(function (elem: any, index: number) {
+                // assigned this renderer when rendering the node so we
+                // could fifnd it later easily
+                elem.renderer.unselect(selection, elem, index);
+            });
+            this._pixiHelper.render();
+        }
     }
 
     // cache the basic graphic structures so we can clone them

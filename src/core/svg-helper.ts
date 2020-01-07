@@ -7,7 +7,7 @@ import {
 import { IXYValue } from '../interface/chart/series-data';
 import { showContextMenu } from './context-menu';
 import { BaseTooltip, CustomDivTooltip } from './tooltip';
-import { SelectionHelper } from './selection';
+import { InteractionState } from './interaction-state';
 import { ColorManager } from './color-manager';
 import { legendColor } from '../../third-party/d3-legend-master';
 import { UIElementRenderer } from './renderer';
@@ -53,61 +53,137 @@ export function getKeys(data: any[], accessor: (value: any) => string[]) {
     return keyList;
 }
 
-export function addHover(d3Obj: d3.Selection<any, any, d3.BaseType, any>,
+function getColor(d3Obj: d3.Selection<any, any, d3.BaseType, any>,
+    map: WeakMap<Object, string>, color: string = undefined) {
+
+    color = color && color !== 'none' ? color : undefined;
+    if (!map.has(d3Obj.node())) {
+        map.set(d3Obj.node(), color);
+    }
+    return map.get(d3Obj.node());
+}
+
+export function focus(d3Obj: d3.Selection<any, any, d3.BaseType, any>,
     fillColors: WeakMap<Object, string>, strokeColors: WeakMap<Object, string>) {
     // if you don't own the style then when you save the
     // colors save null so we restore this DOM object to
     // the same state (aka it removes the style)
-    let styleAttr = d3Obj.attr('style');
-    let color = d3Obj.style('fill');
-    let hoverColor: string;
-    if (color && color !== 'none') {
-        hoverColor = SelectionHelper.getHoverColor(color);
+    let fillColor = d3Obj.style('fill');
+    fillColor = getColor(d3Obj, fillColors, fillColor);
+
+    // always save the color even if it's not defined so we have the original later
+    if (fillColor) {
+        let hoverColor = InteractionState.getFocusColor(fillColor);
         d3Obj.style('fill', hoverColor);
     }
-    if (styleAttr) {
-        fillColors.set(d3Obj.node(), color);
-    }
 
-    color = d3Obj.style('stroke');
-    if (color && color !== 'none') {
-        hoverColor = SelectionHelper.getHoverColor(color);
-        d3Obj.style('stroke', hoverColor);
-    }
-    if (styleAttr) {
-        strokeColors.set(d3Obj.node(), color);
+    if (!d3Obj.classed('selected')) {
+        let strokeColor = d3Obj.style('stroke');
+        strokeColor = getColor(d3Obj, strokeColors, strokeColor);
+
+        if (strokeColor) {
+            let hoverColor = InteractionState.getFocusColor(strokeColor);
+            d3Obj.style('stroke', hoverColor);
+        }
     }
     d3Obj.classed('hover', true);
 }
 
-export function removeHover(d3Obj: d3.Selection<any, any, d3.BaseType, any>,
+export function unfocus(d3Obj: d3.Selection<any, any, d3.BaseType, any>,
     fillColors: WeakMap<Object, string>, strokeColors: WeakMap<Object, string>) {
-    d3Obj.style('fill', fillColors.get(d3Obj.node()));
-    d3Obj.style('stroke', strokeColors.get(d3Obj.node()));
+    let fillColor = getColor(d3Obj, fillColors);
+    if (fillColor) {
+        d3Obj.style('fill', fillColor);
+    }
+
+    if (!d3Obj.classed('selected')) {
+        let strokeColor = d3Obj.style('stroke');
+        if (strokeColor) {
+            strokeColor = getColor(d3Obj, strokeColors);
+            if (strokeColor) {
+                d3Obj.style('stroke', strokeColor);
+            }
+        }
+    }
     d3Obj.classed('hover', false);
 }
 
+export function select(d3Obj: d3.Selection<any, any, d3.BaseType, any>,
+    fillColors: WeakMap<Object, string>, strokeColors: WeakMap<Object, string>) {
+
+    /** if no fill then we only have strokes to deal with we change the color of the stroke */
+    let fillColor = d3Obj.style('fill');
+    fillColor = getColor(d3Obj, fillColors, fillColor);
+
+    let isStrokeOnly = !fillColor || fillColor === 'none';
+
+    let strokeColor = d3Obj.style('stroke');
+    strokeColor = getColor(d3Obj, strokeColors, strokeColor);
+
+    if (strokeColor || isStrokeOnly) {
+        // use the CSS value for selected stroke
+        d3Obj.style('stroke', null);
+    }
+
+    d3Obj.classed('selected', true);
+}
+
+export function unselect(d3Obj: d3.Selection<any, any, d3.BaseType, any>,
+    fillColors: WeakMap<Object, string>, strokeColors: WeakMap<Object, string>) {
+    let color = getColor(d3Obj, strokeColors);
+    if (color) {
+        d3Obj.style('stroke', color);
+    }
+    d3Obj.classed('selected', false);
+}
+
+export function onSelectHelper(caller: UIElement, value: any, selectionValue: string) {
+    let clearEvent = { caller: caller, data: value, event: EventType.SelectClear };
+    let selectEvent = {
+        caller: caller, event: EventType.SelectStart, data: value, selection: selectionValue
+    }
+
+    caller.api.select(clearEvent);
+    caller.api.select(selectEvent);
+
+    if (caller.onClick) {
+        caller.onClick(clearEvent);
+        caller.onClick(selectEvent);
+    }
+}
+
 export function addClickHelper(target: d3.Selection<d3.BaseType, any, d3.BaseType, any>,
-    onClick: (event: IEvent) => void, onDoubleClick: (event: IEvent) => void,
-    contextMenuItems: IContextMenuItem[], tooltip: BaseTooltip, caller: UIElement, value?: any) {
+    options: IOptions, onClick: (event: IEvent) => void, onDoubleClick: (event: IEvent) => void,
+    contextMenuItems: IContextMenuItem[], tooltip: BaseTooltip, caller: UIElement, value?: any,
+    selectionValue?: string) {
     let wait: any;
-    if (onClick) {
-        target.on('click', function (d: any) {
-            if (value !== undefined) {
-                d = value;
-            }
-            if (onDoubleClick) {
-                wait = setTimeout(function () {
-                    if (wait) {
-                        onClick({ caller: caller, event: EventType.Click, data: d });
-                        wait = null;
+
+    target.on('click', function (d: any) {
+        if (value !== undefined) {
+            d = value;
+        }
+        if (onDoubleClick) {
+            wait = setTimeout(function () {
+                if (wait) {
+                    if (!options.disableSelection) {
+                        onSelectHelper(caller, value, selectionValue);
                     }
-                }, 300);
-            } else {
+                    if (onClick) {
+                        onClick({ caller: caller, event: EventType.Click, data: d });
+                    }
+                    wait = null;
+                }
+            }, 300);
+        } else {
+            if (!options.disableSelection) {
+                onSelectHelper(caller, value, selectionValue);
+            }
+            if (onClick) {
                 onClick({ caller: caller, event: EventType.Click, data: d });
             }
-        });
-    }
+        }
+    });
+
     if (onDoubleClick) {
         target.on('dblclick', function (d: any) {
             if (value !== undefined) {
@@ -123,7 +199,7 @@ export function addClickHelper(target: d3.Selection<d3.BaseType, any, d3.BaseTyp
             if (!event) {
                 event = d3.event;
             }
-            showContextMenu(d3.event, d, contextMenuItems);
+            showContextMenu(d3.event, value, contextMenuItems);
         });
     }
 }
@@ -863,7 +939,7 @@ export class SVGRenderer extends UIElementRenderer {
     /** stores the original stroke colors for an series */
     protected _strokeColors = new WeakMap<Object, string>();
 
-    protected _selectionHelper: SelectionHelper;
+    protected _interactionState: InteractionState;
 
     /** the tooltip object */
     protected _dataTooltip: CustomDivTooltip;
@@ -876,12 +952,18 @@ export class SVGRenderer extends UIElementRenderer {
         this._minSvgWidth = 0;
         this._maxGraphWidth = Number.MAX_VALUE;
         this._maxSvgWidth = Number.MAX_VALUE;
-        this._selectionHelper = new SelectionHelper(
+        this._interactionState = new InteractionState(
             function (selection: any) {
-                self.addHover(selection);
+                self._focus(selection);
             },
             function (selection: any) {
-                self.removeHover(selection);
+                self._unfocus(selection);
+            }, false,
+            function (selection: any) {
+                self._select(selection);
+            },
+            function (selection: any) {
+                self._unselect(selection);
             });
     }
 
@@ -974,12 +1056,31 @@ export class SVGRenderer extends UIElementRenderer {
     }
 
     /**
+     * @deprecated ('Deprecated since 1.14.0 in favor of focus.  Will be removed in 2.x')
      * hover event
      *
      * @param event the event to pass to the renderer
      */
     public hover(event: IEvent): void {
-        this._selectionHelper.onSelect(event);
+        this.focus(event);
+    }
+
+    /**
+     * bring an item into focus
+     *
+     * @param event the event to focus on
+     */
+    public focus(event: IEvent): void {
+        this._interactionState.focus(event);
+    }
+
+    /**
+     * select an item
+     *
+     * @param event the event to focus on
+     */
+    public select(event: IEvent): void {
+        this._interactionState.select(event);
     }
 
     /** the svg that contains the chart */
@@ -988,27 +1089,50 @@ export class SVGRenderer extends UIElementRenderer {
     /** the svg that contains the chart */
     protected _backgroundSVG: d3.Selection<d3.BaseType, {}, d3.BaseType, any>;
 
-    public addHover(selection: any): void {
+    public _focus(selection: any): void {
         let self = this;
         if (selection) {
             self._svg.selectAll('.' + selection)
                 .each(function () {
                     let d3Obj = d3.select(this);
-                    addHover(d3Obj, self._fillColors, self._strokeColors);
+                    focus(d3Obj, self._fillColors, self._strokeColors);
                 });
         }
     }
 
-    public removeHover(selection: any) {
+    public _unfocus(selection: any) {
         let self = this;
         if (selection.length > 0) {
             self._svg.selectAll('.' + selection)
                 .each(function () {
                     let d3Obj = d3.select(this);
-                    removeHover(d3Obj, self._fillColors, self._strokeColors);
+                    unfocus(d3Obj, self._fillColors, self._strokeColors);
                 });;
         }
     }
+
+    public _select(selection: any): void {
+        let self = this;
+        if (selection) {
+            self._svg.selectAll('.' + selection)
+                .each(function () {
+                    let d3Obj = d3.select(this);
+                    select(d3Obj, self._fillColors, self._strokeColors);
+                });
+        }
+    }
+
+    public _unselect(selection: any) {
+        let self = this;
+        if (selection.length > 0) {
+            self._svg.selectAll('.' + selection)
+                .each(function () {
+                    let d3Obj = d3.select(this);
+                    unselect(d3Obj, self._fillColors, self._strokeColors);
+                });;
+        }
+    }
+
     public invalidate(options: IOptions) {
         // clear the SVG
         this.loadOptions(options);
@@ -1020,9 +1144,6 @@ export class SVGRenderer extends UIElementRenderer {
 
         this.configureTooltip();
         this.render(options);
-
-        // restore any previous selection
-        this._selectionHelper.onRedraw();
     }
 
     public updateHandles() {

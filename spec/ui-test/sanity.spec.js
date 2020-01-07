@@ -551,7 +551,7 @@ describe('sanity', function () {
 
     }, 10000);
 
-    it('hierarchy-graph', function (done) {
+    fit('hierarchy-graph', function (done) {
         driver.get('file://' + path.join(__dirname + '../../../examples/hierarchyGraph/hierarchyGraphTest.html'));
 
         const element = By.className('link');

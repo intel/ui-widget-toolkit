@@ -61,7 +61,7 @@ module TestBase {
         for (var i = 0; i < charts.length; ++i) {
             let renderElements = charts[i].getElements();
             for (var j = 0; j < renderElements.length; ++j) {
-                renderElements[j].api.hover(event);
+                renderElements[j].api.focus(event);
             }
         }
     }

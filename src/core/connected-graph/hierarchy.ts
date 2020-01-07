@@ -659,8 +659,8 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
         }
 
         let graph = (this._element as IHierarchyGraph);
-        addClickHelper(elem, graph.onClick, graph.onDoubleClick, graph.contextMenuItems,
-            self._dataTooltip, graph);
+        addClickHelper(elem, self.getOptions(), graph.onClick, graph.onDoubleClick,
+            graph.contextMenuItems, self._dataTooltip, graph, node.def, node.def.key);
 
         let htmlNode = elem.node();
         htmlNode['__data__'] = node.def;

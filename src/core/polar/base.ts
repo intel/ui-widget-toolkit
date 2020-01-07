@@ -103,7 +103,8 @@ export class D3Polar extends SVGRenderer {
     /** configures segment hover and stores the current hovered
      * item for others to use in the _selection variable
      **/
-    protected configureItemHover(target: d3.Selection<d3.BaseType, any, d3.BaseType, any>): void {
+    protected configureItemInteraction(target: d3.Selection<d3.BaseType, any, d3.BaseType, any>,
+        value: any, selectionValue: string): void {
         let self = this;
         let chart = self._element as IChart;
 
@@ -126,8 +127,9 @@ export class D3Polar extends SVGRenderer {
             contextMenuItems.push(saveImageItem);
         }
 
-        addClickHelper(target, polarChart.onClick, polarChart.onDoubleClick,
-            contextMenuItems, self._dataTooltip, polarChart);
+        addClickHelper(target, self.getOptions(), polarChart.onClick,
+            polarChart.onDoubleClick, contextMenuItems, self._dataTooltip,
+            polarChart, value, selectionValue);
 
         // All further processing occurs in the callbacks
         return;
@@ -136,24 +138,22 @@ export class D3Polar extends SVGRenderer {
             if (SVGRenderer.IS_RESIZING) {
                 return;
             }
-            self._renderer.hover(chart, event);
+            self._renderer.focus(chart, event);
 
-            let hoverCallback = chart.onHover;
-            if (hoverCallback) {
-                hoverCallback(event);
+            if (chart.onHover) {
+                chart.onHover(event);
             }
             return true;
         }
 
         function hoverStart(): boolean {
-            let rawData = this.__data__.rawData;
-            let selection = getSelectionName(self.getDataName(rawData));
-            self._hoverItem = rawData;
+            self._hoverItem = value;
             if (self._hoverItem) {
                 return onHoverChanged({
                     caller: self._element,
                     event: EventType.HoverStart,
-                    selection: selection
+                    data: value,
+                    selection: selectionValue
                 });
             }
             return false;
@@ -165,7 +165,8 @@ export class D3Polar extends SVGRenderer {
                 let ret = onHoverChanged({
                     caller: self._element,
                     event: EventType.HoverEnd,
-                    selection: getSelectionName(self.getDataName(self._hoverItem))
+                    data: value,
+                    selection: selectionValue
                 });
 
                 self._hoverItem = undefined;
@@ -196,28 +197,27 @@ export class D3Polar extends SVGRenderer {
             if (SVGRenderer.IS_RESIZING) {
                 return;
             }
-            let polarChart = self._element as IPolarChart;
+            let chart = self._element as IPolarChart;
 
             let selection = self.getDataName(d.rawData);
-            let cb = polarChart.onTooltip;
-            if (cb) {
+            if (chart.onTooltip) {
                 let data: any = {
                     tooltip: self._dataTooltip
                 }
 
-                self._dataTooltip.setData(polarChart.title + ' for ' + self.getDataName(d.rawData), []);
-                cb({ caller: polarChart, selection: selection, data: data });
+                self._dataTooltip.setData(chart.title + ' for ' + self.getDataName(d.rawData), []);
+                chart.onTooltip({ caller: chart, selection: selection, data: data });
             } else {
                 let data = d.rawData;
-                let units = (self._element as IPolarChart).units ? (self._element as IPolarChart).units : '';
+                let units = chart.units ? chart.units : '';
                 let tooltipMetrics: { [index: string]: string } = {};
                 tooltipMetrics[self.getDataName(data)] = self.getDataDisplayValue(data) + units;
 
-                let ttList: ITooltipData[] = [{ source: polarChart, group: '', metrics: tooltipMetrics }];
+                let ttList: ITooltipData[] = [{ source: chart, group: '', metrics: tooltipMetrics }];
 
                 let tooltip = self._dataTooltip;
-                if (polarChart.title) {
-                    tooltip.setData(polarChart.title + ' for ' + self.getDataName(data), ttList);
+                if (chart.title) {
+                    tooltip.setData(chart.title + ' for ' + self.getDataName(data), ttList);
                 } else {
                     tooltip.setData('', ttList);
                 }
@@ -240,8 +240,8 @@ export class D3Polar extends SVGRenderer {
     protected renderLegend(pieLeft: number, pieTop: number, diameter: number) {
         let self = this;
         // RENDER LEGENDS
-        let polarChart = this._element as IPolarChart;
-        let renderLegend = polarChart.legend;
+        let chart = this._element as IPolarChart;
+        let renderLegend = chart.legend;
         if (renderLegend) {
             let legendData = this.getLegendData();
             let xLegend = pieLeft;
@@ -273,7 +273,7 @@ export class D3Polar extends SVGRenderer {
                         opacity: elem.attr('opacity'),
                         shape: 'rect',
                         value: self.getDataValue(data),
-                        units: polarChart.units
+                        units: chart.units
                     });
                 } catch (e) {
                     legendItems.push({
@@ -282,7 +282,7 @@ export class D3Polar extends SVGRenderer {
                         opacity: '1',
                         shape: 'rect',
                         value: self.getDataValue(data),
-                        units: polarChart.units
+                        units: chart.units
                     });
                 }
             }

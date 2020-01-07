@@ -30,13 +30,24 @@ module BoxPlotTest {
                         { x: 'xyz', min: 3, max: 10, y: 4.5, entry: 4, exit: 5 },
                         { x: 'por', min: 5, max: 8, y: 7, entry: 6, exit: 7.5 }
                     ],
+                    onClick(event: UWT.IEvent) {
+                        console.log(event);
+                    },
+                    contextMenuItems: [{
+                        title: 'MenuItem',
+                        action(elem: any, data: any, index: any) {
+                            console.log('index: ' + index);
+                            console.log(data);
+                            console.log(elem);
+                        }
+                    }]
                 }],
                 axes: [
                     {
                         axisDesc: leftAxis,
                         alignment: UWT.Alignment.Left
                     }],
-                isXContinuous: false
+                isXContinuous: false,
             }
 
             UWT.Chart.finalize(chart);

@@ -274,14 +274,15 @@ export class BaseHeatMap extends BaseSeries implements ICartesianSeriesPlugin {
                 // this._pixiHelper.addSelection(getSelectionName(value.x), selection);
                 // this._pixiHelper.addSelection(getSelectionName(value.y), selection);
 
-                this._pixiHelper.addInteractionHelper(selection, this._layer.onClick,
-                    this._layer.onDoubleClick, self._contextMenuItems,
+                this._pixiHelper.addInteractionHelper(selection, this._d3Chart.getOptions(),
+                    this._layer.onClick, this._layer.onDoubleClick, self._contextMenuItems,
                     () => {
                         this._selection = value;
                         if (value) {
                             this._d3Chart.onHover({
                                 caller: chart,
                                 event: EventType.HoverStart,
+                                data: value,
                                 selection: getSelectionName(value.y)
                             });
                         }
@@ -291,11 +292,12 @@ export class BaseHeatMap extends BaseSeries implements ICartesianSeriesPlugin {
                             this._d3Chart.onHover({
                                 caller: chart,
                                 event: EventType.HoverEnd,
+                                data: value,
                                 selection: getSelectionName(value.y)
                             });
                         }
                         this._selection = undefined;
-                    }, self._d3Chart.getTooltip(), chart, value);
+                    }, self._d3Chart.getTooltip(), chart, value, value);
 
                 stage.addChild(rect);
 

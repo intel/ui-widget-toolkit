@@ -101,14 +101,40 @@ export class D3Renderer implements UIRenderer {
     }
 
     /**
+     * @deprecated ('Deprecated since 1.14.0 in favor of focus.  Will be removed in 2.x')
      * hover event
      *
      * @param element to fire the hover event on
      * @param event the event to pass to the renderer
      */
     public hover(element: UIElement, event: IEvent): void {
+        this.focus(element, event);
+    }
+
+    /**
+     * bring an item into focus
+     *
+     * @param element to fire the focus event on
+     * @param event the event to pass to the renderer
+     */
+    public focus(element: UIElement, event: IEvent): void {
         if (this._rendererMap.has(element)) {
-            return this._rendererMap.get(element).hover(event);
+            if (!this._rendererMap.get(element).focus) {
+                this._rendererMap.get(element).hover(event);
+            }
+            return this._rendererMap.get(element).focus(event);
+        }
+    }
+
+    /**
+     * select an item
+     *
+     * @param element to fire the select event on
+     * @param event the event to pass to the renderer
+     */
+    public select(element: UIElement, event: IEvent): void {
+        if (this._rendererMap.has(element)) {
+            this._rendererMap.get(element).select(event);
         }
     }
 

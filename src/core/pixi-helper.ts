@@ -1,6 +1,7 @@
 import {
-    EventType, IContextMenuItem, IEvent, UIElement
+    EventType, IContextMenuItem, IEvent, UIElement, IOptions
 } from '../interface/ui-base';
+import { onSelectHelper } from './svg-helper';
 import { BaseTooltip } from './tooltip';
 import { showContextMenu } from './context-menu';
 
@@ -117,14 +118,19 @@ export class PIXIHelper {
         return foreignObject;
     }
 
+    public createRectange(width: number, height: number, backgroundColor: number) {
+        var rect = new PIXI.Sprite(this._rectTexture);
+        rect.width = width;
+        rect.height = height;
+        rect.tint = backgroundColor;
+        return rect;
+    }
+
     public createRectangleContainer(x: number, y: number, width: number,
         height: number, backgroundColor: number) {
 
         var box = new PIXI.Container();
-        var background = new PIXI.Sprite(this._rectTexture);
-        background.tint = backgroundColor;
-        background.width = width;
-        background.height = height;
+        let background = this.createRectange(width, height, backgroundColor);
 
         box.addChild(background);
         box.position.x = x;
@@ -156,11 +162,11 @@ export class PIXIHelper {
     }
 
     private _tooltipTarget: any;
-    public addInteractionHelper(target: PIXI.DisplayObject,
+    public addInteractionHelper(target: PIXI.DisplayObject, options: IOptions,
         onClick: (event: IEvent) => void, onDoubleClick: (event: IEvent) => void,
         contextMenuItems: IContextMenuItem[], hoverStart: (event: IEvent) => void,
-        hoverEnd: (event: IEvent) => void,
-        tooltip: BaseTooltip, caller: UIElement, value: any) {
+        hoverEnd: (event: IEvent) => void, tooltip: BaseTooltip, caller: UIElement,
+        value: any, selectionValue: any) {
 
         target.interactive = true;
         let self = this;
@@ -174,25 +180,27 @@ export class PIXIHelper {
                         window.clearTimeout(wait);
                         wait = null;
                         onDoubleClick({
-                            caller: caller,
-                            event: EventType.DoubleClick,
-                            data: value
+                            caller: caller, event: EventType.DoubleClick, data: value
                         });
                     } else {
                         wait = setTimeout(function () {
                             if (wait) {
+                                if (!options.disableSelection) {
+                                    onSelectHelper(caller, value, selectionValue ? selectionValue : value);
+                                }
                                 onClick({
-                                    caller: caller, event: EventType.Click,
-                                    data: value
+                                    caller: caller, event: EventType.Click, data: value
                                 });
                                 wait = null;
                             }
                         }, 300);
                     }
                 } else {
+                    if (!options.disableSelection) {
+                        onSelectHelper(caller, value, selectionValue ? selectionValue : value);
+                    }
                     onClick({
-                        caller: caller, event: EventType.Click,
-                        data: value
+                        caller: caller, event: EventType.Click, data: value
                     });
                 }
             });

@@ -186,7 +186,7 @@ export class MarkerSeries extends BaseSeries implements ICartesianSeriesPlugin {
     }
 
     private _selection: ITraceValue;
-    private configureHover(elem: d3.Selection<d3.BaseType, {}, d3.BaseType, any>,
+    private configureMarkerInteraction(elem: d3.Selection<d3.BaseType, {}, d3.BaseType, any>,
         value?: ITraceValue) {
         let self = this;
         elem
@@ -195,6 +195,7 @@ export class MarkerSeries extends BaseSeries implements ICartesianSeriesPlugin {
                 if (value) {
                     self._d3Chart.onHover({
                         event: EventType.HoverStart,
+                        data: value,
                         selection: getSelectionName(self.getDataName(value))
                     });
                 }
@@ -203,12 +204,13 @@ export class MarkerSeries extends BaseSeries implements ICartesianSeriesPlugin {
                 if (value) {
                     self._d3Chart.onHover({
                         event: EventType.HoverEnd,
+                        data: value,
                         selection: getSelectionName(self.getDataName(value))
                     });
                 }
                 self._selection = undefined;
             });
-        self.configureItemInteraction(elem, value);
+        self.configureItemInteraction(elem, value, value.key.toString());
     }
 
     public render(): void {
@@ -246,7 +248,7 @@ export class MarkerSeries extends BaseSeries implements ICartesianSeriesPlugin {
                 .attr('x', xStart)
                 .attr('y', yStart);
 
-            this.configureHover(marker, value);
+            this.configureMarkerInteraction(marker, value);
         }
 
         this.applyStyles();

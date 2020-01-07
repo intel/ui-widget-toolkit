@@ -354,32 +354,31 @@ export class D3Sunburst extends D3Polar {
                 return;
             }
 
-            let polarChart = self._element as IPolarChart;
+            let chart = self._element as IPolarChart;
             let ttList: ITooltipData[] = [];
             if (d) {
-                let units = polarChart.units ? polarChart.units : '';
+                let units = chart.units ? chart.units : '';
                 let tooltipMetrics: { [index: string]: string } = {};
                 tooltipMetrics[self.getDataName(d)] = d.value + units;
-                ttList.push({ source: polarChart, group: '', metrics: tooltipMetrics });
+                ttList.push({ source: chart, group: '', metrics: tooltipMetrics });
             }
 
-            ttList.push({ source: polarChart, group: 'Stack', metrics: getTreePath(angle) });
+            ttList.push({ source: chart, group: 'Stack', metrics: getTreePath(angle) });
 
             if (d) {
                 let selection = self.getDataName(d);
-                let cb = polarChart.onTooltip;
-                if (cb) {
+                if (chart.onTooltip) {
                     let data: any = {
                         tooltip: self._dataTooltip
                     }
 
-                    cb({ caller: polarChart, selection: selection, data: data });
+                    chart.onTooltip({ caller: chart, selection: selection, data: data });
                 }
             }
 
             // now get text from any associated graphs
-            if (polarChart.title) {
-                self._dataTooltip.setData(polarChart.title + ' for ' + self.getDataName(d), ttList);
+            if (chart.title) {
+                self._dataTooltip.setData(chart.title + ' for ' + self.getDataName(d), ttList);
             } else {
                 self._dataTooltip.setData('', ttList);
             }
@@ -443,17 +442,17 @@ export class D3Sunburst extends D3Polar {
         }
 
         // create helper function for update
-        let polarChart = self._element as IPolarChart;
+        let chart = self._element as IPolarChart;
         let colorMgr = self._renderer.getColorManager();
         let animateDuration = super.getAnimateDuration();
 
         let classFunc = function (d: any) {
             let classes = self.getSegmentClasses(d.rawData);
-            if (polarChart.category) {
-                classes = getSelectionName(polarChart.category) + ' ' + classes;
+            if (chart.category) {
+                classes = getSelectionName(chart.category) + ' ' + classes;
             }
-            if (polarChart.title) {
-                classes = getSelectionName(polarChart.title) + ' ' + classes;
+            if (chart.title) {
+                classes = getSelectionName(chart.title) + ' ' + classes;
             }
             return classes;
         };
@@ -604,6 +603,10 @@ export class D3Sunburst extends D3Polar {
 
                     return self.arc(transitionObj);
                 }
+            })
+            .each(function (d: any) {
+                self.configureItemInteraction(d3.select(this), d.rawData,
+                    d.rawData ? d.rawData.name : d.rawData)
             });
 
         let background = graphArea.select('.background')
@@ -634,8 +637,6 @@ export class D3Sunburst extends D3Polar {
         super.render(options);
 
         // configure to tooltip and selection on hover over arcs
-        let arcs = this._graphArea.selectAll('.arc');
-        this.configureItemHover(arcs);
         this.configureHoverLine();
     }
 }

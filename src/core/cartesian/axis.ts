@@ -7,7 +7,6 @@ import {
 import { mergeKeys, SVGRenderer } from '../svg-helper';
 import { D3Renderer } from '../renderer';
 import { CustomDivTooltip } from '../tooltip';
-import { showContextMenu } from '../context-menu';
 import { D3Chart, getBoundedPixelValue } from './chart';
 
 import * as d3 from 'd3';

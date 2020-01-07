@@ -49,10 +49,13 @@ export class D3SimpleGraph extends D3ConnectedGraphSVG {
             })
             .classed('link', true)
             .on('mouseenter', self.linkHoverStart)
-            .on('mouseleave', self.hoverEnd);
+            .on('mouseleave', self.hoverEnd)
+            .each(function (d: any) {
+                addClickHelper(d3.select(this), self.getOptions(), graph.onClick,
+                    graph.onDoubleClick, graph.contextMenuItems,
+                    self._dataTooltip, graph, d.key, d.key);
+            })
 
-        addClickHelper(links, graph.onClick, graph.onDoubleClick, graph.contextMenuItems,
-            self._dataTooltip, graph);
         self._dataTooltip.setTarget(links);
 
         return links;
@@ -87,6 +90,11 @@ export class D3SimpleGraph extends D3ConnectedGraphSVG {
                 }
                 return d.key
             })
+            .each(function (d: any) {
+                addClickHelper(d3.select(this), self.getOptions(), graph.onClick,
+                    graph.onDoubleClick, graph.contextMenuItems,
+                    self._dataTooltip, graph, d.key, d.key);
+            })
             .classed('node', true)
             .on('mouseenter', self.nodeHoverStart)
             .on('mouseleave', self.hoverEnd)
@@ -95,8 +103,6 @@ export class D3SimpleGraph extends D3ConnectedGraphSVG {
                 .on('drag', dragMove)
                 .on('end', dragEnd));
 
-        addClickHelper(nodes, graph.onClick, graph.onDoubleClick, graph.contextMenuItems,
-            self._dataTooltip, graph);
         self._dataTooltip.setTarget(nodes);
 
         return nodes;

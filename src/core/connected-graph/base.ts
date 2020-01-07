@@ -8,7 +8,7 @@ import {
     IHierarchyGraph, IPortDiagram
 } from '../../interface/graph';
 import { showContextMenu } from '../context-menu';
-import { SelectionHelper } from '../selection';
+import { InteractionState } from '../interaction-state';
 import { merge, getSelectionName } from '../utilities';
 import { CustomDivTooltip, OneLineTooltip } from '../tooltip';
 
@@ -138,11 +138,10 @@ export class ConnectedGraphBase {
             if (SVGRenderer.IS_RESIZING) {
                 return;
             }
-            renderer.hover(graph, event);
+            renderer.focus(graph, event);
 
-            let hoverCallback = graph.onHover;
-            if (hoverCallback) {
-                hoverCallback(event);
+            if (graph.onHover) {
+                graph.onHover(event);
             }
             return true;
         }
@@ -154,6 +153,7 @@ export class ConnectedGraphBase {
             return self.onHoverChanged({
                 caller: graph,
                 event: EventType.HoverStart,
+                data: this.__data__,
                 selection: selection
             });
         }    // onHoverEnter
@@ -164,6 +164,7 @@ export class ConnectedGraphBase {
             return self.onHoverChanged({
                 caller: graph,
                 event: EventType.HoverStart,
+                data: this.__data__,
                 selection: selection
             });
         }    // onHoverEnter
@@ -172,6 +173,7 @@ export class ConnectedGraphBase {
             let ret = self.onHoverChanged({
                 caller: graph,
                 event: EventType.HoverEnd,
+                data: this.__data__,
                 selection: myPrevHover
             });
 
@@ -199,9 +201,8 @@ export class ConnectedGraphBase {
                 data: d
             }
             let output: string;
-            let cb = graph.onTooltip;
-            if (cb) {
-                cb({ caller: graph, data: data });
+            if (graph.onTooltip) {
+                graph.onTooltip({ caller: graph, data: data });
             } else {
                 this.getTooltipData({ caller: graph, data: data });
             }
@@ -412,7 +413,7 @@ export class ConnectedGraphBase {
             }
 
             self._contextMenuItems.push({
-                title: 'Reset Zoom',
+                title: 'Reset Graph',
                 action(elem: any, data: any, index: any) {
                     if (self._options.fitToWindow) {
                         let zoomLevel = d3.zoomIdentity
@@ -452,11 +453,9 @@ export class ConnectedGraphBase {
                     caller: chart
                 };
 
-                let cb = chart.onBrush;
-                if (cb) {
-                    cb(options);
-                } else {
-                    self.brush(options);
+
+                if (chart.onBrush) {
+                    chart.onBrush(options);
                 }
                 return true;
             }
@@ -789,8 +788,8 @@ export class D3ConnectedGraphSVG extends SVGRenderer {
             .on('mouseleave', self.hoverEnd);
 
         let graph = (this._element as IHierarchyGraph);
-        addClickHelper(elem, graph.onClick, graph.onDoubleClick, graph.contextMenuItems,
-            self._dataTooltip, graph, link.def);
+        addClickHelper(elem, self.getOptions(), graph.onClick, graph.onDoubleClick,
+            graph.contextMenuItems, self._dataTooltip, graph, link.def);
 
         let htmlNode = elem.node();
         htmlNode['__data__'] = link;
@@ -970,7 +969,7 @@ export class D3ConnectedGraphPixi extends UIElementRenderer {
      * Renderer specific code
      */
 
-    protected _selectionHelper: SelectionHelper;
+    protected _interactionState: InteractionState;
 
     protected _pixi: PIXI.Renderer;
     protected _pixiHelper: PIXIHelper;
@@ -1001,12 +1000,31 @@ export class D3ConnectedGraphPixi extends UIElementRenderer {
     }
 
     /**
+     * @deprecated ('Deprecated since 1.14.0 in favor of focus.  Will be removed in 2.x')
      * hover event
      *
      * @param event the event to pass to the renderer
      */
     public hover(event: IEvent): void {
-        this._selectionHelper.onSelect(event);
+        this.focus(event);
+    }
+
+    /**
+     * bring an item into focus
+     *
+     * @param event the event to focus on
+     */
+    public focus(event: IEvent): void {
+        this._interactionState.focus(event);
+    }
+
+    /**
+     * select an item
+     *
+     * @param event the event to item on
+     */
+    public select(event: IEvent): void {
+        this._interactionState.select(event);
     }
 
     /**
@@ -1061,31 +1079,74 @@ export class D3ConnectedGraphPixi extends UIElementRenderer {
         }
     }
 
-    configureHover() {
-        let self = this;
-
-        this._selectionHelper = new SelectionHelper(function (selection: any): void {
-            if (selection) {
-                let items = self._pixiHelper.getSelection(selection);
-                if (items) {
-                    items.forEach(function (elem: any) {
-                        elem._prevTint = elem.tint;
-                        elem.tint = 0x888888;
-                        elem.alpha = 0x88;
-                    });
-                }
-                self._pixiHelper.render();
-            }
-        }, function (selection: any) {
-            let items = self._pixiHelper.getSelection(selection);
+    public _focus(selection: string) {
+        if (selection) {
+            let items = this._pixiHelper.getSelection(selection);
             if (items) {
                 items.forEach(function (elem: any) {
-                    elem.tint = elem._prevTint;
-                    elem.alpha = 0xFF;
+                    elem._prevTint = elem.tint;
+                    elem.tint = 0x888888;
+                    elem.alpha = 0x88;
                 });
             }
-            self._pixiHelper.render();
-        });
+            this._pixiHelper.render();
+        }
+    }
+
+    public _unfocus(selection: string) {
+        let items = this._pixiHelper.getSelection(selection);
+        if (items) {
+            items.forEach(function (elem: any) {
+                elem.tint = elem._prevTint;
+                elem.alpha = 0xFF;
+            });
+        }
+        this._pixiHelper.render();
+    }
+
+    public _select(selection: string): void {
+        if (selection) {
+            let items = this._pixiHelper.getSelection(selection);
+            if (items) {
+                items.forEach(function (elem: any) {
+                    elem._prevTint = elem.tint;
+                    elem.tint = 0x888888;
+                    elem.alpha = 0x88;
+                });
+            }
+            this._pixiHelper.render();
+        }
+    }
+
+    public _unselect(selection: string) {
+        let items = this._pixiHelper.getSelection(selection);
+        if (items) {
+            items.forEach(function (elem: any) {
+                elem.tint = elem._prevTint;
+                elem.alpha = 0xFF;
+            });
+        }
+        this._pixiHelper.render();
+    }
+
+    configureInteractionVisualization() {
+        let self = this;
+
+        this._interactionState = new InteractionState(
+            function (selection: string) {
+                self._focus(selection);
+            },
+            function (selection: string) {
+                self._unfocus(selection);
+            }
+            , false,
+            function (selection: string) {
+                self._select(selection);
+            },
+            function (selection: string) {
+                self._unselect(selection);
+            }
+        )
     }
 
     protected configureContextMenu(): void {
@@ -1125,7 +1186,7 @@ export class D3ConnectedGraphPixi extends UIElementRenderer {
             this._stage.interactive = true;
 
             this.createArrowTexture();
-            this.configureHover();
+            this.configureInteractionVisualization();
         }
         this._stage.removeChildren();
 

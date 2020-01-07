@@ -56,8 +56,8 @@ function createMenu(event: MouseEvent, data: any, contextMenuItems: IContextMenu
                 }
 
                 if (item.submenu) {
-                    li.innerHTML = '<span><text>' + item.title +
-                        '</text><text style="width: 5px; float: right">&#9658</text></span>';
+                    li.innerHTML = `<span><text>${item.title}</text>` +
+                        '<text style="width: 5px; float: right; color: #000000A0">&#9658</text></span>'
                 } else {
                     li.innerHTML = item.title;
                 }

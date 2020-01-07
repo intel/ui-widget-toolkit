@@ -26,15 +26,6 @@ export interface ITreeMapNode {
 
 export interface ITreeMap extends UIElement {
     root: ITreeMapNode;
-    /** the callback when an item in this data is clicked
-     * @param event contains the data for the item that was clicked
-     */
-    onClick?: (event: IEvent) => void;
-
-    /** the callback when an item in this data is double clicked
-     * @param event contains the data for the item that was clicked
-     */
-    onDoubleClick?: (event: IEvent) => void;
 
     /** the context menu definitions for when the user right clicks */
     contextMenuItems?: IContextMenuItem[];

@@ -14,7 +14,7 @@ import { bisectBuffer, getSelectionName, SimpleBuffer } from '../../utilities';
 import { PIXIHelper } from '../../pixi-helper';
 
 import { ColorManager } from '../../color-manager';
-import { SelectionHelper } from '../../selection';
+import { SelectionHelper } from '../../interaction-state';
 
 import { D3Axis } from '../axis';
 import { ID3Chart, D3Chart, createDecimatorWorker } from '../chart';
@@ -51,6 +51,16 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
 
     protected _minHeight = 0;
     protected _stackHeight = 20;
+
+    protected getEventDataValue(value: IFlameChartValue) {
+        if (value) {
+            if (value.decimatedValues && value.decimatedValues.length > 1) {
+                return value.decimatedValues;
+            }
+            return value.traceValue;
+        }
+        return undefined;
+    }
 
     /**
      * used to generate a list of all rects that could be drawn
@@ -244,8 +254,10 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
             self.render = D3SVGFlameChart.prototype.render.bind(this);
         } else {
             self.render = D3PIXIFlameChart.prototype.render.bind(this);
-            self.addHover = D3PIXIFlameChart.prototype.addHover.bind(this);
-            self.removeHover = D3PIXIFlameChart.prototype.removeHover.bind(this);
+            self.focus = D3PIXIFlameChart.prototype.focus.bind(this);
+            self.unfocus = D3PIXIFlameChart.prototype.unfocus.bind(this);
+            self.select = D3PIXIFlameChart.prototype.select.bind(this);
+            self.unselect = D3PIXIFlameChart.prototype.unselect.bind(this);
         }
     }
 
@@ -419,7 +431,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
 
         let maxDepth = 0;
         for (let depth in this._allRects) {
-            maxDepth = Math.max(maxDepth, Number(depth));
+            maxDepth = Math.max(maxDepth, Number(depth)) + 1;
         }
 
         this._minHeight = (maxDepth + 1) * this._stackHeight;
@@ -427,7 +439,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
     }
 
     protected _selection: ITraceValue;
-    protected configureHover(elem: d3.Selection<d3.BaseType, {}, d3.BaseType, any>,
+    protected configureSegmentInteraction(elem: d3.Selection<d3.BaseType, {}, d3.BaseType, any>,
         value?: IFlameChartValue) {
         let self = this;
         if (!self._layer.disableHover) {
@@ -438,6 +450,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
                         self._d3Chart.onHover({
                             caller: self._d3Chart.getElement(),
                             event: EventType.HoverStart,
+                            data: self.getEventDataValue(value),
                             selection: getSelectionName(self.getDataName(value.traceValue))
                         });
                     }
@@ -447,6 +460,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
                         self._d3Chart.onHover({
                             caller: self._d3Chart.getElement(),
                             event: EventType.HoverEnd,
+                            data: self.getEventDataValue(value),
                             selection: getSelectionName(self.getDataName(value.traceValue))
                         });
                     }
@@ -454,7 +468,9 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
                 });
         }
         this._d3Elems.push(elem);
-        self.configureItemInteraction(elem, value.decimatedValues);
+        self.configureItemInteraction(elem, self.getEventDataValue(value),
+            value ? getSelectionName(self.getDataName(value.traceValue)) : undefined
+        );
     }
 
     protected getSegmentClasses(d: any) {
@@ -488,7 +504,7 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
             let background = self._d3svg.select(this.getSelectionClasses(seriesTypeName) + '.background')
                 .attr('d', backgroundFunc(this._backgroundData));
 
-            this.configureItemInteraction(background);
+            this.configureItemInteraction(background, undefined, undefined);
         }
     }
 
@@ -544,7 +560,7 @@ class D3SVGFlameChart extends FlameChartSeries {
                 .attr('y', yStart)
                 .attr('height', this._stackHeight);
 
-            this.configureHover(segment, decimatedValue);
+            this.configureSegmentInteraction(segment, decimatedValue);
 
             if (xWidth > 50 && key !== 'merged') {
                 let labelBox = labelGroup.append('svg')
@@ -553,7 +569,7 @@ class D3SVGFlameChart extends FlameChartSeries {
                     .attr('y', yStart)
                     .attr('height', this._stackHeight);
 
-                this.configureHover(labelBox, decimatedValue);
+                this.configureSegmentInteraction(labelBox, decimatedValue);
 
                 labelBox.append('text')
                     .text(name)
@@ -572,7 +588,7 @@ class D3SVGFlameChart extends FlameChartSeries {
 class D3PIXIFlameChart extends FlameChartSeries {
     protected _textMap: any;
 
-    public addHover(selection: string) {
+    public focus(selection: string) {
         if (selection) {
             let items = this._pixiHelper.getSelection(selection);
             if (items) {
@@ -580,7 +596,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
                     elem._prevTint = elem.tint;
                     if (elem.tint) {
                         elem.tint = ColorManager.RgbToInt(
-                            SelectionHelper.getHoverColor(
+                            SelectionHelper.getFocusColor(
                                 ColorManager.IntToHex(elem.tint)
                             ));
                     }
@@ -591,12 +607,64 @@ class D3PIXIFlameChart extends FlameChartSeries {
         }
     }
 
-    public removeHover(selection: string) {
+    public unfocus(selection: string) {
         let items = this._pixiHelper.getSelection(selection);
         if (items) {
             items.forEach(function (elem: any) {
                 elem.tint = elem._prevTint;
                 elem.alpha = 0xFF;
+            });
+        }
+        this._pixiHelper.render();
+    }
+
+    public select(selection: string) {
+        if (selection) {
+
+            let self = this;
+            let segments = this._d3svg.select('.segments');
+            segments.classed('selected', true);
+
+            let color = ColorManager.RgbToInt(segments.style('stroke'));
+            let strokeWidth = parseInt(segments.style('stroke-width'), 10);
+
+            let createSelectionBorder = function (rect: PIXI.Sprite) {
+                let border = self._pixiHelper.createRectange(
+                    rect.width, rect.height, color);
+
+                return border;
+            }
+
+            let items = this._pixiHelper.getSelection(selection);
+            if (items) {
+                items.forEach(function (elem: any) {
+                    let border = createSelectionBorder(elem);
+
+                    elem.parent.getChildAt(0);
+                    let interiorPadding = strokeWidth * 2;
+                    elem.width = elem.width - interiorPadding;
+                    elem.height = elem.height - interiorPadding;
+                    elem.x = strokeWidth;
+                    elem.y = strokeWidth;
+
+                    elem.parent.addChildAt(border, 0);
+                });
+            }
+            this._pixiHelper.render();
+        }
+    }
+
+    public unselect(selection: string) {
+        this._d3svg.select('.segments').classed('selected', false);
+        let items = this._pixiHelper.getSelection(selection);
+        if (items) {
+            items.forEach(function (elem: any) {
+                let border = elem.parent.removeChildAt(0);
+
+                elem.width = border.width;
+                elem.height = border.height;
+                elem.x = border.x;
+                elem.y = border.y;
             });
         }
         this._pixiHelper.render();
@@ -611,6 +679,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
 
         this.renderBackground();
 
+        /** these groups are so CSS can affect the formatting of text */
         let segmentGroup = this._d3svg.select('.segments');
         segmentGroup.selectAll('*').remove();
 
@@ -636,7 +705,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
         this._pixiHelper.clearSelections();
 
         this._d3Elems.push(foreignObject); // this is just for legends
-        this.configureItemInteraction(foreignObject);
+        this.configureItemInteraction(foreignObject, undefined, undefined);
 
         let xScale = this._d3XAxis.getScale();
         let stage = new PIXI.Container();
@@ -647,7 +716,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
         let background = this._pixiHelper.createRectangleContainer(xStart, 0,
             xEnd, this.getRequiredHeight(), 0);
         background.alpha = 0;
-        this.configureItemInteractionPIXI(background, undefined);
+        this.configureItemInteractionPIXI(background, undefined, undefined);
         stage.addChild(background);
 
         let outputData = this.getOutputData();
@@ -675,8 +744,8 @@ class D3PIXIFlameChart extends FlameChartSeries {
             this._pixiHelper.addSelection(getSelectionName(key), selection);
 
             // note click is handled by the configureItemInteractionPIXI call after this
-            this._pixiHelper.addInteractionHelper(selection, undefined,
-                undefined, this._contextMenuItems,
+            this._pixiHelper.addInteractionHelper(selection, this._d3Chart.getOptions(),
+                undefined, undefined, this._contextMenuItems,
                 this._layer.disableHover ? undefined : () => {
                     this._selection = value;
                     if (value) {
@@ -696,10 +765,13 @@ class D3PIXIFlameChart extends FlameChartSeries {
                         });
                     }
                     this._selection = undefined;
-                }, undefined, chart, decimatedValue.decimatedValues);
+                }, undefined, chart, decimatedValue.decimatedValues,
+                decimatedValue.traceValue);
 
             // this is flame chart specific handling for brush
-            this.configureItemInteractionPIXI(selection, decimatedValue.decimatedValues);
+            this.configureItemInteractionPIXI(selection,
+                this.getEventDataValue(decimatedValue),
+                getSelectionName(key));
 
             if (key !== 'merged') {
                 let text: PIXI.Text = this._textMap[name];

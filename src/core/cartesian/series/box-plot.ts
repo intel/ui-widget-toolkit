@@ -6,7 +6,6 @@ import { ILayer, RenderType } from '../../../interface/chart/chart'
 import { getSelectionName } from '../../utilities';
 import { D3Axis } from '../axis';
 import { ID3Chart, D3Chart } from '../chart';
-import { addClickHelper } from '../../svg-helper';
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 
 import { BaseSeries } from './baseSeries';
@@ -97,23 +96,6 @@ export class BoxPlotSeries extends BaseSeries implements ICartesianSeriesPlugin 
         return legendItems;
     }
 
-    private configureHover(elem: d3.Selection<d3.BaseType, {}, d3.BaseType, any>,
-        value: any) {
-        let self = this;
-        (elem.node() as any)['__data__'] = value;
-        elem
-            .on('mouseenter', function () {
-                self._d3Chart.cursorEnter();
-            })
-            .on('mouseleave', function () {
-                self._d3Chart.cursorExit();
-            });
-
-        addClickHelper(elem, self._layer.onClick, self._layer.onDoubleClick,
-            self._contextMenuItems, self._d3Chart.getTooltip(),
-            self._d3Chart.getElement(), value);
-    }
-
     public getTooltipMetrics(elem: UIElement, event: IEvent): ITooltipData[] {
         let tooltipData: ITooltipData = { source: elem, group: '', metrics: {} };
         let yScalar = this.getYScalingInfo().baseScale.scalar;
@@ -151,6 +133,7 @@ export class BoxPlotSeries extends BaseSeries implements ICartesianSeriesPlugin 
 
     public render(): void {
         let self = this;
+        this._d3Chart.getOptions().disableBrush = true;
 
         for (let i = 0; i < this._d3Elems.length; ++i) {
             this._d3Elems[i].remove();
@@ -214,7 +197,7 @@ export class BoxPlotSeries extends BaseSeries implements ICartesianSeriesPlugin 
                 .attr('y2', yScale(data.max));  // y position of the top of the line
 
             this._d3Elems.push(verticalLine);
-            this.configureItemInteraction(verticalLine);
+            this.configureBandedItemInteration(verticalLine, data, data.x);
 
             // add none so we don't actually select old stuff laying around
             let box = self._d3svg
@@ -238,7 +221,7 @@ export class BoxPlotSeries extends BaseSeries implements ICartesianSeriesPlugin 
                 .attr('height', Math.abs(yEntry - yExit));  // y position of the top of the line
 
             this._d3Elems.push(box);
-            this.configureHover(box, data);
+            this.configureBandedItemInteration(box, data, data.x);
 
             let renderHorizontalLines = (end: number, offset: number) => {
                 let endLine = self._d3svg
@@ -260,7 +243,7 @@ export class BoxPlotSeries extends BaseSeries implements ICartesianSeriesPlugin 
                     .attr('y2', yScale(end));  // y position of the top of the line
 
                 this._d3Elems.push(endLine);
-                this.configureItemInteraction(endLine);
+                this.configureBandedItemInteration(endLine, data, data.x);
             }
             renderHorizontalLines(data.min, xOffset2);
             renderHorizontalLines(data.max, xOffset2);

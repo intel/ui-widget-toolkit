@@ -265,17 +265,31 @@ export class TraceSeries implements ICartesianSeriesPlugin {
         return legendItems;
     }
 
-    /** handle on select events if we want to */
-    public addHover(selection: string): void {
+    /** handle on focus events if we want to */
+    public focus(selection: string): void {
         for (let dataIdx = 0; dataIdx < this._d3SeriesList.length; ++dataIdx) {
-            this._d3SeriesList[dataIdx].addHover(selection);
+            this._d3SeriesList[dataIdx].focus(selection);
         }
     }
 
-    /** handle on deselect events if we want to */
-    public removeHover(selection: string): void {
+    /** handle on unfocus events if we want to */
+    public unfocus(selection: string): void {
         for (let dataIdx = 0; dataIdx < this._d3SeriesList.length; ++dataIdx) {
-            this._d3SeriesList[dataIdx].removeHover(selection);
+            this._d3SeriesList[dataIdx].unfocus(selection);
+        }
+    }
+
+    /** handle on focus events if we want to */
+    public select(selection: string): void {
+        for (let dataIdx = 0; dataIdx < this._d3SeriesList.length; ++dataIdx) {
+            this._d3SeriesList[dataIdx].select(selection);
+        }
+    }
+
+    /** handle on unfocus events if we want to */
+    public unselect(selection: string): void {
+        for (let dataIdx = 0; dataIdx < this._d3SeriesList.length; ++dataIdx) {
+            this._d3SeriesList[dataIdx].unselect(selection);
         }
     }
 

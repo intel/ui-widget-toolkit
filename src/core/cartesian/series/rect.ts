@@ -202,15 +202,13 @@ export class RectSeries extends BaseSeries implements ICartesianSeriesPlugin {
             .classed(this._classes, true)
             .attr('fill', self._layer.renderType === RenderType.Area ? color : 'none')
             .attr('stroke', color)
-            .each(function (d: any) {
-                self.configureItemInteraction(d3.select(this));
-            })
             .attr('x', function (d: any) { return self.xMap(d.x); })
             .attr('width', function (d: any) { return self.xMap(d.x1) - self.xMap(d.x); })
             .attr('y', function (d: any) { return self.yMap(d.y1); })
             .attr('height', function (d: any) { return self.yMap(d.y) - self.yMap(d.y1); })
-            .each(function () {
+            .each(function (d: any) {
                 self._d3Elems.push(d3.select(this));
+                self.configureItemInteraction(d3.select(this), d.value, d.value);
             })
 
         dataUpdate

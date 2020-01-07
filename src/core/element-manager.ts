@@ -9,6 +9,7 @@ const enum GroupType {
     Highlight,
     Render,
     Focus,
+    Select,
     None
 }
 
@@ -33,6 +34,19 @@ function addTooltipCallback(elem: UIElement) {
     }
 }
 
+function addClickCallback(elem: UIElement) {
+    if (!elem.api) {
+        elem.api = {}
+    }
+    if (!elem.api.select) {
+        elem.api.select = function (event: IEvent): void {
+            if (elem.renderer && elem.renderer.select) {
+                return elem.renderer.select(elem, event);
+            }
+        }
+    }
+}
+
 function addHoverCallback(elem: UIElement) {
     if (!elem.api) {
         elem.api = {}
@@ -45,12 +59,19 @@ function addHoverCallback(elem: UIElement) {
         }
     }
 
-    if (!elem.api.hover) {
-        elem.api.hover = function (event: IEvent): void {
-            if (elem.renderer && elem.renderer.hover) {
+    if (!elem.api.focus) {
+        elem.api.focus = function (event: IEvent): void {
+            /** @deprecated ('Deprecated since 1.14.0 in favor of focus.  Will be removed in 2.x') */
+            if (elem.renderer && !elem.renderer.focus && elem.renderer.hover) {
                 return elem.renderer.hover(elem, event);
             }
+            // end deprecated
+
+            if (elem.renderer && elem.renderer.focus) {
+                return elem.renderer.focus(elem, event);
+            }
         }
+        elem.api.hover = elem.api.focus;
     }
 
     if (!elem.api.brush) {
@@ -104,6 +125,7 @@ function addRenderCallback(elem: UIElement) {
 export function addCallbacks(elem: UIElement) {
     addTooltipCallback(elem);
     addHoverCallback(elem);
+    addClickCallback(elem);
     addRenderCallback(elem);
 }
 
@@ -118,6 +140,7 @@ export class ElementManager implements UIElementManager {
     protected _groupInfo: GroupInfo[];
 
     protected _hoverCallback: (group: UIElement[], event: IEvent) => void;
+    protected _clickCallback: (group: UIElement[], event: IEvent) => void;
     protected _zoomCallback: (group: UIElement[], event: IEvent) => void;
     protected _tooltipCallback: (group: UIElement[], event: IEvent) => ITooltipData;
     protected _cursorChangeCallback: (group: UIElement[], event: IEvent) => void;
@@ -126,6 +149,7 @@ export class ElementManager implements UIElementManager {
     protected _onTooltipCallback: (event: IEvent) => ITooltipData[];
     protected _onZoomCallback: (event: IEvent) => void;
     protected _onHoverCallback: (event: IEvent) => void;
+    protected _onClickCallback: (event: IEvent) => void;
     protected _onCursorChangeCallback: (event: IEvent) => void;
     protected _onBrushCallback: (event: IEvent) => void;
     protected _onUpdateCallback: (caller: UIElement, options: IOptions) => void;
@@ -149,67 +173,44 @@ export class ElementManager implements UIElementManager {
                 } else {
                     for (let i = 0; i < elems.length; ++i) {
                         let elem = elems[i];
-                        if (event.caller !== elem && elem.api && elem.api.hover) {
+                        /** @deprecated to remove in 2.x */
+                        if (event.caller !== elem && elem.api && !elem.api.focus && elem.api.hover) {
                             elem.api.hover(event);
                         }
-                    }
-                }
-            }
-        }
-        this._onZoomCallback = function (event: IEvent): void {
-            if (!event.caller) {
-                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
-            }
-            let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
-            if (elems) {
-                if (self._zoomCallback) {
-                    self._zoomCallback(elems, event);
-                } else {
-                    for (let i = 0; i < elems.length; ++i) {
-                        let elem = elems[i];
-                        if (event.caller !== elem && elem.api && elem.api.zoom) {
-                            elem.api.zoom(event);
+                        // end deprecated
+                        if (event.caller !== elem && elem.api && elem.api.focus) {
+                            elem.api.focus(event);
                         }
                     }
                 }
             }
         }
-        this._onCursorChangeCallback = function (event: IEvent): void {
-            if (!event.caller) {
-                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
-            }
-            let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
-            if (elems) {
-                if (self._cursorChangeCallback) {
-                    self._cursorChangeCallback(elems, event);
-                } else {
-                    for (let i = 0; i < elems.length; ++i) {
-                        let elem = elems[i];
-                        if (event.caller !== elem && elem.api && elem.api.cursorChange) {
-                            elem.api.cursorChange(event);
+
+        let dispatch = function (groupType: GroupType, callback: any, apiName: string) {
+            return function (event: IEvent) {
+                if (!event.caller) {
+                    console.warn('Warning no caller specified for this event, cannot propagate changes', event);
+                }
+                let elems = self._groupInfo[groupType]._objectMap.get(event.caller);
+                if (elems) {
+                    if (callback) {
+                        callback(elems, event);
+                    } else {
+                        for (let i = 0; i < elems.length; ++i) {
+                            let elem = elems[i];
+                            if (event.caller !== elem && elem.api && elem.api[apiName]) {
+                                elem.api[apiName](event);
+                            }
                         }
                     }
                 }
             }
         }
-        this._onBrushCallback = function (event: IEvent): void {
-            if (!event.caller) {
-                console.warn('Warning no caller specified for this event, cannot propoate changes', event);
-            }
-            let elems = self._groupInfo[GroupType.Highlight]._objectMap.get(event.caller);
-            if (elems) {
-                if (self._brushCallback) {
-                    self._brushCallback(elems, event);
-                } else {
-                    for (let i = 0; i < elems.length; ++i) {
-                        let elem = elems[i];
-                        if (event.caller !== elem && elem.api && elem.api.brush) {
-                            elem.api.brush(event);
-                        }
-                    }
-                }
-            }
-        }
+        this._onZoomCallback = dispatch(GroupType.Highlight, this._zoomCallback, 'zoom');
+        this._onCursorChangeCallback = dispatch(GroupType.Highlight, this._cursorChangeCallback, 'cursorChange');
+        this._onBrushCallback = dispatch(GroupType.Highlight, this._brushCallback, 'brush');
+        this._onClickCallback = dispatch(GroupType.Select, this._clickCallback, 'select');
+
         this._onTooltipCallback = function (event: IEvent): ITooltipData[] {
             if (!event.caller) {
                 console.warn('Warning no caller specified for this event, cannot propoate changes', event);
@@ -380,6 +381,16 @@ export class ElementManager implements UIElementManager {
     }
 
     /**
+     * user callback called when a hover event happens
+     *
+     * @param the function to be called
+     */
+    public setClickCallback(callback: (group: UIElement[], event: IEvent) => void): ElementManager {
+        this._clickCallback = callback;
+        return this;
+    }
+
+    /**
      * user callback called when a tooltip is created
      *
      * @param the functiotn to be called
@@ -482,6 +493,47 @@ export class ElementManager implements UIElementManager {
     }
 
     /**
+    * set the group to sync this elem with
+    *
+    * @param elem - the elem that should should be "ganged"
+    * @param groupName - Name of the group that this elem should be "ganged"
+    *   with.
+    *
+    * @return - The elem manager instance.
+    */
+    public addToSelectGroup(elem: UIElement, groupName: string): ElementManager {
+        addClickCallback(elem);
+        this.removeFromSelectGroup(elem);
+
+        let self = this;
+        if (elem.onClick) {
+            let func = elem.onClick;
+            elem.onClick = function (event: IEvent) {
+                self._onClickCallback(event);
+                func(event);
+            }
+        } else {
+            elem.onClick = self._onClickCallback;
+        }
+
+        this.addToGroup(elem, groupName, GroupType.Select);
+
+        return this;
+    }
+
+    /**
+     * remove the elem from the zoom group it is in
+     *
+     * @param elem - the elem that should should be "unganged"
+     *
+     * @return - The elem manager instance.
+     */
+    public removeFromSelectGroup(elem: UIElement): ElementManager {
+        this.removeFromGroup(elem, GroupType.Select);
+        return this;
+    }
+
+    /**
      * set the group to sync this elem with
      *
      * @param elem - the elem that should should be "ganged"
@@ -495,6 +547,7 @@ export class ElementManager implements UIElementManager {
         this.removeFromHighlightGroup(elem);
 
         this.addToFocusGroup(elem, groupName);
+        this.addToSelectGroup(elem, groupName);
 
         let self = this;
         if (elem.onBrush) {
@@ -554,6 +607,7 @@ export class ElementManager implements UIElementManager {
      */
     public removeFromHighlightGroup(elem: UIElement): ElementManager {
         this.removeFromFocusGroup(elem);
+        this.removeFromSelectGroup(elem);
         this.removeFromGroup(elem, GroupType.Highlight);
         return this;
     }

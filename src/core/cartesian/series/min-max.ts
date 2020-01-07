@@ -216,6 +216,7 @@ export class MinMaxSeries extends BaseSeries implements ICartesianSeriesPlugin {
             .attr('stroke', color)
             .each(function (d, i) {
                 self._d3Elems.push(d3.select(this));
+                self.configureBandedItemInteration(d3.select(this), d, d.x);
             })
 
         // Appending lines onto the SVG
@@ -240,6 +241,7 @@ export class MinMaxSeries extends BaseSeries implements ICartesianSeriesPlugin {
             .attr('y2', yMap)       // y position of the bottom of the line
             .each(function (d, i) {
                 self._d3Elems.push(d3.select(this));
+                self.configureBandedItemInteration(d3.select(this), d, d.x);
             })
 
         elem
@@ -247,10 +249,6 @@ export class MinMaxSeries extends BaseSeries implements ICartesianSeriesPlugin {
             .duration(animateDuration)
             .attr('y1', yMinMap)   // y position of the bottom of the line
             .attr('y2', yMaxMap);  // y position of the top of the line
-
-        this._d3Elems.push(elem);
-        this._d3Chart.getOptions().disableBrush = true;
-        this.configureItemInteraction(elem);
 
         this.applyStyles();
     }

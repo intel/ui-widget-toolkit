@@ -7,8 +7,6 @@ import { getSelectionName } from '../utilities';
 import { ColorManager } from '../color-manager';
 import { showContextMenu } from '../context-menu';
 import * as agGrid from 'ag-grid-community';
-import { deprecate } from 'util';
-import { select } from 'd3';
 
 // from https://www.ag-grid.com/best-javascript-data-grid/#gsc.tab=0
 export function percentCellRenderer(params: any) {
@@ -122,11 +120,22 @@ class AgGrid {
 
     private keyboardSelectionFocus: (params: any) => void;
 
-    private onRowSelectedDefaultCallback: (event: IEvent) => void;
+    private onRowFocusDefaultCallback: (row: any) => void;
+
+    private onRowUnfocusDefaultCallback: (row: any) => void;
+
+    private onRowSelectedDefaultCallback: (row: any) => void;
 
     private _prevSelection: any;
 
     private _disableCallbacks: boolean;
+
+    public api: {
+        select: (event: IEvent) => void,
+
+        /** @deprecated in favor of focus */
+        hover: (event: IEvent) => void
+    };
 
     /**
      * Append the div for this graph to the parent div. The div we create
@@ -147,27 +156,48 @@ class AgGrid {
         }
 
         let self = this;
-        this.onRowSelectedDefaultCallback = function (row: any) {
+        let defaultCallback = function (row: any, eventType: EventType, callback: any) {
             if (self._disableCallbacks) {
                 return;
             }
 
             let grid: IGrid = self._element as IGrid;
             let gridOptions: any = grid.gridOptions;
-            let selectionCallback = grid.onHover;
-            if (selectionCallback) {
+            if (callback) {
                 let columns = gridOptions.columnApi.getAllColumns();
                 if (columns && columns.length > 0) {
                     let key = columns[0].colDef.field;
                     let selection = row.node.data[key];
-                    let event: IEvent = { caller: grid, selection: selection, data: { row: row } }
+                    let event: IEvent = {
+                        caller: grid,
+                        selection: selection,
+                        event: eventType,
+                        data: { row: row }
+                    }
 
-                    event.event = row.node.isSelected() ? EventType.HoverStart :
-                        EventType.HoverEnd;
-
-                    selectionCallback(event);
+                    callback(event);
                 }
             }
+        }
+
+        this.onRowFocusDefaultCallback = function (row: any) {
+            defaultCallback(row, EventType.HoverStart, self._element.onHover);
+        }
+
+        this.onRowUnfocusDefaultCallback = function (row: any) {
+            defaultCallback(row, EventType.HoverEnd, self._element.onHover);
+        }
+
+        this.onRowSelectedDefaultCallback = function (row: any) {
+            let eventType = row.node.isSelected() ?
+                EventType.SelectStart : EventType.SelectEnd;
+
+            defaultCallback(row, eventType, self._element.onClick);
+        }
+
+        this.api = {
+            select: self.select,
+            hover: self.select
         }
 
         this.keyboardSelectionFocus = function (params: any) {
@@ -192,7 +222,7 @@ class AgGrid {
                         if (index === node.rowIndex) {
                             node.setSelected(true);
                         } else if (!params.event.shiftKey) {
-                            self._renderer.hover(self._element, {
+                            self._renderer.focus(self._element, {
                                 event: EventType.HoverEnd,
                                 selection: getSelectionName(node.data[selectionKey])
                             });
@@ -220,7 +250,7 @@ class AgGrid {
         this._div = div;
     }
 
-    public select(event: IEvent) {
+    protected select(event: IEvent) {
         let self = this;
         let selection = event.selection;
 
@@ -234,7 +264,8 @@ class AgGrid {
                 columns[0].colDef.field;
 
             let key = event.selectionKey ? event.selectionKey : selectionKey;
-            if (event.event === EventType.HoverStart) {
+            if (event.event === EventType.SelectStart ||
+                event.event === EventType.HoverStart) {
                 this._prevSelection = event.selection;
 
                 gridOptions.api.forEachNode(function (rowNode: any) {
@@ -242,11 +273,12 @@ class AgGrid {
                         // select the node
                         rowNode.setSelected(true);
                         if (self._element.gridOptions.autoScrollToSelection) {
-                            gridOptions.api.ensureNodeVisible(rowNode);
+                            gridOptions.api.ensureNodeVisible(rowNode, 'middle');
                         }
                     }
                 });
-            } else if (event.event === EventType.HoverClear) {
+            } else if (event.event === EventType.SelectClear ||
+                event.event === EventType.HoverClear) {
                 gridOptions.api.deselectAll();
             } else {
                 if (!event.selection) {
@@ -311,6 +343,41 @@ class AgGrid {
         gridOptions.autoScrollToSelection = gridOptions.autoScrollToSelection !== undefined ?
             gridOptions.autoScrollToSelection : true
 
+        let wrapCallback = function (userCallback: (row: any) => void,
+            defaultCallback: (row: any) => void,
+            eventType: EventType) {
+            if (!userCallback) {
+                return defaultCallback;
+            } else {
+                return function (row: any) {
+                    if (self._disableCallbacks) {
+                        return;
+                    }
+                    userCallback({
+                        caller: self._element,
+                        event: eventType,
+                        data: { row: row.node.data }
+                    });
+                }
+            }
+        }
+        gridOptions.onCellMouseOver = wrapCallback(gridOptions.onCellMouseOver,
+            this.onRowFocusDefaultCallback, EventType.HoverStart);
+        gridOptions.cellMouseOut = wrapCallback(gridOptions.onCellMouseOver,
+            this.onRowUnfocusDefaultCallback, EventType.HoverEnd);
+        gridOptions.onRowClicked = wrapCallback(gridOptions.onRowClicked,
+            undefined, undefined);
+        gridOptions.onRowDoubleClicked = wrapCallback(gridOptions.onRowDoubleClicked,
+            undefined, undefined);
+        if (gridOptions.onClick) {
+            gridOptions.onRowClicked = wrapCallback(gridOptions.onClick,
+                undefined, undefined);
+        }
+        if (gridOptions.onDoubleClick) {
+            gridOptions.onRowDoubleClicked = wrapCallback(gridOptions.onDoubleClick,
+                undefined, undefined);
+        }
+
         if (!gridOptions.onRowSelected) {
             gridOptions.onRowSelected = this.onRowSelectedDefaultCallback;
         } else {
@@ -322,39 +389,18 @@ class AgGrid {
                 if (self._disableCallbacks) {
                     return;
                 }
+                // TODO handle multiple selection clear correctly
                 gridOptions.userOnRowSelected({
                     caller: self._element,
                     data: {
                         row: row.node.data,
                         isSelected: row.node.selected
-                    }
+                    },
+                    event: row.node.selected ? EventType.SelectStart : EventType.SelectEnd
                 });
             }
         }
-        if (gridOptions.onRowClicked) {
-            if (!gridOptions.userOnRowClicked) {
-                gridOptions.userOnRowClicked = gridOptions.onRowClicked;
-            }
 
-            gridOptions.onRowClicked = function (row: any) {
-                gridOptions.userOnRowClicked({
-                    caller: self._element,
-                    data: { row: row }
-                });
-            }
-        }
-        if (gridOptions.onRowDoubleClicked) {
-            if (!gridOptions.userOnRowDoubleClicked) {
-                gridOptions.userOnRowDoubleClicked = gridOptions.onRowDoubleClicked;
-            }
-
-            gridOptions.onRowDoubleClicked = function (row: any) {
-                gridOptions.userOnRowDoubleClicked({
-                    caller: self._element,
-                    data: { row: row }
-                });
-            }
-        }
         let hasGrouping = false;
         if (gridOptions.rowData && !gridOptions.getNodeChildDetails) {
             for (let i = 0; i < gridOptions.rowData.length; ++i) {
@@ -464,16 +510,12 @@ class AgGrid {
             this._div.removeChild(this._div.firstChild);
         }
         if (!this._element.api) {
-            this._element.api = {
-                select: function (event: IEvent) {
-                    self.select(event);
-                }
-            }
-        } else {
-            this._element.api.select = function (event: IEvent) {
-                self.select(event);
-            }
+            this._element.api = { select: undefined, hover: undefined }
         }
+        this._element.api.select = function (event: IEvent) {
+            self.select(event);
+        }
+        this._element.api.hover = this._element.api.select;
         new agGrid.Grid(this._div as HTMLElement, this._element.gridOptions as any); //create a new grid
     }
 }
@@ -517,18 +559,18 @@ export class AgGridRenderer implements UIRenderer {
         }
     }
 
-    /**
-     * @deprecated
-     */
+    /** @deprecated ('Deprecated since 1.14.0 in favor of focus.  Will be removed in 2.x') */
     public hover(element: UIElement, event: IEvent) {
-        if (this._rendererMap.has(element)) {
-            return this._rendererMap.get(element).select(event);
-        }
+        this.focus(element, event);
+    }
+
+    public focus(element: UIElement, event: IEvent) {
+        console.debug('currently no focus events can be created for the grid')
     }
 
     public select(element: UIElement, event: IEvent) {
         if (this._rendererMap.has(element)) {
-            return this._rendererMap.get(element).select(event);
+            return this._rendererMap.get(element).api.select(event);
         }
     }
 

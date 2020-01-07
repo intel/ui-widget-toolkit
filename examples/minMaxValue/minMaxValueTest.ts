@@ -30,13 +30,25 @@ module MinMaxValueTest {
                         { x: 'xyz', min: 4, max: 10, y: 4 },
                         { x: 'por', min: 5, max: 8, y: 7 }
                     ],
+                    onClick: function (event: UWT.IEvent) {
+                        console.log('click');
+                        console.log(event);
+                    },
+                    contextMenuItems: [{
+                        title: 'MinMaxMenuItem',
+                        action(elem: any, data: any, index: any) {
+                            console.log('index: ' + index);
+                            console.log(data);
+                            console.log(elem);
+                        }
+                    }]
                 }],
                 axes: [
                     {
                         axisDesc: leftAxis,
                         alignment: UWT.Alignment.Left
                     }],
-                isXContinuous: false
+                isXContinuous: false]
             }
 
             UWT.Chart.finalize(chart);

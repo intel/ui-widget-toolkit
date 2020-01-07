@@ -221,3 +221,8 @@
 .no-pointer-events {
   pointer-events: none;
 }
+
+.selected {
+    stroke: rgb(242, 242, 73);
+    stroke-width: 3;
+}

@@ -1,6 +1,6 @@
 import { IOptions, UIType, UIElement } from '../../interface/ui-base';
 import { IConnectedGraph } from '../../interface/graph';
-import { addClickHelper, SVGRenderer } from '../svg-helper';
+import { addClickHelper, SVGRenderer, onSelectHelper } from '../svg-helper';
 import { D3Renderer } from '../renderer';
 
 import * as d3 from 'd3';
@@ -39,10 +39,13 @@ export class D3SankeyDiagram extends D3ConnectedGraphSVG {
             .style('stroke-width', function (d: any) { return Math.max(1, d.dy); })
             .sort(function (a: any, b: any) { return b.dy - a.dy; })
             .on('mouseenter', self.linkHoverStart)
-            .on('mouseleave', self.hoverEnd);
+            .on('mouseleave', self.hoverEnd)
+            .each(function (d: any) {
+                addClickHelper(d3.select(this), self.getOptions(),
+                    diagram.onClick, diagram.onDoubleClick,
+                    diagram.contextMenuItems, self._dataTooltip, diagram, d);
+            });
 
-        addClickHelper(links, diagram.onClick, diagram.onDoubleClick, diagram.contextMenuItems,
-            self._dataTooltip, diagram);
         self._dataTooltip.setTarget(links);
 
         return links;
@@ -64,8 +67,18 @@ export class D3SankeyDiagram extends D3ConnectedGraphSVG {
             .attr('transform', function (d: any) {
                 return 'translate(' + d.x + ',' + d.y + ')';
             })
+            .each(function (d: any) {
+                addClickHelper(d3.select(this), self.getOptions(), diagram.onClick,
+                    diagram.onDoubleClick, diagram.contextMenuItems, self._dataTooltip,
+                    diagram, d);
+            })
             .call((<any>d3).drag()
                 .subject(function (d: any) {
+                    // put this here because on click isn't hit for
+                    // the sankey nodes otherwise
+                    if (!self.getOptions().disableSelection) {
+                        onSelectHelper(self._element, d, d.key);
+                    }
                     return d;
                 })
                 .on('start', function () {
@@ -76,9 +89,6 @@ export class D3SankeyDiagram extends D3ConnectedGraphSVG {
                 .on('end', function () {
                     SVGRenderer.IS_RESIZING = false;
                 }));
-
-        addClickHelper(nodes, diagram.onClick, diagram.onDoubleClick, diagram.contextMenuItems,
-            self._dataTooltip, diagram);
 
         // add the rectangles for the nodes
         let colorMgr = self._renderer.getColorManager()

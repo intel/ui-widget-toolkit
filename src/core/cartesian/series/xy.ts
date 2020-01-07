@@ -16,7 +16,7 @@ import {
 import {
     getSelectionName, SimpleBuffer, bisectBuffer, isOverlapping
 } from '../../utilities';
-
+import { ColorManager } from '../../color-manager';
 import { getKeys, Arrow, animatePath } from '../../svg-helper';
 import { PIXIHelper, GraphicsManager } from '../../pixi-helper';
 import { D3Axis } from '../axis';
@@ -487,7 +487,7 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
 
         if (isFirst) {
             let configureItemInteraction = function () {
-                self.configureItemInteraction(d3.select(this));
+                self.configureItemInteraction(d3.select(this), undefined, undefined);
 
                 if (self._layer.renderType & RenderType.Raw || self._layer.onHover) {
                     d3.select(this)
@@ -496,10 +496,8 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
                                 caller: self._d3Chart.getElement(),
                                 selection: self.getName(),
                                 event: EventType.HoverStart,
-                                data: {
-                                    tooltip: self._d3Chart.getTooltip(),
-                                    data: self.getName()
-                                },
+                                data: self.getName(),
+                                tooltip: self._d3Chart.getTooltip(),
                             }
                             self._d3Chart.onHover(event);
                             if (self._layer.onHover) {
@@ -511,10 +509,8 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
                                 caller: self._d3Chart.getElement(),
                                 selection: self.getName(),
                                 event: EventType.HoverEnd,
-                                data: {
-                                    tooltip: self._d3Chart.getTooltip(),
-                                    data: self.getName()
-                                },
+                                tooltip: self._d3Chart.getTooltip(),
+                                data: self.getName()
                             }
                             self._d3Chart.onHover(event);
                             if (self._layer.onHover) {
@@ -682,7 +678,7 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
             }
         }
 
-        this.configureItemInteraction(elem);
+        this.configureItemInteraction(elem, undefined, undefined);
 
         let optimizedPath: IXYValue[];
         if (isStacked) {
@@ -827,8 +823,10 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
                 this.renderCirclePoints = D3SVGXYSeries.prototype.renderCirclePoints.bind(this);
             } else {
                 this.renderCirclePoints = D3PIXIXYSeries.prototype.renderCirclePoints.bind(this);
-                this.addHover = D3PIXIXYSeries.prototype.addHover.bind(this);
-                this.removeHover = D3PIXIXYSeries.prototype.removeHover.bind(this);
+                this.focus = D3PIXIXYSeries.prototype.focus.bind(this);
+                this.unfocus = D3PIXIXYSeries.prototype.unfocus.bind(this);
+                this.select = D3PIXIXYSeries.prototype.select.bind(this);
+                this.unselect = D3PIXIXYSeries.prototype.unselect.bind(this);
             }
             self.renderCirclePoints(indices, color, 3);
         }
@@ -876,13 +874,14 @@ class D3SVGXYSeries extends XYSeries {
         }
 
         let configureItemInteraction = function (d: any) {
-            self.configureItemInteraction(d3.select(this), self.getOutputData().get(d));
+            let xy = self._outputData.get(d);
+            let selection = '';
+            if (xy.info && xy.info.title) {
+                selection = xy.info.title;
+            }
+
+            self.configureItemInteraction(d3.select(this), self.getOutputData().get(d), selection);
             if (self._layer.onHover) {
-                let xy = self._outputData.get(d);
-                let selection = '';
-                if (xy.info && xy.info.title) {
-                    selection = xy.info.title;
-                }
 
                 d3.select(this)
                     .on('mouseenter', function () {
@@ -890,10 +889,8 @@ class D3SVGXYSeries extends XYSeries {
                             caller: self._d3Chart.getElement(),
                             selection: selection,
                             event: EventType.HoverStart,
-                            data: {
-                                tooltip: self._d3Chart.getTooltip(),
-                                data: xy
-                            },
+                            tooltip: self._d3Chart.getTooltip(),
+                            data: xy
                         }
                         self._d3Chart.onHover(event);
                         self._layer.onHover(event);
@@ -907,10 +904,8 @@ class D3SVGXYSeries extends XYSeries {
                             caller: self._d3Chart.getElement(),
                             selection: selection,
                             event: EventType.HoverEnd,
-                            data: {
-                                tooltip: self._d3Chart.getTooltip(),
-                                data: xy
-                            },
+                            tooltip: self._d3Chart.getTooltip(),
+                            data: xy
                         }
                         self._d3Chart.onHover(event);
                         self._layer.onHover(event);
@@ -1066,11 +1061,78 @@ class D3SVGXYSeries extends XYSeries {
             .attr('fill', getColor)
             .attr('stroke', getColor)
             .each(configureItem)
-            .each(configureItemInteraction);
+            .each(configureItemInteraction)
+            .each(function () { self._d3Elems.push(d3.select(this)); })
     }
 }
 
 class D3PIXIXYSeries extends XYSeries {
+    protected _stage: PIXI.Container;
+    protected _graphicsMgr: GraphicsManager;
+    protected _selectTempItems: any;
+
+    public select(selection: string) {
+        if (selection) {
+
+            let self = this;
+            let segments = this._d3svg.classed('selected', true);
+            segments.classed('selected', true);
+
+            let color = ColorManager.RgbToInt(segments.style('stroke'));
+            let strokeWidth = parseInt(segments.style('stroke-width'), 10);
+
+            this._d3svg.classed('selected', false);
+
+            let createSelectionBorder = function (circle: PIXI.Sprite) {
+                let circleRadius = circle.width / 2;
+                let radius = circleRadius / 2 + strokeWidth;
+                let border = self._graphicsMgr.add(self.getName() + radius,
+                    self.getName() + radius, PIXI.SCALE_MODES.LINEAR, 1,
+                    function () {
+                        let pixiCircle = new PIXI.Graphics();
+                        pixiCircle.beginFill(0xFFFFFF);
+                        pixiCircle.drawCircle(0, 0, radius); // drawCircle(x, y, radius)
+                        pixiCircle.endFill();
+                        return pixiCircle;
+                    });
+
+                border.x = circle.x + circleRadius - radius;
+                border.y = circle.y + circleRadius - radius;
+                border.tint = color;
+                border.__data__ = (circle as any).__data__;
+
+                return border;
+            }
+
+            let items = this._pixiHelper.getSelection(selection);
+            if (items) {
+                if (!self._selectTempItems) {
+                    self._selectTempItems = {}
+                }
+                items.forEach(function (elem: any, index: number) {
+                    let border = createSelectionBorder(elem);
+                    self._selectTempItems[`${selection}Select${index}`] = border;
+                    self._stage.addChildAt(border, 0);
+                });
+            }
+            this._pixiHelper.render();
+        }
+    }
+
+    public unselect(selection: string) {
+        this._d3svg.select('.segments').classed('selected', false);
+        let items = this._pixiHelper.getSelection(selection);
+        if (items) {
+            let self = this;
+            items.forEach(function (elem: any, index: number) {
+                let center = self._selectTempItems[`${selection}Select${index}`];
+                self._stage.removeChild(center);
+                delete self._selectTempItems[`${selection}Select${index}`];
+            });
+            this._pixiHelper.render();
+        }
+    }
+
     public renderCirclePoints(indices: number[], color: string, radius: number) {
         let self = this;
         let chart = this._d3Chart.getElement() as any;
@@ -1101,17 +1163,15 @@ class D3PIXIXYSeries extends XYSeries {
             }
 
             // note click is handled by the configureItemInteractionPIXI call after this
-            self._pixiHelper.addInteractionHelper(elem, undefined,
-                undefined, self._contextMenuItems,
+            self._pixiHelper.addInteractionHelper(elem, self._d3Chart.getOptions(),
+                undefined, undefined, self._contextMenuItems,
                 self._layer.onHover ? () => {
                     let event = {
                         caller: self._d3Chart.getElement(),
                         selection: selection,
                         event: EventType.HoverStart,
-                        data: {
-                            tooltip: self._d3Chart.getTooltip(),
-                            data: xy
-                        },
+                        data: xy,
+                        tooltip: self._d3Chart.getTooltip()
                     }
                     self._d3Chart.onHover(event);
                     self._layer.onHover(event);
@@ -1122,24 +1182,22 @@ class D3PIXIXYSeries extends XYSeries {
                         caller: self._d3Chart.getElement(),
                         selection: selection,
                         event: EventType.HoverEnd,
-                        data: {
-                            tooltip: self._d3Chart.getTooltip(),
-                            data: xy
-                        },
+                        data: xy,
+                        tooltip: self._d3Chart.getTooltip()
                     }
                     self._d3Chart.onHover(event);
                     self._layer.onHover(event);
                     self._d3Chart.getTooltip().hideTooltip();
-                } : undefined, undefined, chart, xy);
+                } : undefined, undefined, chart, xy, xy);
 
-            self.configureItemInteractionPIXI(elem, xy);
+            self.configureItemInteractionPIXI(elem, xy, selection);
 
             if (xy.info && xy.info.title) {
                 self._pixiHelper.addSelection(getSelectionName(xy.info.title), elem);
             }
         }
 
-        let stage = new PIXI.Container();
+        this._stage = new PIXI.Container();
         if (!this._pixiHelper) {
             this._pixiHelper = new PIXIHelper();
             this._pixi = this._pixiHelper.getRenderer();
@@ -1155,9 +1213,9 @@ class D3PIXIXYSeries extends XYSeries {
             .style('fill', color);
         this._d3Elems.push(foreignObject); // this is just for legends
 
-        self.configureItemInteraction(foreignObject);
+        self.configureItemInteraction(foreignObject, undefined, undefined);
 
-        let graphicsMgr = new GraphicsManager(this._pixi);
+        this._graphicsMgr = new GraphicsManager(this._pixi);
 
         let computeRadius = function (d: any) {
             if (self._layer.useValueWhenRendering) {
@@ -1169,7 +1227,7 @@ class D3PIXIXYSeries extends XYSeries {
 
         indices.forEach(function (idx: number) {
             let radius = computeRadius(idx);
-            let sprite = graphicsMgr.add(self.getName() + radius,
+            let sprite = self._graphicsMgr.add(self.getName() + radius,
                 self.getName() + radius, PIXI.SCALE_MODES.LINEAR, 1,
                 function () {
                     let pixiCircle = new PIXI.Graphics();
@@ -1183,7 +1241,7 @@ class D3PIXIXYSeries extends XYSeries {
             sprite.y = self.yIndexMap(idx) - radius;
             sprite.tint = parseInt(getColor(idx).substring(1), 16);
             configureItemInteractionPIXI(sprite, idx);
-            stage.addChild(sprite);
+            self._stage.addChild(sprite);
         });
 
         if (this._data.showTitleText) {
@@ -1207,6 +1265,6 @@ class D3PIXIXYSeries extends XYSeries {
             // })
         }
 
-        this._pixiHelper.render(stage);
+        this._pixiHelper.render(this._stage);
     }
 }

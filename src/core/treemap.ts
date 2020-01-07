@@ -5,7 +5,7 @@ import {
 
 import { showContextMenu } from './context-menu';
 import { CustomDivTooltip } from './tooltip';
-import { SVGRenderer } from './svg-helper';
+import { SVGRenderer, onSelectHelper } from './svg-helper';
 import { D3Renderer, getTextWidth } from './renderer';
 import { ITreeMap, ITreeMapNode } from '../interface/treemap';
 
@@ -80,9 +80,8 @@ export class TreeMap extends SVGRenderer {
                 data: d
             }
             let output: string;
-            let cb = self._element.onTooltip;
-            if (cb) {
-                cb({ caller: self._element, data: data });
+            if (self._element.onTooltip) {
+                self._element.onTooltip({ caller: self._element, data: data });
             } else {
                 self._dataTooltip.setData(d.id, []);
             }
@@ -105,11 +104,10 @@ export class TreeMap extends SVGRenderer {
             if (SVGRenderer.IS_RESIZING) {
                 return;
             }
-            self.hover(event);
+            self.focus(event);
 
-            let hoverCallback = self._element.onHover;
-            if (hoverCallback) {
-                hoverCallback(event);
+            if (self._element.onHover) {
+                self._element.onHover(event);
             }
             return true;
         }
@@ -232,10 +230,15 @@ export class TreeMap extends SVGRenderer {
                             self._navBarText += '.' + e.data.name;
                             self._renderTreeMap(self._currentRoot, e);
                         }
+                        if (!self.getOptions().disableSelection) {
+                            onSelectHelper(self._element, e.data, e.data.id);
+                        }
                         if (onClick) {
                             onClick({
-                                caller: self._element, event: EventType.Click,
-                                data: e.data
+                                caller: self._element,
+                                event: EventType.Click,
+                                data: e.data,
+                                selection: e.data.id
                             });
                             wait = null;
                         }
@@ -251,9 +254,14 @@ export class TreeMap extends SVGRenderer {
                     self._renderTreeMap(self._currentRoot, e);
                 }
                 if (onClick) {
+                    if (!self.getOptions().disableSelection) {
+                        onSelectHelper(self._element, e.data, e.data.id);
+                    }
                     onClick({
-                        caller: self._element, event: EventType.Click,
-                        data: e.data
+                        caller: self._element,
+                        event: EventType.Click,
+                        data: e.data,
+                        selection: e.data.id
                     });
                 }
             }
@@ -263,8 +271,10 @@ export class TreeMap extends SVGRenderer {
                 window.clearTimeout(wait);
                 wait = null;
                 onDoubleClick({
-                    caller: self._element, event: EventType.DoubleClick,
-                    data: e.data
+                    caller: self._element,
+                    event: EventType.DoubleClick,
+                    data: e.data,
+                    selection: e.data.id
                 });
             });
         }
