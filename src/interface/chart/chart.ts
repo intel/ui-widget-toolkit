@@ -274,11 +274,26 @@ export interface IChart extends UIElement {
      */
     api?: {
         /**
+         * @deprecated Deprecated in favor of focus
          * fire a hover event for this element
          *
          * @param event any event to pass to the renderer
          */
         hover?: (event?: IEvent) => void;
+
+        /**
+         * fire a focus event for this element
+         *
+         * @param event any event to pass to the renderer
+         */
+        focus?: (event?: IEvent) => void;
+
+        /**
+         * fire a select event for this element
+         *
+         * @param event any event to pass to the renderer
+         */
+        select?: (event?: IEvent) => void;
 
         /**
          * fire a zoom event for this element
