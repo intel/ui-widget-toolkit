@@ -56,8 +56,10 @@ export interface IOptions {
 
     // auto pick a default renderer unless forced by these flags
     forceSvgRenderer?: boolean,
-    forceWebGLRenderer?: boolean,
     forceCanvasRenderer?: boolean,
+
+    /** @deprecated WebGL is now the default in PIXI so we have to force the canvas renderer */
+    forceWebGLRenderer?: boolean,
 
     /** brush options */
     disableBrush?: boolean,

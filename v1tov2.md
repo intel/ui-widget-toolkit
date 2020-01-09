@@ -4,8 +4,14 @@ Changes from verison 1.x to version 2.x
 # Move to Peer Dependencies
 In 1.x most external libraries were bundled with the ui-widget-toolkit in order to simplify installation and/or sharing of the script without requiring multiple external dependencies.  With the shift to more modern compilation tools like webpack this has been become less of an issue so the toolkit now leverages peer dependencies to help reduce the size of the package.
 
+# WebGL Rendering vs Canvas Rendering
+PIXI.js has updated to make WebGL the default rendering mode for their library.  As such the forceWebGLRenderer option has been deprecated.  The following data types will render using WebGL unless the forceSvgRenderer or forceCanvasRenderer are set in the IOptions that is passed into the renderer:
+- Flame Chart Series
+- Heatmap
+- Scatter Plot XY Series
+- Port Diagram
+
 # Hover vs Focus vs Select
-------------------------
 In version 1 hover was synonymous with focus in most, but not all cases.  With 2.x the goal was to be consistent across all of the widgets.  Each widget now supports 3 different common user interface concepts.
 
 - Hover is when the user interacts with the system and moves the mouse over an item.
@@ -19,7 +25,6 @@ To support the breaking up of these concepts the following changes have been mad
 - The programmatic hover function has been deprecated in favor of a focus function for all widgets. Note that previously hover acted as a select in the grid, so to maintain some backwards compatibility the hover event is synonymous with select for the grid.
 
 ## Select functionality
-**************************
 
 - A new select event type has been added.  Each widget now supports a select function to allow widgets to programmatically select items in other widgets.
 - The user can configure how items are affected by selection using CSS.  A selected item will have the `selected` class added to it.

@@ -694,7 +694,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
         }
 
         if (!this._pixiHelper) {
-            this._pixiHelper = new PIXIHelper();
+            this._pixiHelper = new PIXIHelper(!this._d3Chart.getOptions().forceCanvasRenderer);
             this._pixi = this._pixiHelper.getRenderer();
         }
 

@@ -1199,7 +1199,7 @@ class D3PIXIXYSeries extends XYSeries {
 
         this._stage = new PIXI.Container();
         if (!this._pixiHelper) {
-            this._pixiHelper = new PIXIHelper();
+            this._pixiHelper = new PIXIHelper(!this._d3Chart.getOptions().forceCanvasRenderer);
             this._pixi = this._pixiHelper.getRenderer();
         }
         let foreignObject = this._pixiHelper.addPixiSvg(

@@ -1167,9 +1167,6 @@ export class D3ConnectedGraphPixi extends UIElementRenderer {
     }
 
     protected initializeGraphArea(options: IOptions): any {
-
-        let self = this;
-
         this._contextMenuItems = [];
 
         // create the graph area
@@ -1177,7 +1174,7 @@ export class D3ConnectedGraphPixi extends UIElementRenderer {
 
         let first = this._pixiHelper === undefined;
         if (first) {
-            this._pixiHelper = new PIXIHelper();
+            this._pixiHelper = new PIXIHelper(!this.getOptions().forceCanvasRenderer);
             this._pixi = this._pixiHelper.getRenderer();
             (this._parent.node() as any).appendChild(this._pixi.view);
 

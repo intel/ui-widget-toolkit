@@ -54,12 +54,17 @@ export class PIXIHelper {
     protected _selectionItems: { [index: string]: any } = {};
     protected _useWebGLRenderer: boolean;
 
-    constructor() {
+    constructor(useWebGLRenderer = true) {
         PIXI.utils.skipHello();
 
-        this._renderer = new PIXI.Renderer(
-            { transparent: true, antialias: true });
-
+        if (useWebGLRenderer) {
+            this._renderer = new PIXI.Renderer(
+                { transparent: true, antialias: true });
+        } else {
+            /** to use this you need to use the pixi.js-legacy script */
+            this._renderer = new (PIXI as any).CanvasRenderer(
+                { transparent: true, antialias: true });
+        }
         let rect = new PIXI.Graphics();
         rect.beginFill(0xFFFFFF);
         rect.drawRect(0, 0, 1, 1); // draw rect)
