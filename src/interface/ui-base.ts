@@ -18,6 +18,8 @@ export interface IEvent {
     selectionKey?: string,
     /** data associated with the event */
     data?: any,
+    /** tooltip used to display information about data */
+    tooltip?: any
     /** the original caller who caused this event to be fired*/
     caller?: UIElement,
     /** xStart bounds of associated with this event */

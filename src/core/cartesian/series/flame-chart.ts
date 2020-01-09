@@ -53,11 +53,11 @@ export class FlameChartSeries extends BaseSeries implements ICartesianSeriesPlug
     protected _stackHeight = 20;
 
     protected getEventDataValue(value: IFlameChartValue) {
-        if (value) {
-            if (value.decimatedValues && value.decimatedValues.length > 1) {
+        if (value && value.decimatedValues) {
+            if (value.decimatedValues.length > 1) {
                 return value.decimatedValues;
             }
-            return value.traceValue;
+            return value.decimatedValues[0];
         }
         return undefined;
     }
@@ -765,7 +765,7 @@ class D3PIXIFlameChart extends FlameChartSeries {
                         });
                     }
                     this._selection = undefined;
-                }, undefined, chart, decimatedValue.decimatedValues,
+                }, undefined, chart, this.getEventDataValue(decimatedValue.decimatedValues),
                 decimatedValue.traceValue);
 
             // this is flame chart specific handling for brush

@@ -48,7 +48,7 @@ module MinMaxValueTest {
                         axisDesc: leftAxis,
                         alignment: UWT.Alignment.Left
                     }],
-                isXContinuous: false]
+                isXContinuous: false
             }
 
             UWT.Chart.finalize(chart);
