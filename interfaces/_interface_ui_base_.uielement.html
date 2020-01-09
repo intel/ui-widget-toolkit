@@ -2448,7 +2448,13 @@ img {
 					<a href="_interface_ui_base_.uielement.html#onbrush" class="tsd-kind-icon">on<wbr>Brush</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="_interface_ui_base_.uielement.html#onclick" class="tsd-kind-icon">on<wbr>Click</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="_interface_ui_base_.uielement.html#oncursorchanged" class="tsd-kind-icon">on<wbr>Cursor<wbr>Changed</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="_interface_ui_base_.uielement.html#ondoubleclick" class="tsd-kind-icon">on<wbr>Double<wbr>Click</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="_interface_ui_base_.uielement.html#onhover" class="tsd-kind-icon">on<wbr>Hover</a>
@@ -2521,7 +2527,9 @@ img {
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_ui_base_.uielement.html#handleupdate" class="tsd-kind-icon">handle<wbr>Update</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_ui_base_.uielement.html#manager" class="tsd-kind-icon">manager</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_ui_base_.uielement.html#onbrush" class="tsd-kind-icon">on<wbr>Brush</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_ui_base_.uielement.html#onclick" class="tsd-kind-icon">on<wbr>Click</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_ui_base_.uielement.html#oncursorchanged" class="tsd-kind-icon">on<wbr>Cursor<wbr>Changed</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_ui_base_.uielement.html#ondoubleclick" class="tsd-kind-icon">on<wbr>Double<wbr>Click</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_ui_base_.uielement.html#onhover" class="tsd-kind-icon">on<wbr>Hover</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_ui_base_.uielement.html#onrender" class="tsd-kind-icon">on<wbr>Render</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interface_ui_base_.uielement.html#ontooltip" class="tsd-kind-icon">on<wbr>Tooltip</a></li>
@@ -2542,7 +2550,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">api<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L327">interface/ui-base.ts:327</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L348">interface/ui-base.ts:348</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -2626,6 +2634,37 @@ img {
 							</ul>
 						</li>
 						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> focus<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>fire a focus event for this element</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>param</dt>
+									<dd><p>any event to pass to the renderer</p>
+									</dd>
+								</dl>
+							</div>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-siganture">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-variable tsd-is-not-exported">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">?: </span><a href="_interface_ui_base_.ievent.html" class="tsd-signature-type">IEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5><span class="tsd-flag ts-flagOptional">Optional</span> event: <a href="_interface_ui_base_.ievent.html" class="tsd-signature-type">IEvent</a></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li class="tsd-parameter">
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> get<wbr>Options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span></h5>
 							<ul class="tsd-parameters">
 								<li class="tsd-parameter-siganture">
@@ -2643,10 +2682,11 @@ img {
 						<li class="tsd-parameter">
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> hover<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span></h5>
 							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>fire a hover event for this element</p>
-								</div>
 								<dl class="tsd-comment-tags">
+									<dt>deprecated</dt>
+									<dd><p>(&#39;Deprecated since 1.14.0 in favor of focus.  Will be removed in 2.x&#39;)
+										fire a hover event for this element</p>
+									</dd>
 									<dt>param</dt>
 									<dd><p>any event to pass to the renderer</p>
 									</dd>
@@ -2820,7 +2860,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">get<wbr>Elements<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L435">interface/ui-base.ts:435</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L472">interface/ui-base.ts:472</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2850,7 +2890,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">get<wbr>Tooltip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L386">interface/ui-base.ts:386</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L415">interface/ui-base.ts:415</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2891,7 +2931,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">handle<wbr>Update<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L430">interface/ui-base.ts:430</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L467">interface/ui-base.ts:467</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -2925,7 +2965,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">manager<span class="tsd-signature-symbol">:</span> <a href="_interface_ui_base_.uielementmanager.html" class="tsd-signature-type">UIElementManager</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L325">interface/ui-base.ts:325</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L346">interface/ui-base.ts:346</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2935,7 +2975,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">on<wbr>Brush<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L414">interface/ui-base.ts:414</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L451">interface/ui-base.ts:451</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2971,12 +3011,48 @@ img {
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="onclick" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Click</h3>
+				<div class="tsd-signature tsd-kind-icon">on<wbr>Click<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L432">interface/ui-base.ts:432</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>callback when user clicks on an item</p>
+					</div>
+				</div>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter-siganture">
+							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="_interface_ui_base_.ievent.html" class="tsd-signature-type">IEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+							</ul>
+							<ul class="tsd-descriptions">
+								<li class="tsd-description">
+									<h4 class="tsd-parameters-title">Parameters</h4>
+									<ul class="tsd-parameters">
+										<li>
+											<h5>event: <a href="_interface_ui_base_.ievent.html" class="tsd-signature-type">IEvent</a></h5>
+										</li>
+									</ul>
+									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="oncursorchanged" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Cursor<wbr>Changed</h3>
 				<div class="tsd-signature tsd-kind-icon">on<wbr>Cursor<wbr>Changed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L421">interface/ui-base.ts:421</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L458">interface/ui-base.ts:458</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3012,12 +3088,53 @@ img {
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="ondoubleclick" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Double<wbr>Click</h3>
+				<div class="tsd-signature tsd-kind-icon">on<wbr>Double<wbr>Click<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L437">interface/ui-base.ts:437</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>the callback when an item in this data is double clicked</p>
+					</div>
+					<dl class="tsd-comment-tags">
+						<dt>param</dt>
+						<dd><p>contains the data for the item that was clicked</p>
+						</dd>
+					</dl>
+				</div>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter-siganture">
+							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="_interface_ui_base_.ievent.html" class="tsd-signature-type">IEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+							</ul>
+							<ul class="tsd-descriptions">
+								<li class="tsd-description">
+									<h4 class="tsd-parameters-title">Parameters</h4>
+									<ul class="tsd-parameters">
+										<li>
+											<h5>event: <a href="_interface_ui_base_.ievent.html" class="tsd-signature-type">IEvent</a></h5>
+										</li>
+									</ul>
+									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="onhover" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Hover</h3>
 				<div class="tsd-signature tsd-kind-icon">on<wbr>Hover<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L400">interface/ui-base.ts:400</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L429">interface/ui-base.ts:429</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3058,7 +3175,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">on<wbr>Render<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L428">interface/ui-base.ts:428</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L465">interface/ui-base.ts:465</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3099,7 +3216,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">on<wbr>Tooltip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L393">interface/ui-base.ts:393</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L422">interface/ui-base.ts:422</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3140,7 +3257,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">on<wbr>Zoom<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L407">interface/ui-base.ts:407</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L444">interface/ui-base.ts:444</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3181,7 +3298,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="_interface_ui_base_.ioptions.html" class="tsd-signature-type">IOptions</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L323">interface/ui-base.ts:323</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L344">interface/ui-base.ts:344</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -3191,7 +3308,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">renderer<span class="tsd-signature-symbol">:</span> <a href="_interface_ui_base_.uirenderer.html" class="tsd-signature-type">UIRenderer</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L324">interface/ui-base.ts:324</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L345">interface/ui-base.ts:345</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -3201,7 +3318,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <a href="../enums/_interface_ui_base_.uitype.html" class="tsd-signature-type">UIType</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/interface/ui-base.ts#L322">interface/ui-base.ts:322</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/interface/ui-base.ts#L343">interface/ui-base.ts:343</a></li>
 					</ul>
 				</aside>
 			</section>

@@ -2384,6 +2384,9 @@ img {
 				<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-not-exported">
 					<a href="_core_connected_graph_port_.pixisimplenode.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-not-exported">
+					<a href="_core_connected_graph_port_.pixisimplenode.html#_selecttempitems" class="tsd-kind-icon">_select<wbr>Temp<wbr>Items</a>
+				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-not-exported">
 					<a href="_core_connected_graph_port_.pixisimplenode.html#def" class="tsd-kind-icon">def</a>
 				</li>
@@ -2407,6 +2410,12 @@ img {
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-not-exported">
 					<a href="_core_connected_graph_port_.pixisimplenode.html#rendernode" class="tsd-kind-icon">render<wbr>Node</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-not-exported">
+					<a href="_core_connected_graph_port_.pixisimplenode.html#select" class="tsd-kind-icon">select</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-not-exported">
+					<a href="_core_connected_graph_port_.pixisimplenode.html#unselect" class="tsd-kind-icon">unselect</a>
 				</li>
 			</ul>
 		</li>
@@ -2439,6 +2448,12 @@ img {
 		</li>
 		<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
 			<a href="../modules/_core_connected_graph_port_.html#radius" class="tsd-kind-icon">RADIUS</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+			<a href="../modules/_core_connected_graph_port_.html#selection_color" class="tsd-kind-icon">SELECTION_<wbr>COLOR</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+			<a href="../modules/_core_connected_graph_port_.html#stroke_width" class="tsd-kind-icon">STROKE_<wbr>WIDTH</a>
 		</li>
 		<li class=" tsd-kind-object-literal tsd-parent-kind-external-module tsd-is-not-exported">
 			<a href="../modules/_core_connected_graph_port_.html#simpleportarea" class="tsd-kind-icon">simple<wbr>Port<wbr>Area</a>
@@ -2480,6 +2495,7 @@ img {
 					<section class="tsd-index-section tsd-is-not-exported">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-not-exported"><a href="_core_connected_graph_port_.pixisimplenode.html#_selecttempitems" class="tsd-kind-icon">_select<wbr>Temp<wbr>Items</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-not-exported"><a href="_core_connected_graph_port_.pixisimplenode.html#def" class="tsd-kind-icon">def</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-not-exported"><a href="_core_connected_graph_port_.pixisimplenode.html#getnode" class="tsd-kind-icon">get<wbr>Node</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-not-exported"><a href="_core_connected_graph_port_.pixisimplenode.html#initializenode" class="tsd-kind-icon">initialize<wbr>Node</a></li>
@@ -2493,6 +2509,8 @@ img {
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-not-exported"><a href="_core_connected_graph_port_.pixisimplenode.html#configurenode" class="tsd-kind-icon">configure<wbr>Node</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-not-exported"><a href="_core_connected_graph_port_.pixisimplenode.html#getportarearect" class="tsd-kind-icon">get<wbr>Port<wbr>Area<wbr>Rect</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-not-exported"><a href="_core_connected_graph_port_.pixisimplenode.html#rendernode" class="tsd-kind-icon">render<wbr>Node</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-not-exported"><a href="_core_connected_graph_port_.pixisimplenode.html#select" class="tsd-kind-icon">select</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-not-exported"><a href="_core_connected_graph_port_.pixisimplenode.html#unselect" class="tsd-kind-icon">unselect</a></li>
 						</ul>
 					</section>
 				</div>
@@ -2511,7 +2529,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Overrides <a href="_core_connected_graph_port_.simplenode.html">SimpleNode</a>.<a href="_core_connected_graph_port_.simplenode.html#constructor">constructor</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/core/connected-graph/port.ts#L233">core/connected-graph/port.ts:233</a></li>
+								<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L272">core/connected-graph/port.ts:272</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2527,6 +2545,22 @@ img {
 		</section>
 		<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
 			<h2>Properties</h2>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-not-exported">
+				<a name="_selecttempitems" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> _select<wbr>Temp<wbr>Items</h3>
+				<div class="tsd-signature tsd-kind-icon">_select<wbr>Temp<wbr>Items<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+				<aside class="tsd-sources">
+					<p>Inherited from <a href="_core_connected_graph_port_.simplenode.html">SimpleNode</a>.<a href="_core_connected_graph_port_.simplenode.html#_selecttempitems">_selectTempItems</a></p>
+					<ul>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L162">core/connected-graph/port.ts:162</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+					</ul>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-not-exported">
 				<a name="def" class="tsd-anchor"></a>
 				<h3>def</h3>
@@ -2535,7 +2569,7 @@ img {
 					<p>Implementation of <a href="../interfaces/_core_connected_graph_port_.inoderenderer.html">INodeRenderer</a>.<a href="../interfaces/_core_connected_graph_port_.inoderenderer.html#def">def</a></p>
 					<p>Inherited from <a href="_core_connected_graph_port_.simplenode.html">SimpleNode</a>.<a href="_core_connected_graph_port_.simplenode.html#def">def</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/core/connected-graph/port.ts#L123">core/connected-graph/port.ts:123</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L161">core/connected-graph/port.ts:161</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2546,7 +2580,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Implementation of <a href="../interfaces/_core_connected_graph_port_.inoderenderer.html">INodeRenderer</a>.<a href="../interfaces/_core_connected_graph_port_.inoderenderer.html#getnode">getNode</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/core/connected-graph/port.ts#L233">core/connected-graph/port.ts:233</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L272">core/connected-graph/port.ts:272</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -2571,7 +2605,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">initialize<wbr>Node<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/core/connected-graph/port.ts#L232">core/connected-graph/port.ts:232</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L271">core/connected-graph/port.ts:271</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -2597,7 +2631,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Implementation of <a href="../interfaces/_core_connected_graph_port_.inoderenderer.html">INodeRenderer</a>.<a href="../interfaces/_core_connected_graph_port_.inoderenderer.html#renderport">renderPort</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/core/connected-graph/port.ts#L231">core/connected-graph/port.ts:231</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L270">core/connected-graph/port.ts:270</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -2632,7 +2666,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Implementation of <a href="../interfaces/_core_connected_graph_port_.inoderenderer.html">INodeRenderer</a>.<a href="../interfaces/_core_connected_graph_port_.inoderenderer.html#updateposition">updatePosition</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/core/connected-graph/port.ts#L230">core/connected-graph/port.ts:230</a></li>
+						<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L269">core/connected-graph/port.ts:269</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -2679,7 +2713,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_core_connected_graph_port_.simplenode.html">SimpleNode</a>.<a href="_core_connected_graph_port_.simplenode.html#configurenode">configureNode</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/core/connected-graph/port.ts#L128">core/connected-graph/port.ts:128</a></li>
+								<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L167">core/connected-graph/port.ts:167</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -2697,7 +2731,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_core_connected_graph_port_.simplenode.html">SimpleNode</a>.<a href="_core_connected_graph_port_.simplenode.html#getportarearect">getPortAreaRect</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/core/connected-graph/port.ts#L132">core/connected-graph/port.ts:132</a></li>
+								<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L171">core/connected-graph/port.ts:171</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <a href="../interfaces/_interface_ui_base_.irect.html" class="tsd-signature-type">IRect</a></h4>
@@ -2714,7 +2748,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/ee5b3f0/src/core/connected-graph/port.ts#L244">core/connected-graph/port.ts:244</a></li>
+								<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L283">core/connected-graph/port.ts:283</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2724,6 +2758,67 @@ img {
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Container</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-not-exported">
+				<a name="select" class="tsd-anchor"></a>
+				<h3>select</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-not-exported">
+					<li class="tsd-signature tsd-kind-icon">select<span class="tsd-signature-symbol">(</span>selection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, elem<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Sprite</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, graphicsMgr<span class="tsd-signature-symbol">: </span><a href="_core_pixi_helper_.graphicsmanager.html" class="tsd-signature-type">GraphicsManager</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L307">core/connected-graph/port.ts:307</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>selection: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>elem: <span class="tsd-signature-type">Sprite</span></h5>
+							</li>
+							<li>
+								<h5>index: <span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li>
+								<h5>graphicsMgr: <a href="_core_pixi_helper_.graphicsmanager.html" class="tsd-signature-type">GraphicsManager</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-not-exported">
+				<a name="unselect" class="tsd-anchor"></a>
+				<h3>unselect</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-not-exported">
+					<li class="tsd-signature tsd-kind-icon">unselect<span class="tsd-signature-symbol">(</span>selection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, elem<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Sprite</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/intel/ui-widget-toolkit/blob/9b13cbf/src/core/connected-graph/port.ts#L337">core/connected-graph/port.ts:337</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>selection: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>elem: <span class="tsd-signature-type">Sprite</span></h5>
+							</li>
+							<li>
+								<h5>index: <span class="tsd-signature-type">number</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 					</li>
 				</ul>
 			</section>

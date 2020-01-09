@@ -29,18 +29,6 @@ var MinMaxValueTest;
                             { x: 'xyz', min: 4, max: 10, y: 4 },
                             { x: 'por', min: 5, max: 8, y: 7 }
                         ],
-                        onClick: function (event) {
-                            console.log('click');
-                            console.log(event);
-                        },
-                        contextMenuItems: [{
-                                title: 'MinMaxMenuItem',
-                                action(elem, data, index) {
-                                    console.log('index: ' + index);
-                                    console.log(data);
-                                    console.log(elem);
-                                }
-                            }]
                     }],
                 axes: [
                     {

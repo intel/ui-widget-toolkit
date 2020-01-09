@@ -26,7 +26,11 @@ var TestData;
     TestData.scatterEvents = ['data-0', 'data-1', 'data-2', 'def', 'test'];
     TestData.scatterData = [new Array(), new Array(), new Array(), new Array(), new Array()];
     for (let i = 0; i < TestData.pointsPerSeries; ++i) {
-        TestData.scatterData[i % TestData.scatterEvents.length].push({ x: i, y: TestData.scatterEvents[i % TestData.scatterEvents.length] });
+        TestData.scatterData[i % TestData.scatterEvents.length].push({
+            x: i,
+            y: TestData.scatterEvents[i % TestData.scatterEvents.length],
+            info: { title: 'name' + i }
+        });
     }
     // Define the area and graphs.
     TestData.defaultScalingInfo = new UWT.ScalingInfo(1, 'deg');
