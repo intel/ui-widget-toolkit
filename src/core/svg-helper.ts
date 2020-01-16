@@ -140,7 +140,7 @@ export function unselect(d3Obj: d3.Selection<any, any, d3.BaseType, any>,
 export function onSelectHelper(caller: UIElement, value: any, selectionValue: string) {
     let clearEvent = { caller: caller, data: value, event: EventType.SelectClear };
     let selectEvent = {
-        caller: caller, event: EventType.SelectStart, data: value, selection: selectionValue
+        caller: caller, event: EventType.SelectAdd, data: value, selection: selectionValue
     }
 
     caller.api.select(clearEvent);

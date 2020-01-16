@@ -114,7 +114,7 @@ export class InteractionState {
         let selection = getSelectionName(event.selection);
         let selectionIdx = this._currFocus.indexOf(selection);
         switch (event.event) {
-            case EventType.SelectStart: // here for legacy reasons
+            case EventType.SelectAdd: // here for legacy reasons
             case EventType.HoverStart:
             case EventType.FocusStart:
                 if (selectionIdx === -1) {
@@ -122,7 +122,7 @@ export class InteractionState {
                     this._addFocusHelper(selection);
                 }
                 break;
-            case EventType.SelectEnd: // here for legacy reasons
+            case EventType.SelectRemove: // here for legacy reasons
             case EventType.HoverEnd:
             case EventType.FocusEnd:
                 if (selectionIdx !== -1) {
@@ -158,13 +158,13 @@ export class InteractionState {
         let selection = getSelectionName(event.selection);
         let selectionIdx = this._currSelection.indexOf(selection);
         switch (event.event) {
-            case EventType.SelectStart:
+            case EventType.SelectAdd:
                 if (selectionIdx === -1) {
                     this._currSelection.push(selection);
                     this._addSelectionHelper(selection);
                 }
                 break;
-            case EventType.SelectEnd:
+            case EventType.SelectRemove:
                 if (selectionIdx !== -1) {
                     clearTimeout(this._highlightTimer);
                     this._currSelection.splice(selectionIdx, 1);

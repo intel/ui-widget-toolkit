@@ -190,7 +190,7 @@ class AgGrid {
 
         this.onRowSelectedDefaultCallback = function (row: any) {
             let eventType = row.node.isSelected() ?
-                EventType.SelectStart : EventType.SelectEnd;
+                EventType.SelectAdd : EventType.SelectRemove;
 
             defaultCallback(row, eventType, self._element.onClick);
         }
@@ -264,7 +264,7 @@ class AgGrid {
                 columns[0].colDef.field;
 
             let key = event.selectionKey ? event.selectionKey : selectionKey;
-            if (event.event === EventType.SelectStart ||
+            if (event.event === EventType.SelectAdd ||
                 event.event === EventType.HoverStart) {
                 this._prevSelection = event.selection;
 
@@ -398,7 +398,7 @@ class AgGrid {
                         row: row.node.data,
                         isSelected: row.node.selected
                     },
-                    event: row.node.selected ? EventType.SelectStart : EventType.SelectEnd
+                    event: row.node.selected ? EventType.SelectAdd : EventType.SelectRemove
                 });
             }
         }
