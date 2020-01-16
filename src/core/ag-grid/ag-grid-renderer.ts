@@ -322,6 +322,8 @@ class AgGrid {
 
         // make typescript happy to hardcode some things
         let gridOptions: any = this._element.gridOptions;
+         // required to allow the select api to not end up in a infinite loop
+        gridOptions.suppressAsyncEvents = true;
         gridOptions.animateRows = gridOptions.animateRows !== undefined ?
             gridOptions.animateRows : true;
         gridOptions.rowSelection = gridOptions.rowSelection !== undefined ?

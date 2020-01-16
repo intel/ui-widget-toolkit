@@ -1018,7 +1018,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             // when moving with overlay for zoomed region dynamically update all
             // related graphs when this region is moved
             if (self._options.disableZoomViewUpdate) {
-                if (onBrushCallback(coords, EventType.BrushEnd)) {
+                if (onBrushCallback(coords, EventType.BrushMove)) {
                     self.onZoomChanged(configureEvent(EventType.Zoom, coords));
                 }
                 return true;
