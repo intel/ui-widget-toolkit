@@ -194,6 +194,12 @@ export interface ISummaryLayer extends IBaseLayer {
     colors?: { [index: string]: string };
 }
 
+/** a set of summary data. bar graphs */
+export interface IBarLayer extends ISummaryLayer {
+    /** user defined minimum width of a bar */
+    min_width?: number
+}
+
 /** a set of min/max/value data */
 export interface IMinMaxValueLayer extends IBaseLayer {
     /** a list of min max values to render */

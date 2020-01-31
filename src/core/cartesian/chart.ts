@@ -1487,6 +1487,12 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
                 }
 
                 xD3Axis.setBanded(true);
+                let requiredWidth = series.getRequiredWidth();
+                if (requiredWidth !== 0 && this._graphRect.width < requiredWidth) {
+                    this._options.width = requiredWidth + this._options.leftMargin +
+                        this._options.rightMargin;
+                    this._requiresRelayout = true;
+                }
             } else {
                 let xMinMax = d3Series.getXMinMax();
 

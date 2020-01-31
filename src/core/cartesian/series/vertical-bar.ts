@@ -2,7 +2,7 @@ import {
     ICss, IEvent, UIElement, ITooltipData, ILegendItem
 } from '../../../interface/ui-base';
 import { ISummaryValue } from '../../../interface/chart/series-data';
-import { RenderType, ILayer } from '../../../interface/chart/chart'
+import { RenderType, IBarLayer, ILayer } from '../../../interface/chart/chart'
 
 import { ICartesianSeriesPlugin } from '../../../interface/chart/series';
 import { getSelectionName } from '../../utilities';
@@ -68,6 +68,34 @@ export class VerticalBarSeries extends BaseSeries implements ICartesianSeriesPlu
 
     public getLevelKeys(): string[][] {
         return this._levelKeyList;
+    }
+
+    public getRequiredWidth() {
+        let layer = this._layer as IBarLayer;
+        if (layer.min_width) {
+            let barCount = 0;
+
+            let isStacked = layer.renderType & RenderType.Stacked;
+            if (isStacked) {
+                for (let i = 0; i < this._stackData.length && barCount === 0; ++i) {
+                    let dataPerKey = this._stackData[i];
+                    for (let j = 0; j < dataPerKey.length && barCount === 0; ++j) {
+                        for (let k = 0; k < dataPerKey[j].length && barCount === 0; ++k) {
+                            barCount = dataPerKey[j].length * dataPerKey[j][k].length;
+                        }
+                    }
+                }
+            } else {
+                if (this._hasLevels) {
+                    let keys = this._levelKeyList[this._levelKeyList.length - 1];
+                    barCount = this._data.length / keys.length;
+                } else {
+                    barCount = Object.keys((this._data[0] as ISummaryValue).data).length
+                }
+            }
+            return layer.min_width * barCount;
+        }
+        return 0;
     }
 
     // walk over the leafs in using a preorder traversal, get the keys for each

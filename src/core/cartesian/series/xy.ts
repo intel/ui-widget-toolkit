@@ -183,6 +183,21 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
         xMinMax[0] = xMinMax[0] * scalar;
         xMinMax[1] = xMinMax[1] * scalar;
 
+        // adjust so scatter is on the screen
+        // fit scatter plot to screen if we don't have to deal with zooming
+        if (this._layer.renderType & RenderType.Scatter &&
+            this._d3Chart.getOptions().disableZoomViewUpdate) {
+            let radius = 3;
+            if (this._layer.css && this._layer.css.style && this._layer.css.style.r) {
+                radius = this._layer.css.style.r;
+            }
+
+            let range = xMinMax[1] - xMinMax[0];
+            let offset = radius / this._d3Chart.getOptions().width * range;
+            xMinMax[0] = xMinMax[0] - offset;
+            xMinMax[1] = xMinMax[1] + offset;
+        }
+
         return xMinMax;
     }
 
@@ -195,6 +210,22 @@ export class XYSeries extends BaseSeries implements ICartesianSeriesPlugin {
             yMinMax[0] = Math.min(yMinMax[0], this._values.get(i).y);
             yMinMax[1] = Math.max(yMinMax[1], this._values.get(i).y);
         }
+
+        // adjust so scatter is on the screen
+        // fit scatter plot to screen if we don't have to deal with zooming
+        if (this._layer.renderType & RenderType.Scatter &&
+            this._d3Chart.getOptions().disableZoomViewUpdate) {
+            let radius = 3;
+            if (this._layer.css && this._layer.css.style && this._layer.css.style.r) {
+                radius = this._layer.css.style.r;
+            }
+
+            let range = yMinMax[1] - yMinMax[0];
+            let offset = radius / this._d3Chart.getOptions().height * range;
+            yMinMax[0] = yMinMax[0] - offset;
+            yMinMax[1] = yMinMax[1] + offset;
+        }
+
         return yMinMax;
     }
 

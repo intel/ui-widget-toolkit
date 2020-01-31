@@ -243,6 +243,7 @@ module BarTest {
                         console.log('double click');
                         console.log(event);
                     },
+                    min_width: 30,
                     renderType: UWT.RenderType.Bar | UWT.RenderType.Stacked,
                     data: UWT.transposeKeys(data),
                     colors: { 'Failing': 'red', 'Workaround': 'yellow', 'Passing': 'green', 'Not Yet Tested/WIP': 'gray' },
@@ -270,6 +271,7 @@ module BarTest {
                 title: 'Rotated X Axis',
                 type: UWT.UIType.Cartesian,
                 dataSets: [{
+                    min_width: 50,
                     onClick: function (event: UWT.IEvent) {
                         console.log('click');
                         console.log(event);

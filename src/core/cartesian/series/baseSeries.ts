@@ -164,6 +164,10 @@ export class BaseSeries {
         return 0;
     }
 
+    public getRequiredWidth() {
+        return 0;
+    }
+
     protected getSelectionClasses(type: string): string {
         return this.getClassNames(type).replace(/\s+/g, '.');
     }
