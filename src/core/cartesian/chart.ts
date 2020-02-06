@@ -397,8 +397,7 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
         this._handleWidth = 10;
         this._hasBottomHandle = true;
 
-        this.DEFAULT_GRAPH_HEIGHT = 120;
-        this._options.height = this.DEFAULT_GRAPH_HEIGHT;
+        this.DEFAULT_GRAPH_HEIGHT = 150;
         this._options.topMargin = 0;
         this._options.bottomMargin = 0;
 
@@ -1347,10 +1346,28 @@ export class D3Chart extends SVGRenderer implements ID3Chart {
             this._svgRect.width = this._options.width;
         }
 
+        if (!this._options.height) {
+            let node: any = this._parent.node();
+            if (node) {
+                let bounds = node.getBoundingClientRect();
+                let windowHeight = bounds.height;
+                if (bounds.height) {
+                    // this will make sure the view is exactly height of the bounds
+                    // and the graph will fit in that window
+                    this._options.fitToWindow = true;
+                    this._options.height = bounds.height;
+                } else {
+                    windowHeight = this.DEFAULT_GRAPH_HEIGHT;
+                }
+                this._graphRect.height = windowHeight - this._options.topMargin - this._options.bottomMargin;
+            }
+        } else {
+            this._graphRect.height = this._options.height;
+        }
+
         let leftMargin = this._options.leftMargin ? this._options.leftMargin : 0;
         this._graphRect.x = leftMargin;
         this._graphRect.y = this._options.topMargin;
-        this._graphRect.height = this._options.height;
 
         let margins = leftMargin +
             (this._options.rightMargin ? this._options.rightMargin : 0);
