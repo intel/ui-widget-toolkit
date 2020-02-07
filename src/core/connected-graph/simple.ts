@@ -111,6 +111,8 @@ export class D3SimpleGraph extends D3ConnectedGraphSVG {
     public render(options: IOptions) {
         let self = this;
 
+        this.getHeightWidth(options);
+
         // the function for moving the nodes
         function dragMove(node: any) {
             d3.select(this)

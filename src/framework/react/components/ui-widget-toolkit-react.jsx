@@ -31,12 +31,12 @@ export class UWTChart extends React.Component {
 
     render() {
         if (this.props.chartTitle) {
-            return <div style={this.props.style}>
+            return <div style={this.props.style} style={{ height: '100%' }}>
                 <div className='chart-title'>{this.props.chartTitle}</div>
-                <div ref={this.chart} id='chart'></div>
+                <div ref={this.chart} id='chart' style={{ height: '100%' }}></div>
             </div>;
         } else {
-            return <div style={this.props.style} ref={this.chart} id='chart'></div>;
+            return <div style={this.props.style} ref={this.chart} id='chart' style={{ height: '100%' }}></div>;
         }
     }
 }
@@ -298,12 +298,12 @@ export class UWTFlowDiagram extends React.Component {
 
     render() {
         if (this.props.diagramTitle) {
-            return <div>
+            return <div style={{ height: '100%' }}>
                 <div className='diagram-title'>{this.props.diagramTitle}</div>
-                <div ref={this.diagram} id='diagram'></div>
+                <div ref={this.diagram} id='diagram' style={{ height: '100%' }}></div>
             </div>;
         } else {
-            return <div ref={this.diagram} id='diagram'></div>;
+            return <div ref={this.diagram} id='diagram' style={{ height: '100%' }}></div>;
         }
     }
 }
@@ -338,12 +338,12 @@ export class UWTGraph extends React.Component {
 
     render() {
         if (this.props.graphTitle) {
-            return <div>
+            return <div style={{ height: '100%' }}>
                 <div className='graph-title'>{this.props.graphTitle}</div>
-                <div ref={this.graph} id='graph'></div>
+                <div ref={this.graph} id='graph' style={{ height: '100%' }}></div>
             </div>;
         } else {
-            return <div ref={this.graph} id='graph'></div>;
+            return <div ref={this.graph} id='graph' style={{ height: '100%' }}></div>;
         }
     }
 }

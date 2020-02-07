@@ -762,7 +762,7 @@ export class D3PortDiagram extends UIElementRenderer {
             }
             this._renderer.setColorManager(this._colorMgr);
         }
-        this._renderer.render(options);
+        this._renderer.render(this._options);
     }
 
     public invalidate: any = this.render;
@@ -786,6 +786,8 @@ export class D3PortDiagramSVG extends D3ConnectedGraphSVG {
 
     public render(options: IOptions) {
         let self = this;
+
+        this.getHeightWidth(options);
 
         let graphArea = self.initializeGraphArea(options);
 
@@ -1064,6 +1066,8 @@ export class D3PortDiagramPixi extends D3ConnectedGraphPixi {
     // vs recreating them
     public render(options: IOptions) {
         merge(this._options, options);
+
+        this.getHeightWidth(this._options);
 
         let self = this;
         let graph = self._element as IPortDiagram;

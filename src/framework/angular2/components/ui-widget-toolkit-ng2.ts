@@ -9,6 +9,9 @@ import * as UWT from 'ui-widget-toolkit';
 @Component({
     selector: 'uwt-chart',
     styles: [`
+        div#chart {
+            height: 100%;
+        }
         .axis path,
         .axis line {
             fill: none;
@@ -262,8 +265,8 @@ export class UWTGrid implements OnChanges {
 @Component({
     selector: 'uwt-flow-diagram',
     styles: [`
-        div#graph {
-            height: 400px
+        div#diagram {
+            height: 100%;
         }
 
         .node rect {
@@ -317,7 +320,7 @@ export class UWTFlowDiagram implements OnChanges {
     selector: 'uwt-graph',
     styles: [`
         div#graph {
-            height: 400px
+            height: 100%
         }
 
         .nodes circle {

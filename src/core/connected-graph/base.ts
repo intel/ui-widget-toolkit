@@ -922,8 +922,23 @@ export class D3ConnectedGraphSVG extends SVGRenderer {
         });
     }
 
+    protected getHeightWidth(options: IOptions) {
+        if (!options.height) {
+            let node: any = this._parent.node();
+            if (node) {
+                let bounds = node.getBoundingClientRect();
+                options.height = bounds.height;
+                if (!options.height) {
+                    options.height = 400;
+                }
+            }
+        }
+        options.width = options.width ? options.width :
+            this._parent.node().getBoundingClientRect().width;
+    }
+
     protected configureView() {
-        let height = this._options.height ? this._options.height : 400;
+        let height = this._options.height;
         let width = this._options.width;
 
         this._svg
@@ -1304,10 +1319,24 @@ export class D3ConnectedGraphPixi extends UIElementRenderer {
         return height;
     }
 
-    protected configureView() {
-        let height = this._options.height ? this._options.height : 400;
-        let width = this._options.width ? this._options.width :
+    protected getHeightWidth(options: IOptions) {
+        if (!options.height) {
+            let node: any = this._parent.node();
+            if (node) {
+                let bounds = node.getBoundingClientRect();
+                options.height = bounds.height;
+                if (!options.height) {
+                    options.height = 400;
+                }
+            }
+        }
+        options.width = options.width ? options.width :
             this._parent.node().getBoundingClientRect().width;
+    }
+
+    protected configureView() {
+        let height = this._options.height;
+        let width = this._options.width;
 
         this._pixi.resize(width, height);
         ConnectedGraphBase.prototype.configureView.call(this, height, width);

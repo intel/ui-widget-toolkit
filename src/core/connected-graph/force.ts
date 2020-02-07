@@ -25,12 +25,9 @@ export class D3ForceGraph extends D3SimpleGraph {
         let self = this;
         let graph = self._element as IConnectedGraph;
 
-        if (!this._options.height) {
-            this._options.height = 400;
-        }
-
-        let width = this._options.width;
+        this.getHeightWidth(this._options);
         let height = this._options.height;
+        let width = this._options.width;
 
         var simulation = d3.forceSimulation()
             .force('link', d3.forceLink().id(function (d: any) { return d.node; }))

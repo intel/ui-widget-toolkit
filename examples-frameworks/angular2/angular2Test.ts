@@ -25,13 +25,19 @@ window.onload = () => {
 @Component({
     selector: 'test-app',
     template: `
-        <uwt-chart id='chart1' [chartTitle]='title' [chartDef]='chartDef' [renderOptions]='renderOptions' [colorManager]='colorManager'></uwt-chart>
+        <div style='height: 300px'>
+            <uwt-chart id='chart1' [chartTitle]='title' [chartDef]='chartDef' [colorManager]='colorManager'></uwt-chart>
+        </div>
         <uwt-checkbox-tree [data]='node' (onCheckChanged)='onChecked($event)'></uwt-checkbox-tree>
         <uwt-swimlane-chart id='swimlane' [chartTitle]='swimTitle' [chartDefs]='swimDef' [renderOptions]='swimlaneOptions' [colorManager]='colorManager'></uwt-swimlane-chart>
         <uwt-pie-chart id='pie1' [chartTitle]='pieTitle' [chartDef]='pieDef' [renderOptions]='renderOptions' [colorManager]='colorManager'></uwt-pie-chart>
         <uwt-grid id='grid1' [gridTitle]='gridTitle' [gridDef]='gridDef' [gridStyle]='gridStyle' [gridClass]='gridClass' [colorManager]='colorManager'></uwt-grid>
-        <uwt-flow-diagram id='flow1' [diagramTitle]='flowTitle' [diagramDef]='diagramDef' [colorManager]='colorManager'></uwt-flow-diagram>
-        <uwt-graph id='graph1' [graphTitle]='graphTitle' [graphDef]='graphDef' [colorManager]='colorManager'></uwt-graph>
+        <div style='height: 300px'>
+            <uwt-flow-diagram id='flow1' [diagramTitle]='flowTitle' [diagramDef]='diagramDef' [colorManager]='colorManager'></uwt-flow-diagram>
+        </div>
+        <div style='height: 300px'>
+            <uwt-graph style='height: 300px' id='graph1' [graphTitle]='graphTitle' [graphDef]='graphDef' [colorManager]='colorManager'></uwt-graph>
+        </div>    
         <uwt-chart id='chart3' [chartTitle]='flameTitle' [chartDef]='flameChart' [colorManager]='colorManager' [renderOptions]='flameRenderOptions'></uwt-chart>
         <uwt-sunburst-chart id='chart4' [chartTitle]='sunTitle' [chartDef]='sunChart' [colorManager]='colorManager'></uwt-sunburst-chart>
         <uwt-axis [axisDef]='axis'></uwt-axis>

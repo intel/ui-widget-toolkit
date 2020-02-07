@@ -1034,21 +1034,27 @@ let radar1 = {
 // Define the area and graphs.
 const App = () => (
     <div>
-        <UWTChart chartDef={barChart} colorManager={colorManager}></UWTChart>
+        <div style={{ height: '300px' }}>
+            <UWTChart chartDef={barChart} colorManager={colorManager}></UWTChart>
+        </div>
         <UWTCheckboxTree data={checkboxData}></UWTCheckboxTree>
         <UWTSwimlaneChart chartDefs={swimlaneDefs} renderOptions={swimlaneOptions} colorManager={TestBase.colorManager} />
         <UWTChart chartDef={chartDef} chartTitle='foo' colorManager={colorManager} />
         <UWTPieChart chartDef={pieDef} chartTitle='pie1' colorManager={colorManager} />
         <UWTPieChart chartDef={pieDef2} colorManager={colorManager} />
         <UWTGrid gridTitle='Test Grid' gridDef={gridDef} gridStyle={gridStyle} />
-        <UWTFlowDiagram diagramDef={flow} diagramTitle='Sankey Chart' colorManager={colorManager} />
-        <UWTGraph graphDef={forceGraph} graphTitle='Force Graph' colorManager={colorManager} />
+        <div style={{ height: '300px' }}>
+            <UWTFlowDiagram diagramDef={flow} diagramTitle='Sankey Chart' colorManager={colorManager} />
+        </div>
+        <div style={{ height: '300px' }}>
+            <UWTGraph graphDef={forceGraph} graphTitle='Force Graph' colorManager={colorManager} />
+        </div>
         <UWTHierarchyGraph graphDef={hGraph} graphTitle='Hierarchy Graph' colorManager={TestBase.colorManager} />
         <UWTChart chartDef={flameChart} chartTitle='Flame Chart' colorManager={TestBase.colorManager} />
         <UWTSunburstChart chartDef={sunburst} chartTitle='Sunburst Chart' colorManager={TestBase.colorManager} />
         <UWTAxis axisDef={axis}></UWTAxis>
         <UWTRadarChart chartDef={radar1} chartTitle='Radar Chart'></UWTRadarChart>
-    </div>
+    </div >
 );
 ReactDOM.render(
     <App />,

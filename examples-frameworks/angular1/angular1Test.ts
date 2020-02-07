@@ -24,7 +24,6 @@ module AngularTest {
     app.controller('TestCtrl', function ($scope: any, $window: any) {
 
         $scope.title = 'Carteisan Chart 1';
-        $scope.renderOptions = optionsBigLaneBlink;
         $scope.colorManager = TestBase.colorManager;
 
         let chart: UWT.ICartesianChart = {

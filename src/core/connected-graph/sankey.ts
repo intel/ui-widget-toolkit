@@ -136,9 +136,7 @@ export class D3SankeyDiagram extends D3ConnectedGraphSVG {
         let self = this;
         let diagram = self._element as IConnectedGraph;
 
-        if (!this._options.height) {
-            this._options.height = 400;
-        }
+        this.getHeightWidth(this._options);
 
         let width = this._options.width;
         let height = this._options.height;

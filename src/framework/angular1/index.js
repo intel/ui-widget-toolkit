@@ -4,7 +4,7 @@ export function initializeAngular1(angular) {
     angularModule.directive('uwtChart', function () {
         return {
             template: '<div class="chart-title">{{chartTitle}}</div>' +
-                '<div id="chart"></div>',
+                '<div id="chart" style="height: 100%"></div>',
             restrict: 'E',
             scope: {
                 chartDef: '=',
@@ -219,7 +219,7 @@ export function initializeAngular1(angular) {
     angularModule.directive('uwtFlowDiagram', function () {
         return {
             template: '<div class="diagram-title">{{diagramTitle}}</div>' +
-                '<div id="diagram"></div>',
+                '<div id="diagram" style="height: 100%"></div>',
             restrict: 'E',
             scope: {
                 diagramDef: '=',
@@ -255,7 +255,7 @@ export function initializeAngular1(angular) {
     angularModule.directive('uwtGraph', function () {
         return {
             template: '<div class="graph-title">{{graphTitle}}</div>' +
-                '<div id="graph"></div>',
+                '<div id="graph" style="height: 100%"></div>',
             restrict: 'E',
             scope: {
                 graphDef: '=',
