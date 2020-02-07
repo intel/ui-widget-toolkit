@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div style="height: 100%">
         <div class="chart-title">{{ chartTitle }}</div>
-        <div ref="chart"></div>
+        <div ref="chart" id="chart"></div>
     </div>
 </template>
 

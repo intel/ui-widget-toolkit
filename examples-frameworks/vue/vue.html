@@ -43,18 +43,25 @@
         </p>
 
         <uwt-checkbox-tree id='checkboxTree' :data='checkboxData'></uwt-checkbox-tree>
-        <uwt-chart id='chart1' :chart-def='chartDef'></uwt-chart>
+        <div style='height: 300px'>
+            <uwt-chart id='chart1' :chart-def='chartDef'></uwt-chart>
+        </div>
         <uwt-grid id='grid1' :grid-def='gridDef'></uwt-grid>
         <uwt-pie-chart id='pieChart1' :chart-def='pieChart1'></uwt-pie-chart>
         <uwt-pie-chart id='pieChart2' :chart-def='pieChart2'></uwt-pie-chart>
-        <uwt-flow-diagram style='height: 300px' id='flowDiagram' :diagram-def='flow'></uwt-flow-diagram>
-        <uwt-graph style='height: 300px' id='forceGraph' :graph-def='force'></uwt-graph>
+        <div style='height: 300px'>
+            <uwt-flow-diagram id='flowDiagram' :diagram-def='flow'></uwt-flow-diagram>
+        </div>
+        <div style='height: 300px'>
+            <uwt-graph id='forceGraph' :graph-def='force'></uwt-graph>
+        </div>
         <uwt-chart id='flameChart' :chart-def='flame'></uwt-chart>
         <uwt-sunburst-chart id='sunburst' :chart-def='sunburst'></uwt-sunburst-chart>
         <uwt-hierarchy-graph id='hierarchyGraph' :graph-def='hGraph' :color-manager='colorManager'>
         </uwt-hierarchy-graph>
         <uwt-axis id='axis' :axis-def='axis'></uwt-axis>
-        <uwt-swimlane-chart id='axis' :chart-defs='swimlaneDefs' :render-options='swimlaneOptions'></uwt-swimlane-chart>
+        <uwt-swimlane-chart id='axis' :chart-defs='swimlaneDefs' :render-options='swimlaneOptions'>
+        </uwt-swimlane-chart>
         <uwt-radar-chart id='radar' :chart-def='radar'></uwt-radar-chart>
     </div>
     <script src='./vueTest.js'></script>

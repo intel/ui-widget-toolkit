@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="height: 100%">
         <div class="diagram-title">{{diagramTitle}}</div>
         <div ref="diagram" id="diagram"></div>
     </div>
