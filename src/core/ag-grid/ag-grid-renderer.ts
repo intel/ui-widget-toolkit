@@ -322,7 +322,7 @@ class AgGrid {
 
         // make typescript happy to hardcode some things
         let gridOptions: any = this._element.gridOptions;
-         // required to allow the select api to not end up in a infinite loop
+        // required to allow the select api to not end up in a infinite loop
         gridOptions.suppressAsyncEvents = true;
         gridOptions.animateRows = gridOptions.animateRows !== undefined ?
             gridOptions.animateRows : true;
@@ -358,7 +358,7 @@ class AgGrid {
                     userCallback({
                         caller: self._element,
                         event: eventType,
-                        data: { row: row.node.data }
+                        data: { row: row.node.data, node: row.node }
                     });
                 }
             }
@@ -367,6 +367,8 @@ class AgGrid {
             this.onRowFocusDefaultCallback, EventType.HoverStart);
         gridOptions.cellMouseOut = wrapCallback(gridOptions.onCellMouseOver,
             this.onRowUnfocusDefaultCallback, EventType.HoverEnd);
+        gridOptions.onRowGroupOpened = wrapCallback(gridOptions.onRowGroupOpened,
+            undefined, undefined);
         gridOptions.onRowClicked = wrapCallback(gridOptions.onRowClicked,
             undefined, undefined);
         gridOptions.onRowDoubleClicked = wrapCallback(gridOptions.onRowDoubleClicked,
@@ -396,6 +398,7 @@ class AgGrid {
                     caller: self._element,
                     data: {
                         row: row.node.data,
+                        node: row.node,
                         isSelected: row.node.selected
                     },
                     event: row.node.selected ? EventType.SelectAdd : EventType.SelectRemove
