@@ -1,3 +1,3 @@
-import UWTHierarchyGraph from './hierarchy-graph'
+import UWTHierarchyGraph from './hierarchy-graph.vue'
 
 export default UWTHierarchyGraph;

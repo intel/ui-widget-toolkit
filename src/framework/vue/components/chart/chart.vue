@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import * as UWT from "ui-widget-toolkit";
+import * as UWT from "ui-widget-toolkit/js/ui-widget-toolkit-chart";
 
 export default {
     name: "uwtChart",

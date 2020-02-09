@@ -1,3 +1,3 @@
-import UWTCheckboxTreeNode from './checkbox-tree-node'
+import UWTCheckboxTreeNode from './checkbox-tree-node.vue'
 
 export default UWTCheckboxTreeNode;

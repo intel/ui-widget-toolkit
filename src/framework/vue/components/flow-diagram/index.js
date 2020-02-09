@@ -1,3 +1,3 @@
-import UWTFlowDiagram from './flow-diagram'
+import UWTFlowDiagram from './flow-diagram.vue'
 
 export default UWTFlowDiagram;

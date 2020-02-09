@@ -16,8 +16,8 @@ let common = {
     },
     externals: [
         webpackAngularExternals(),
+        /^ui-widget-toolkit*/,
         {
-            'ui-widget-toolkit': 'ui-widget-toolkit',
             d3: 'd3',
             'd3-sankey': {
                 root: 'Sankey',
@@ -144,6 +144,7 @@ module.exports = [
             new CopyWebpackPlugin([
                 { from: './src/framework/polymer', to: 'framework/polymer' },
                 { from: './src/framework/polymer2', to: 'framework/polymer2' },
+                { from: './src/framework/vue/components', to: 'framework/vue//components' },
                 { from: './package.json', to: '.' },
                 { from: './LICENSE', to: '.' },
                 { from: './bower.json', to: '.' },

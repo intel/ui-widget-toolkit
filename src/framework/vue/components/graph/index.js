@@ -1,3 +1,3 @@
-import UWTGraph from './graph'
+import UWTGraph from './graph.vue'
 
 export default UWTGraph;

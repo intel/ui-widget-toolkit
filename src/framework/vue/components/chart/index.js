@@ -1,3 +1,3 @@
-import UWTChart from './chart'
+import UWTChart from './chart.vue'
 
 export default UWTChart;

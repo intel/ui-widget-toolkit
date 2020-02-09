@@ -1,3 +1,3 @@
-import UWTTreeMap from './tree-map'
+import UWTTreeMap from './tree-map.vue'
 
 export default UWTTreeMap;

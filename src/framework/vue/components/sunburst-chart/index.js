@@ -1,3 +1,3 @@
-import UWTSunburstChart from './sunburst-chart'
+import UWTSunburstChart from './sunburst-chart.vue'
 
 export default UWTSunburstChart;

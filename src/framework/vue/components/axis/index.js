@@ -1,3 +1,3 @@
-import UWTAxis from './axis'
+import UWTAxis from './axis.vue'
 
 export default UWTAxis;
