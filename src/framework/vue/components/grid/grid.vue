@@ -106,6 +106,6 @@ export default {
 
 <style scoped>
 div#grid {
-    height: var(--uwt-grid-height, 200px);
+    height: var(--uwt-grid-height, 100%);
 }
 </style>
