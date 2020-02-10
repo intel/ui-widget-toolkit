@@ -62,14 +62,6 @@ export default {
             default: () => {
                 return [];
             }
-        },
-        onCheckChanged: {
-            type: Function,
-            default: undefined
-        },
-        onCheckCompleted: {
-            type: Function,
-            default: undefined
         }
     },
     mounted: function() {
