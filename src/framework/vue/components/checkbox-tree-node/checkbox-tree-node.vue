@@ -24,8 +24,8 @@
                     :open="child.open"
                     :checked="child.checked"
                     :children="child.children"
-                    :on-check-changed="_emitCheckChanged"
-                    :on-check-completed="_emitCheckCompleted"
+                    @check-changed="_emitCheckChanged"
+                    @check-completed="_emitCheckCompleted"
                     class="checkbox-tree-node"
                 ></uwt-checkbox-tree-node>
             </li>
@@ -97,14 +97,10 @@ export default {
             }
         },
         _emitCheckChanged() {
-            if (this.onCheckChanged) {
-                this.onCheckChanged(this.def);
-            }
+            this.$emit("check-changed", this.def);
         },
         _emitCheckCompleted() {
-            if (this.onCheckCompleted) {
-                this.onCheckCompleted(this.def);
-            }
+            this.$emit("check-completed", this.def);
         },
         _onCheckChanged() {
             if (this.indeterminate) {

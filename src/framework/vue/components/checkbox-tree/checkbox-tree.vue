@@ -6,8 +6,8 @@
             :open="data.open"
             :checked="data.checked"
             :children="data.children"
-            :onCheckChanged="_onCheckChanged"
-            :onCheckCompleted="_onCheckCompleted"
+            @check-changed="$emit('check-changed')"
+            @check-completed="$emit('check-completed')"
             class="checkbox-tree-node"
         ></uwt-checkbox-tree-node>
     </div>
@@ -28,27 +28,8 @@ export default {
             default: () => {
                 return {};
             }
-        },
-        onCheckChanged: {
-            type: Function,
-            default: undefined
-        },
-        onCheckCompleted: {
-            type: Function,
-            default: undefined
         }
     },
-    methods: {
-        _onCheckChanged() {
-            if (this.onCheckChanged) {
-                this.onCheckChanged();
-            }
-        },
-        _onCheckCompleted() {
-            if (this.onCheckCompleted) {
-                this.onCheckCompleted();
-            }
-        }
-    }
+    methods: {}
 };
 </script>
