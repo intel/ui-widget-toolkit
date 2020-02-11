@@ -86,6 +86,9 @@ export interface IXYSeries {
     /** EXPERIMENTAL: this flag enables text rendering for each XY scatter point*/
     showTitleText?: boolean;
 
+    /** EXPERIMENTAL: this enables getting title of for display */
+    getTitle?: (d: IXYValue) => string;
+
     /** EXPERIMENTAL: description is drawn along the line/area graph */
     description?: {
         /** the description text */

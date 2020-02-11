@@ -892,6 +892,17 @@ class D3SVGXYSeries extends XYSeries {
     public renderCirclePoints(indices: number[], color: string, radius: number) {
         let self = this;
 
+        let getTitle = function (d: any) {
+            let xy = self._outputData.get(d);
+            if (self._data.getTitle) {
+                return self._data.getTitle(xy);
+            }
+            if (xy.info && xy.info.title) {
+                return xy.info.title;
+            }
+            return '';
+        }
+
         let getColor = function (d: any) {
             let xy = self._outputData.get(d);
             if (xy.info && xy.info.colorKey) {
@@ -906,10 +917,7 @@ class D3SVGXYSeries extends XYSeries {
 
         let configureItemInteraction = function (d: any) {
             let xy = self._outputData.get(d);
-            let selection = '';
-            if (xy.info && xy.info.title) {
-                selection = xy.info.title;
-            }
+            let selection = getTitle(d);
 
             self.configureItemInteraction(d3.select(this), self.getOutputData().get(d), selection);
             if (self._layer.onHover) {
@@ -952,8 +960,9 @@ class D3SVGXYSeries extends XYSeries {
                 if (xy.info.colorKey) {
                     obj.classed(getSelectionName(xy.info.colorKey), true);
                 }
-                if (xy.info.title) {
-                    obj.classed(getSelectionName(xy.info.title), true);
+                let title = getTitle(d);
+                if (title.length) {
+                    obj.classed(getSelectionName(title), true);
                 }
             }
         }
@@ -1044,7 +1053,7 @@ class D3SVGXYSeries extends XYSeries {
             text.enter()
                 .append('text')
                 .classed(self._classes, true)
-                .text(function (d: any) { return self._outputData.get(d).info.title })
+                .text(getTitle)
                 .attr('x', self.xIndexMap)
                 .attr('y', self.yIndexMap)
                 .attr('dy', .5)
@@ -1054,7 +1063,7 @@ class D3SVGXYSeries extends XYSeries {
 
             text
                 .classed(self._classes, true)
-                .text(function (d: any) { return self._outputData.get(d).info.title })
+                .text(getTitle)
                 .attr('x', self.xIndexMap)
                 .attr('y', self.yIndexMap)
                 .each(configureItem)
@@ -1168,6 +1177,20 @@ class D3PIXIXYSeries extends XYSeries {
         let self = this;
         let chart = this._d3Chart.getElement() as any;
 
+        let getTitle = function (d: any) {
+            let xy = self._outputData.get(d);
+            let ret = '';
+            if (self._data.getTitle) {
+                let ret = self._data.getTitle(xy);
+                if (ret === undefined) {
+                    ret = '';
+                }
+            } else if (xy.info && xy.info.title) {
+                ret = xy.info.title;
+            }
+            return ret;
+        }
+
         let getColor = function (d: any) {
             let xy = self._outputData.get(d);
             if (xy.info && xy.info.colorKey) {
@@ -1186,10 +1209,10 @@ class D3PIXIXYSeries extends XYSeries {
 
             let selection = '';
             if (self._layer.onHover) {
-                if (xy.info && xy.info.title) {
-                    selection = xy.info.title;
+                selection = self._data.getTitle(idx);
+                if (selection.length > 0) {
                     self._pixiHelper.addSelection(
-                        getSelectionName(xy.info.title), elem);
+                        getSelectionName(selection), elem);
                 }
             }
 
@@ -1223,8 +1246,8 @@ class D3PIXIXYSeries extends XYSeries {
 
             self.configureItemInteractionPIXI(elem, xy, selection);
 
-            if (xy.info && xy.info.title) {
-                self._pixiHelper.addSelection(getSelectionName(xy.info.title), elem);
+            if (selection.length > 0) {
+                self._pixiHelper.addSelection(getSelectionName(selection), elem);
             }
         }
 
