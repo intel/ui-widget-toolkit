@@ -168,7 +168,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
             for (let i = 0; i < children.length; ++i) {
                 let child = this._nodes[children[i].key];
                 if (D3HierarchyGraph.isNodeRendered(child)) {
-                    let propValue = parseInt(getStyle(child.d3selection)[prop]);
+                    let propValue = parseIntSafely(getStyle(child.d3selection)[prop]);
                     ret = Math.max(propValue, ret);
                 }
             }
@@ -193,7 +193,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
                 if (D3HierarchyGraph.isNodeRendered(child)) {
                     if (hasChildren) {
                         // handle top margin
-                        cssMargin = parseInt(getStyle(child.d3selection)['margin-top']);
+                        cssMargin = parseIntSafely(getStyle(child.d3selection)['margin-top']);
                         marginTop = cssMargin ? cssMargin : defaultMargin;
                         if (marginTop > marginBottom) {
                             ret += marginTop - marginBottom;
@@ -204,7 +204,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
                     ret += Math.max(rect.height, child.rect.height);
 
                     // handle bottom margin
-                    cssMargin = parseInt(getStyle(child.d3selection)['margin-bottom']);
+                    cssMargin = parseIntSafely(getStyle(child.d3selection)['margin-bottom']);
                     marginBottom = cssMargin ? cssMargin : defaultMargin;
                     ret += marginBottom;
                     hasChildren = true;
@@ -237,7 +237,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
 
                     if (hasChildren) {
                         // handle top margin
-                        let cssMargin = parseInt(getStyle(child.d3selection)['margin-top']);
+                        let cssMargin = parseIntSafely(getStyle(child.d3selection)['margin-top']);
                         marginTop = cssMargin ? cssMargin : defaultMargin;
                         if (marginTop > marginBottom) {
                             y += marginTop - marginBottom;
@@ -254,7 +254,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
 
                     y += child.rect['height'];
 
-                    cssMargin = parseInt(getStyle(child.d3selection)['margin-bottom']);
+                    cssMargin = parseIntSafely(getStyle(child.d3selection)['margin-bottom']);
                     marginBottom = cssMargin ? cssMargin : defaultMargin;
                     y += marginBottom;
                     hasChildren = true;
@@ -281,7 +281,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
                 if (D3HierarchyGraph.isNodeRendered(child)) {
                     if (hasChildren) {
                         // handle left margin
-                        cssMargin = parseInt(getStyle(child.d3selection)['margin-left']);
+                        cssMargin = parseIntSafely(getStyle(child.d3selection)['margin-left']);
                         marginLeft = cssMargin ? cssMargin : defaultMargin;
                         if (marginLeft > marginRight) {
                             ret += marginLeft - marginRight;
@@ -292,7 +292,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
                     ret += Math.max(rect.width, child.rect.width);
 
                     // handle right margin
-                    cssMargin = parseInt(getStyle(child.d3selection)['margin-right']);
+                    cssMargin = parseIntSafely(getStyle(child.d3selection)['margin-right']);
                     marginRight = cssMargin ? cssMargin : defaultMargin;
                     ret += marginRight;
                     hasChildren = true;
@@ -325,7 +325,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
 
                     if (hasChildren) {
                         // handle top margin
-                        let cssMargin = parseInt(getStyle(child.d3selection)['margin-left']);
+                        let cssMargin = parseIntSafely(getStyle(child.d3selection)['margin-left']);
                         marginLeft = cssMargin ? cssMargin : defaultMargin;
                         if (marginLeft > marginRight) {
                             x += marginLeft - marginRight;
@@ -343,7 +343,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
                     x += child.rect['width'];
 
                     // handle bottom margin
-                    cssMargin = parseInt(getStyle(child.d3selection)['margin-right']);
+                    cssMargin = parseIntSafely(getStyle(child.d3selection)['margin-right']);
                     marginRight = cssMargin ? cssMargin : defaultMargin;
                     x += marginRight;
                     hasChildren = true;
@@ -371,14 +371,14 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
                 // add left to center margin
                 middleWidth += Math.max(defaultMargin,
                     Math.max(this.getStylePropertyMax(node.left, 'margin-right'),
-                        parseInt(getStyle(
+                        parseIntSafely(getStyle(
                             this._nodes[node.center[0].key].d3selection)['margin-left'])));
                 middleWidth += centerRect.width;
 
                 if (rightRect.width !== 0) {
                     // add center to right margin
                     middleWidth += Math.max(defaultMargin,
-                        Math.max(parseInt(getStyle(
+                        Math.max(parseIntSafely(getStyle(
                             this._nodes[node.center[node.center.length - 1].key].d3selection)['margin-right'],
                             this.getStylePropertyMax(node.right, 'margin-left'))));
                     middleWidth += rightRect.width;
@@ -395,7 +395,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
             if (rightRect.width !== 0) {
                 // add center to right margin
                 middleWidth += Math.max(defaultMargin,
-                    Math.max(parseInt(getStyle(
+                    Math.max(parseIntSafely(getStyle(
                         this._nodes[node.center[node.center.length - 1].key].d3selection)['margin-right'],
                         this.getStylePropertyMax(node.right, 'margin-left'))));
                 middleWidth += rightRect.width;
@@ -405,8 +405,8 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
             middleWidth = rightRect.width;
         }
         ret = Math.max(middleWidth, ret);
-        ret += Math.max(defaultPadding, parseInt(getStyle(this._nodes[node.key].d3selection).paddingLeft));
-        ret += Math.max(defaultPadding, parseInt(getStyle(this._nodes[node.key].d3selection).paddingRight));
+        ret += Math.max(defaultPadding, parseIntSafely(getStyle(this._nodes[node.key].d3selection).paddingLeft));
+        ret += Math.max(defaultPadding, parseIntSafely(getStyle(this._nodes[node.key].d3selection).paddingRight));
         return ret;
     }
 
@@ -426,13 +426,13 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
                 // add top node bottom margin or left nodes top margin
                 leftHeight += Math.max(defaultMargin,
                     Math.max(this.getStylePropertyMax(node.top, 'margin-bottom'),
-                        parseInt(getStyle(this._nodes[node.left[0].key].d3selection)['margin-top'])));
+                        parseIntSafely(getStyle(this._nodes[node.left[0].key].d3selection)['margin-top'])));
                 leftHeight += topRect.height;
             }
             if (bottomRect.height !== 0) {
                 // add left nodes bottom margin or bottom nodes top margin
                 leftHeight += Math.max(defaultMargin,
-                    Math.max(parseInt(getStyle(
+                    Math.max(parseIntSafely(getStyle(
                         this._nodes[node.left[node.left.length - 1].key].d3selection)['margin-bottom'],
                         this.getStylePropertyMax(node.bottom, 'margin-top'))));
                 leftHeight += bottomRect.height;
@@ -464,13 +464,13 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
                 rightHeight += topRect.height;
                 rightHeight += Math.max(defaultMargin,
                     Math.max(this.getStylePropertyMax(node.top, 'margin-bottom'),
-                        parseInt(getStyle(this._nodes[node.right[0].key].d3selection)['margin-top'])));
+                        parseIntSafely(getStyle(this._nodes[node.right[0].key].d3selection)['margin-top'])));
             }
             if (bottomRect.height !== 0) {
                 // add right nodes bottom margin or bottom nodes top margin
                 rightHeight += bottomRect.height;
                 rightHeight += Math.max(defaultMargin,
-                    Math.max(parseInt(getStyle(
+                    Math.max(parseIntSafely(getStyle(
                         this._nodes[node.right[node.right.length - 1].key].d3selection)['margin-bottom'],
                         this.getStylePropertyMax(node.bottom, 'margin-top'))));
             }
@@ -494,8 +494,8 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
             ret += nodeContentRect.height;
         }
 
-        ret += Math.max(defaultPadding, parseInt(getStyle(this._nodes[node.key].d3selection).paddingTop));
-        ret += Math.max(defaultPadding, parseInt(getStyle(this._nodes[node.key].d3selection).paddingBottom));
+        ret += Math.max(defaultPadding, parseIntSafely(getStyle(this._nodes[node.key].d3selection).paddingTop));
+        ret += Math.max(defaultPadding, parseIntSafely(getStyle(this._nodes[node.key].d3selection).paddingBottom));
         return ret;
     }
 
@@ -516,10 +516,10 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
         let widthProp = 'width';
         let heightProp = 'height';
 
-        let cssMargin = parseInt(getStyle(renderedNode.d3selection)['margin-top']);
+        let cssMargin = parseIntSafely(getStyle(renderedNode.d3selection)['margin-top']);
         defaultMargin = cssMargin ? cssMargin : defaultMargin;
 
-        let cssPadding = parseInt(getStyle(renderedNode.d3selection)['padding-top']);
+        let cssPadding = parseIntSafely(getStyle(renderedNode.d3selection)['padding-top']);
         defaultPadding = cssPadding ? cssPadding : defaultPadding;
 
         let topRect = new Rect(0, 0, self.sumHorizontal(node.top, defaultMargin),
@@ -608,14 +608,14 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
                 centerX = Math.max(centerX, self._padding + leftRect.width +
                     Math.max(defaultMargin,
                         Math.max(this.getStylePropertyMax(node.left, 'margin-right'),
-                            parseInt(getStyle(self._nodes[node.center[0].key].d3selection)['margin-left']))));
+                            parseIntSafely(getStyle(self._nodes[node.center[0].key].d3selection)['margin-left']))));
             }
             if (rightRect.width) {
                 centerX = Math.min(centerX, rect.width - self._padding - rightRect.width -
                     centerRect.width -
                     Math.max(defaultMargin,
                         Math.max(this.getStylePropertyMax(node.right, 'margin-left'),
-                            parseInt(getStyle(
+                            parseIntSafely(getStyle(
                                 self._nodes[node.center[node.center.length - 1].key].d3selection)['margin-left']))));
             }
 
@@ -756,8 +756,8 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
                     .attr('x', self._renderOrigin.x)
                     .attr('y', self._renderOrigin.y);
 
-                let cssHeight = parseInt(getStyle(image).height);
-                let cssWidth = parseInt(getStyle(image).width);
+                let cssHeight = parseIntSafely(getStyle(image).height);
+                let cssWidth = parseIntSafely(getStyle(image).width);
 
                 image.attr('height', cssHeight ? cssHeight : node.imageHeight ? node.imageHeight : 40);
                 image.attr('width', cssWidth ? cssWidth : node.imageWidth ? node.imageWidth : 40);
@@ -1215,4 +1215,13 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
         }
     }
 }
+
+function parseIntSafely(input: string, radix?: number): number {
+    let result = parseInt(input, radix);
+    if (isNaN(result)) {
+        result = 0;
+    }
+    return result;
+}
+
 D3Renderer.register(UIType.HierarchyGraph, D3HierarchyGraph);
