@@ -109,7 +109,7 @@
         "zone.js": "0.10.2"
     },
     "scripts": {
-        "build": "./node_modules/.bin/webpack",
+        "build": "./node_modules/.bin/webpack --mode development --devtool source-map",
         "build-framework": "./node_modules/.bin/webpack --config webpack.framework.js",
         "build-examples": "./node_modules/.bin/tsc -p examples",
         "build-release": "npm run build; npm run build-framework; npm run build-examples;./node_modules/.bin/webpack --config webpack.prod.js",
