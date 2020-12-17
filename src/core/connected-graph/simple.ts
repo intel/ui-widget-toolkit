@@ -9,9 +9,11 @@ import { ConnectedGraphBase, D3ConnectedGraphSVG } from './base';
 
 export class D3SimpleGraph extends D3ConnectedGraphSVG {
     constructor(element: UIElement, renderer: D3Renderer,
-        parent: d3.Selection<any, any, d3.BaseType, any>) {
+        parent: d3.Selection<any, any, d3.BaseType, any>,
+        documentRoot: DocumentFragment = document
+    ) {
 
-        super(element, renderer, parent);
+        super(element, renderer, parent, documentRoot);
 
         ConnectedGraphBase.prototype.initializeGraph.call(this, element as IConnectedGraph);
 

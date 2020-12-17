@@ -46,8 +46,6 @@ export class D3Renderer implements UIRenderer {
 
     /** The parent id of the div */
     protected _parent: d3.Selection<d3.BaseType, any, d3.BaseType, any>;
-    protected _parentId: string;
-    protected _colorMgr: ColorManager;
 
     /** maps to render elements if multiple renders are used
      *  through this interface */
@@ -56,13 +54,13 @@ export class D3Renderer implements UIRenderer {
     // from UIRenderer
     public onRender: (elem: UIElement, options: IOptions) => void;
 
-    constructor(parentId?: string, colorMgr: ColorManager = new ColorManager()) {
-        if (parentId) {
-            this._parentId = parentId;
-            this._parent = d3.select('body').select(parentId);
-        }
-        if (colorMgr) {
-            this._colorMgr = colorMgr;
+    constructor(
+        protected _parentId?: string, 
+        protected _colorMgr: ColorManager = new ColorManager(), 
+        protected _documentRoot: DocumentFragment = document
+    ) {
+        if (this._parentId) {
+            this._parent = d3.select(this._documentRoot).select(this._parentId);
         }
 
         this._rendererMap = new WeakMap<UIElement, SVGRenderer>();
@@ -199,7 +197,7 @@ export class D3Renderer implements UIRenderer {
 
             let Renderer: any = UIRendererMap[element.type];
             if (Renderer) {
-                let r = new Renderer(element, this, this._parent);
+                let r = new Renderer(element, this, this._parent, this._documentRoot);
                 r.setColorManager(this._colorMgr);
                 this._rendererMap.set(element, r);
             }

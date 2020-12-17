@@ -112,7 +112,8 @@ export class ConnectedGraphBase {
 
     bind(renderer: UIRenderer, graph: IPortDiagram,
         getSelectionString: (data: any) => string,
-        getTooltipString: (data: any) => string) {
+        getTooltipString: (data: any) => string,
+        documentRoot: DocumentFragment) {
 
         let self = this;
         this.getSelectionString = getSelectionString ? getSelectionString :
@@ -210,7 +211,7 @@ export class ConnectedGraphBase {
             return true;
         }
 
-        this._dataTooltip = new CustomDivTooltip(this._tooltipId, 'tooltip-t');
+        this._dataTooltip = new CustomDivTooltip(this._tooltipId, 'tooltip-t', documentRoot);
         this._dataTooltip
             .setAnalyticsName(this._tooltipAnalyticsName)
             .setEnterCallback(showTooltip)
@@ -534,7 +535,7 @@ export class ConnectedGraphBase {
             // the selection brush
             self._svg.select('.brush').remove();
 
-            self._brushTooltip = new OneLineTooltip('brush', 'tooltip-t');
+            self._brushTooltip = new OneLineTooltip('brush', 'tooltip-t', documentRoot);
             self._brushTooltip
                 .setPlaceTooltipLeftRight()
                 .alwaysRecalcWidth(true)
@@ -632,13 +633,15 @@ export class D3ConnectedGraphSVG extends SVGRenderer {
         height: number, width: number) => void;
 
     constructor(element: UIElement, renderer: UIRenderer,
-        parent: d3.Selection<any, any, d3.BaseType, any>) {
+        parent: d3.Selection<any, any, d3.BaseType, any>,
+        documentRoot: DocumentFragment = document
+    ) {
         super();
 
         this.initialize(element, renderer, parent);
         this._graphContainer = this._svg;
 
-        ConnectedGraphBase.prototype.bind.call(this, renderer, element);
+        ConnectedGraphBase.prototype.bind.call(this, renderer, element, null, null, documentRoot);
     }
 
     protected renderLegend(graphHeight?: number): number {

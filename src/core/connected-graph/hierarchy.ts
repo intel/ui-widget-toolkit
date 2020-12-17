@@ -47,9 +47,10 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
     protected _nodes: any;
 
     constructor(element: UIElement, renderer: D3Renderer,
-        parent: d3.Selection<any, any, d3.BaseType, any>) {
+        parent: d3.Selection<any, any, d3.BaseType, any>,
+        documentRoot: DocumentFragment) {
 
-        super(element, renderer, parent);
+        super(element, renderer, parent, documentRoot);
 
         // undo auto width from initialize call
         this._options.width = undefined;
