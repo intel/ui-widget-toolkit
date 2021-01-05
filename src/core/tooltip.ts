@@ -147,14 +147,14 @@ export class BaseTooltip {
      * @param tooltipStyle -  css class that describes tooltip format.  Defaults
      *   to tooltip-t.
      */
-    constructor(tooltipDivId: string, tooltipStyle: string = 'tooltip-t') {
+    constructor(tooltipDivId: string, tooltipStyle: string = 'tooltip-t', documentRoot: DocumentFragment = document) {
 
-        if (!document.getElementById(tooltipDivId)) {
+        if (!documentRoot.getElementById(tooltipDivId)) {
             this._tooltipDiv = document.createElement('div');
             this._tooltipDiv.style.overflow = 'auto';
             this._tooltipDiv.id = tooltipDivId;
-            document.querySelector('body')
-                .appendChild(this._tooltipDiv);
+            let parent = documentRoot.querySelector('body') ? documentRoot.querySelector("body") : documentRoot;
+            parent.appendChild(this._tooltipDiv);
         } else {
             // Make sure the div ID has the leading '#' we need for selecting
             // a DOM object by id.
@@ -163,7 +163,7 @@ export class BaseTooltip {
                 id = '#' + tooltipDivId;
             }
 
-            this._tooltipDiv = document.querySelector(id) as HTMLDivElement;
+            this._tooltipDiv = documentRoot.querySelector(id) as HTMLDivElement;
         }
 
         this._targets = [];
@@ -845,8 +845,8 @@ export class BaseTooltip {
 export class OneLineTooltip extends BaseTooltip {
     protected _title: string;
 
-    constructor(tooltipDivId: string, tooltipStyle: string = 'tooltip-t') {
-        super(tooltipDivId, tooltipStyle);
+    constructor(tooltipDivId: string, tooltipStyle: string = 'tooltip-t', documentRoot: DocumentFragment = document) {
+        super(tooltipDivId, tooltipStyle, documentRoot);
     }
 
     public getTitle() {
@@ -889,8 +889,8 @@ export class OneLineTooltip extends BaseTooltip {
 export class MetricListTooltip extends BaseTooltip {
     protected _title: string;
 
-    constructor(tooltipDivId: string, tooltipStyle: string = 'tooltip-t') {
-        super(tooltipDivId, tooltipStyle);
+    constructor(tooltipDivId: string, tooltipStyle: string = 'tooltip-t', documentRoot: DocumentFragment = document) {
+        super(tooltipDivId, tooltipStyle, documentRoot);
     }
 
     public getTitle() {
@@ -979,8 +979,8 @@ export class MetricListTooltip extends BaseTooltip {
 }
 
 export class CustomDivTooltip extends MetricListTooltip {
-    constructor(tooltipDivId: string, tooltipStyle: string = 'tooltip-t') {
-        super(tooltipDivId, tooltipStyle);
+    constructor(tooltipDivId: string, tooltipStyle: string = 'tooltip-t', documentRoot: DocumentFragment = document) {
+        super(tooltipDivId, tooltipStyle, documentRoot);
     }
 
     public clearTooltip() {

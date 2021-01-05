@@ -773,8 +773,10 @@ export class D3PortDiagramSVG extends D3ConnectedGraphSVG {
 
     constructor(element: UIElement, renderer: UIRenderer,
         parent: d3.Selection<any, any, d3.BaseType, any>,
-        portDiagram: D3PortDiagram) {
-        super(element, renderer, parent);
+        portDiagram: D3PortDiagram,
+        documentRoot: DocumentFragment = document
+    ) {
+        super(element, renderer, parent, documentRoot);
 
         DiagramBase.prototype.bind.call(this, this._renderer, this._element);
 

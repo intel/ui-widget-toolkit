@@ -13,9 +13,11 @@ export class D3SankeyDiagram extends D3ConnectedGraphSVG {
     private _sankey: any;
 
     constructor(element: UIElement, renderer: D3Renderer,
-        parent: d3.Selection<any, any, d3.BaseType, any>) {
+        parent: d3.Selection<any, any, d3.BaseType, any>,
+        documentRoot: DocumentFragment = document
+    ) {
 
-        super(element, renderer, parent);
+        super(element, renderer, parent, documentRoot);
 
         ConnectedGraphBase.prototype.initializeGraph.call(this, element);
     }
