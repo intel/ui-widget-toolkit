@@ -96,6 +96,17 @@ Run the following commands (assuming NPM is installed)
 	npm install
 	npm run build-release
 
+After building the release there is one manual step required to make the library friendly with legacy modules.  Add
+
+	export as namespace UWT;
+
+to `dist/index.d.ts`
+
+	import * as PIXI from 'pixi.js';
+
+	export as namespace UWT;
+	export function showContextMenu(event: MouseEvent, data: any, contextMenuItems: IContextMenuItem[], propogateEvent?: boolean): void;
+
 # Running Examples:
 
 To build most examples run:
