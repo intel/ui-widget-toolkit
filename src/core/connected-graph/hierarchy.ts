@@ -572,7 +572,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
             let contentStyle = getStyle(nodeContents);
             let xOffset = (rect.width - nodeContentRect.width) / 2;
             let yPadding = defaultPadding;
-            let yOffset = yPadding;
+            let yOffset = yPadding + topRect.height;
             nodeContents
                 .transition()
                 .duration(self.getAnimateDuration())
@@ -582,7 +582,7 @@ export class D3HierarchyGraph extends D3ConnectedGraphSVG {
         let parentMidX = rect.width / 2;
 
         let elemMidX = parentMidX - topRect.width / 2;
-        let elemMidY = self._padding + nodeContentRect.height + topRect.height / 2;
+        let elemMidY = self._padding + topRect.height / 2;
         self.transformHorizontalNodes(elemMidX, elemMidY, node.top, defaultMargin);
 
         // find the center of the center square (parent rect is a 3x3 tic-tac-toe)
