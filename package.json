@@ -33,7 +33,7 @@
     "types": "index.d.ts",
     "peerDependencies": {
         "@angular/common": "^8.2.14",
-        "@angular/core": "^8.2.14",
+        "@angular/core": "^11.0.5",
         "@angular/platform-browser": "^8.2.14",
         "ag-grid-community": "^22.1.1",
         "d3": "5.15.0",
@@ -52,7 +52,7 @@
         "@angular/cdk": "^8.2.3",
         "@angular/common": "^8.2.14",
         "@angular/compiler": "^8.2.14",
-        "@angular/core": "^8.2.14",
+        "@angular/core": "^11.0.5",
         "@angular/forms": "^8.2.14",
         "@angular/http": "^7.2.15",
         "@angular/material": "^8.2.3",
