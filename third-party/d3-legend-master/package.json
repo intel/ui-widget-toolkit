@@ -72,7 +72,7 @@
   "homepage": "http://d3-legend.susielu.com",
   "types": "./types/d3-svg-legend.d.ts",
   "dependencies": {
-    "@types/d3-selection": "1.0.10",
+    "@types/d3-selection": "1.4.3",
     "d3-array": "1.0.1",
     "d3-dispatch": "1.0.1",
     "d3-format": "1.0.2",
